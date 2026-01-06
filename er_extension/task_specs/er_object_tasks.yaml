@@ -1,0 +1,441 @@
+# ER-OBJECT Task Definitions
+# Principle: Same manipulation (action + target object + goal) in DIFFERENT scene contexts
+# Source A: Manipulation source (from libero_object - floor scene)
+# Source B: Scene source (from libero_90 - kitchen/living room/study scenes)
+#
+# 10 two-source tasks + 10 three-source tasks = 20 total
+
+version: "1.0"
+group: ER-OBJECT
+task_count: 20
+
+# Available scenes from libero_90 for context transfer
+scene_templates:
+  kitchen_scene1:
+    file: libero_90/KITCHEN_SCENE1_put_the_black_bowl_on_the_plate.bddl
+    table: kitchen_table
+    fixtures: [wooden_cabinet_1]
+  kitchen_scene4:
+    file: libero_90/KITCHEN_SCENE4_put_the_wine_bottle_on_the_wine_rack.bddl
+    table: kitchen_table
+    fixtures: [white_cabinet_1, wine_rack_1]
+  living_room_scene1:
+    file: libero_90/LIVING_ROOM_SCENE1_pick_up_the_alphabet_soup_and_put_it_in_the_basket.bddl
+    table: living_room_table
+    fixtures: []
+  living_room_scene3:
+    file: libero_90/LIVING_ROOM_SCENE3_pick_up_the_butter_and_put_it_in_the_tray.bddl
+    table: living_room_table
+    fixtures: []
+  study_scene1:
+    file: libero_90/STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_front_compartment_of_the_caddy.bddl
+    table: study_table
+    fixtures: [desk_caddy_1]
+
+# Manipulation sources from libero_object (floor scene - simple layout)
+manipulation_sources:
+  alphabet_soup_in_basket:
+    file: libero_object/pick_up_the_alphabet_soup_and_place_it_in_the_basket.bddl
+    language: pick up the alphabet soup and place it in the basket
+    goal: "(In alphabet_soup_1 basket_1_contain_region)"
+    manipulation_objects:
+      - {instance: alphabet_soup_1, type: alphabet_soup}
+      - {instance: basket_1, type: basket}
+    obj_of_interest: [alphabet_soup_1, basket_1]
+    
+  butter_in_basket:
+    file: libero_object/pick_up_the_butter_and_place_it_in_the_basket.bddl
+    language: pick up the butter and place it in the basket
+    goal: "(In butter_1 basket_1_contain_region)"
+    manipulation_objects:
+      - {instance: butter_1, type: butter}
+      - {instance: basket_1, type: basket}
+    obj_of_interest: [butter_1, basket_1]
+
+  cream_cheese_in_basket:
+    file: libero_object/pick_up_the_cream_cheese_and_place_it_in_the_basket.bddl
+    language: pick up the cream cheese and place it in the basket
+    goal: "(In cream_cheese_1 basket_1_contain_region)"
+    manipulation_objects:
+      - {instance: cream_cheese_1, type: cream_cheese}
+      - {instance: basket_1, type: basket}
+    obj_of_interest: [cream_cheese_1, basket_1]
+
+  ketchup_in_basket:
+    file: libero_object/pick_up_the_ketchup_and_place_it_in_the_basket.bddl
+    language: pick up the ketchup and place it in the basket
+    goal: "(In ketchup_1 basket_1_contain_region)"
+    manipulation_objects:
+      - {instance: ketchup_1, type: ketchup}
+      - {instance: basket_1, type: basket}
+    obj_of_interest: [ketchup_1, basket_1]
+
+  milk_in_basket:
+    file: libero_object/pick_up_the_milk_and_place_it_in_the_basket.bddl
+    language: pick up the milk and place it in the basket
+    goal: "(In milk_1 basket_1_contain_region)"
+    manipulation_objects:
+      - {instance: milk_1, type: milk}
+      - {instance: basket_1, type: basket}
+    obj_of_interest: [milk_1, basket_1]
+
+  orange_juice_in_basket:
+    file: libero_object/pick_up_the_orange_juice_and_place_it_in_the_basket.bddl
+    language: pick up the orange juice and place it in the basket
+    goal: "(In orange_juice_1 basket_1_contain_region)"
+    manipulation_objects:
+      - {instance: orange_juice_1, type: orange_juice}
+      - {instance: basket_1, type: basket}
+    obj_of_interest: [orange_juice_1, basket_1]
+
+  tomato_sauce_in_basket:
+    file: libero_object/pick_up_the_tomato_sauce_and_place_it_in_the_basket.bddl
+    language: pick up the tomato sauce and place it in the basket
+    goal: "(In tomato_sauce_1 basket_1_contain_region)"
+    manipulation_objects:
+      - {instance: tomato_sauce_1, type: tomato_sauce}
+      - {instance: basket_1, type: basket}
+    obj_of_interest: [tomato_sauce_1, basket_1]
+
+  salad_dressing_in_basket:
+    file: libero_object/pick_up_the_salad_dressing_and_place_it_in_the_basket.bddl
+    language: pick up the salad dressing and place it in the basket
+    goal: "(In salad_dressing_1 basket_1_contain_region)"
+    manipulation_objects:
+      - {instance: salad_dressing_1, type: salad_dressing}
+      - {instance: basket_1, type: basket}
+    obj_of_interest: [salad_dressing_1, basket_1]
+
+  chocolate_pudding_in_basket:
+    file: libero_object/pick_up_the_chocolate_pudding_and_place_it_in_the_basket.bddl
+    language: pick up the chocolate pudding and place it in the basket
+    goal: "(In chocolate_pudding_1 basket_1_contain_region)"
+    manipulation_objects:
+      - {instance: chocolate_pudding_1, type: chocolate_pudding}
+      - {instance: basket_1, type: basket}
+    obj_of_interest: [chocolate_pudding_1, basket_1]
+
+  bbq_sauce_in_basket:
+    file: libero_object/pick_up_the_bbq_sauce_and_place_it_in_the_basket.bddl
+    language: pick up the bbq sauce and place it in the basket
+    goal: "(In bbq_sauce_1 basket_1_contain_region)"
+    manipulation_objects:
+      - {instance: bbq_sauce_1, type: bbq_sauce}
+      - {instance: basket_1, type: basket}
+    obj_of_interest: [bbq_sauce_1, basket_1]
+
+# ===== TWO-SOURCE TASKS (10) =====
+# Format: manipulation from libero_object + scene from libero_90
+tasks:
+  # Task 1: Alphabet soup in basket - Kitchen Scene 1
+  - id: er_object_01_alphabet_soup_basket_kitchen1
+    num_sources: 2
+    evaluated_ability: "Same basket manipulation in kitchen scene with cabinet"
+    sources:
+      - id: A
+        role: manipulation_source
+        ref: alphabet_soup_in_basket
+      - id: B
+        role: scene_source
+        ref: kitchen_scene1
+    novelty_rationale: "Floor basket task now in kitchen_table context with wooden_cabinet"
+
+  # Task 2: Butter in basket - Kitchen Scene 4
+  - id: er_object_02_butter_basket_kitchen4
+    num_sources: 2
+    evaluated_ability: "Basket manipulation in kitchen scene with wine rack"
+    sources:
+      - id: A
+        role: manipulation_source
+        ref: butter_in_basket
+      - id: B
+        role: scene_source
+        ref: kitchen_scene4
+    novelty_rationale: "Floor basket task in kitchen with wine rack and cabinet"
+
+  # Task 3: Cream cheese in basket - Study Scene 1
+  - id: er_object_03_cream_cheese_basket_study1
+    num_sources: 2
+    evaluated_ability: "Basket manipulation in study scene with desk caddy"
+    sources:
+      - id: A
+        role: manipulation_source
+        ref: cream_cheese_in_basket
+      - id: B
+        role: scene_source
+        ref: study_scene1
+    novelty_rationale: "Floor basket task now in study_table context with desk_caddy"
+
+  # Task 4: Ketchup in basket - Living Room Scene 3
+  - id: er_object_04_ketchup_basket_livingroom3
+    num_sources: 2
+    evaluated_ability: "Basket manipulation in living room scene (different from scene 1)"
+    sources:
+      - id: A
+        role: manipulation_source
+        ref: ketchup_in_basket
+      - id: B
+        role: scene_source
+        ref: living_room_scene3
+    novelty_rationale: "Floor basket task in living_room_table with tray layout"
+
+  # Task 5: Milk in basket - Kitchen Scene 1
+  - id: er_object_05_milk_basket_kitchen1
+    num_sources: 2
+    evaluated_ability: "Milk basket manipulation (not in L90) in kitchen context"
+    sources:
+      - id: A
+        role: manipulation_source
+        ref: milk_in_basket
+      - id: B
+        role: scene_source
+        ref: kitchen_scene1
+    novelty_rationale: "Milk-basket task not in L90 kitchen scenes"
+
+  # Task 6: Orange juice in basket - Study Scene 1
+  - id: er_object_06_orange_juice_basket_study1
+    num_sources: 2
+    evaluated_ability: "Orange juice basket manipulation in study context"
+    sources:
+      - id: A
+        role: manipulation_source
+        ref: orange_juice_in_basket
+      - id: B
+        role: scene_source
+        ref: study_scene1
+    novelty_rationale: "OJ-basket from L-Obj in study scene context"
+
+  # Task 7: Tomato sauce in basket - Kitchen Scene 4
+  - id: er_object_07_tomato_sauce_basket_kitchen4
+    num_sources: 2
+    evaluated_ability: "Tomato sauce basket in kitchen with wine fixtures"
+    sources:
+      - id: A
+        role: manipulation_source
+        ref: tomato_sauce_in_basket
+      - id: B
+        role: scene_source
+        ref: kitchen_scene4
+    novelty_rationale: "Tomato sauce-basket in kitchen context with wine rack"
+
+  # Task 8: Salad dressing in basket - Living Room Scene 1
+  - id: er_object_08_salad_dressing_basket_livingroom1
+    num_sources: 2
+    evaluated_ability: "Salad dressing basket in different living room layout"
+    sources:
+      - id: A
+        role: manipulation_source
+        ref: salad_dressing_in_basket
+      - id: B
+        role: scene_source
+        ref: living_room_scene1
+    novelty_rationale: "Salad dressing in L-Obj, basket in L90, but this combo not in L90 scenes"
+
+  # Task 9: Chocolate pudding in basket - Kitchen Scene 1
+  - id: er_object_09_chocolate_pudding_basket_kitchen1
+    num_sources: 2
+    evaluated_ability: "Chocolate pudding basket in kitchen context"
+    sources:
+      - id: A
+        role: manipulation_source
+        ref: chocolate_pudding_in_basket
+      - id: B
+        role: scene_source
+        ref: kitchen_scene1
+    novelty_rationale: "Pudding-basket in kitchen scene (not in training)"
+
+  # Task 10: BBQ sauce in basket - Living Room Scene 3
+  - id: er_object_10_bbq_sauce_basket_livingroom3
+    num_sources: 2
+    evaluated_ability: "BBQ sauce basket in living room tray scene"
+    sources:
+      - id: A
+        role: manipulation_source
+        ref: bbq_sauce_in_basket
+      - id: B
+        role: scene_source
+        ref: living_room_scene3
+    novelty_rationale: "BBQ sauce only in L-Obj, transferred to living room context"
+
+  # ===== THREE-SOURCE TASKS (10) =====
+  # Format: action pattern + target object + scene context
+  # These combine (action from A) + (object from B) + (scene from C)
+
+  # Task 11: Put alphabet soup in basket in kitchen with study background objects
+  - id: er_object_11_alphabet_soup_basket_kitchen1_studyobj
+    num_sources: 3
+    evaluated_ability: "Basket task with study scene objects (book, mug) as distractors"
+    sources:
+      - id: A
+        role: manipulation_source
+        ref: alphabet_soup_in_basket
+      - id: B
+        role: scene_source
+        ref: kitchen_scene1
+      - id: C
+        role: background_objects
+        objects:
+          - {instance: black_book_1, type: black_book}
+          - {instance: white_yellow_mug_1, type: white_yellow_mug}
+    novelty_rationale: "Kitchen basket task with study-scene distractor objects"
+
+  # Task 12: Butter basket in study with kitchen objects
+  - id: er_object_12_butter_basket_study1_kitchenobj
+    num_sources: 3
+    evaluated_ability: "Basket task in study with kitchen objects as distractors"
+    sources:
+      - id: A
+        role: manipulation_source
+        ref: butter_in_basket
+      - id: B
+        role: scene_source
+        ref: study_scene1
+      - id: C
+        role: background_objects
+        objects:
+          - {instance: plate_1, type: plate}
+          - {instance: akita_black_bowl_1, type: akita_black_bowl}
+    novelty_rationale: "Study basket task with kitchen-scene distractor objects"
+
+  # Task 13: Cream cheese basket in kitchen4 with living room objects
+  - id: er_object_13_cream_cheese_basket_kitchen4_lrobj
+    num_sources: 3
+    evaluated_ability: "Kitchen wine rack scene with living room objects"
+    sources:
+      - id: A
+        role: manipulation_source
+        ref: cream_cheese_in_basket
+      - id: B
+        role: scene_source
+        ref: kitchen_scene4
+      - id: C
+        role: background_objects
+        objects:
+          - {instance: wooden_tray_1, type: wooden_tray}
+    novelty_rationale: "Kitchen4 with living room tray as distractor"
+
+  # Task 14: Ketchup basket in kitchen1 with multiple distractors
+  - id: er_object_14_ketchup_basket_kitchen1_multi
+    num_sources: 3
+    evaluated_ability: "Kitchen basket with multiple foreign objects"
+    sources:
+      - id: A
+        role: manipulation_source
+        ref: ketchup_in_basket
+      - id: B
+        role: scene_source
+        ref: kitchen_scene1
+      - id: C
+        role: background_objects
+        objects:
+          - {instance: moka_pot_1, type: moka_pot}
+          - {instance: wine_bottle_1, type: wine_bottle}
+    novelty_rationale: "Kitchen1 basket task with stove-scene objects as distractors"
+
+  # Task 15: Milk basket in living room with kitchen objects
+  - id: er_object_15_milk_basket_livingroom1_kitchenobj
+    num_sources: 3
+    evaluated_ability: "Living room basket with kitchen distractors"
+    sources:
+      - id: A
+        role: manipulation_source
+        ref: milk_in_basket
+      - id: B
+        role: scene_source
+        ref: living_room_scene1
+      - id: C
+        role: background_objects
+        objects:
+          - {instance: chefmate_8_frypan_1, type: chefmate_8_frypan}
+    novelty_rationale: "Living room with frying pan distractor (kitchen scene object)"
+
+  # Task 16: Orange juice basket in kitchen with study objects
+  - id: er_object_16_oj_basket_kitchen4_studyobj
+    num_sources: 3
+    evaluated_ability: "Kitchen wine scene with study distractors"
+    sources:
+      - id: A
+        role: manipulation_source
+        ref: orange_juice_in_basket
+      - id: B
+        role: scene_source
+        ref: kitchen_scene4
+      - id: C
+        role: background_objects
+        objects:
+          - {instance: black_book_1, type: black_book}
+    novelty_rationale: "Kitchen4 with book distractor from study scenes"
+
+  # Task 17: Tomato sauce basket in study with living room objects
+  - id: er_object_17_tomato_basket_study1_lrobj
+    num_sources: 3
+    evaluated_ability: "Study basket with living room distractors"
+    sources:
+      - id: A
+        role: manipulation_source
+        ref: tomato_sauce_in_basket
+      - id: B
+        role: scene_source
+        ref: study_scene1
+      - id: C
+        role: background_objects
+        objects:
+          - {instance: wooden_tray_1, type: wooden_tray}
+          - {instance: red_coffee_mug_1, type: red_coffee_mug}
+    novelty_rationale: "Study scene with living room tray and mug"
+
+  # Task 18: Salad dressing basket in kitchen with study objects
+  - id: er_object_18_salad_basket_kitchen1_studyobj
+    num_sources: 3
+    evaluated_ability: "Kitchen basket with study scene objects"
+    sources:
+      - id: A
+        role: manipulation_source
+        ref: salad_dressing_in_basket
+      - id: B
+        role: scene_source
+        ref: kitchen_scene1
+      - id: C
+        role: background_objects
+        objects:
+          - {instance: yellow_book_1, type: yellow_book}
+          - {instance: porcelain_mug_1, type: porcelain_mug}
+    novelty_rationale: "Kitchen1 with book and mug from study scenes"
+
+  # Task 19: Chocolate pudding basket in living room with kitchen objects
+  - id: er_object_19_pudding_basket_livingroom3_kitchenobj
+    num_sources: 3
+    evaluated_ability: "Living room tray scene with kitchen distractors"
+    sources:
+      - id: A
+        role: manipulation_source
+        ref: chocolate_pudding_in_basket
+      - id: B
+        role: scene_source
+        ref: living_room_scene3
+      - id: C
+        role: background_objects
+        objects:
+          - {instance: plate_1, type: plate}
+          - {instance: glazed_rim_porcelain_ramekin_1, type: glazed_rim_porcelain_ramekin}
+    novelty_rationale: "Living room with plate and ramekin from spatial scenes"
+
+  # Task 20: BBQ sauce basket in study with mixed objects
+  - id: er_object_20_bbq_basket_study1_mixedobj
+    num_sources: 3
+    evaluated_ability: "Study basket with mixed scene distractors"
+    sources:
+      - id: A
+        role: manipulation_source
+        ref: bbq_sauce_in_basket
+      - id: B
+        role: scene_source
+        ref: study_scene1
+      - id: C
+        role: background_objects
+        objects:
+          - {instance: akita_black_bowl_1, type: akita_black_bowl}
+          - {instance: wine_bottle_1, type: wine_bottle}
+          - {instance: cookies_1, type: cookies}
+    novelty_rationale: "Study scene with bowl, wine, cookies from other scenes"
+

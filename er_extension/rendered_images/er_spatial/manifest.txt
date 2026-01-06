@@ -1,0 +1,180 @@
+er_spatial_01_bowl_next_to_butter
+  language: pick up the black bowl next to the butter and place it on the plate
+  goal: (And (On akita_black_bowl_1 plate_1
+  init: er_extension/rendered_images/er_spatial/er_spatial_01_bowl_next_to_butter/init_seed0.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_01_bowl_next_to_butter/init_seed1.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_01_bowl_next_to_butter/init_seed2.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_01_bowl_next_to_butter/goal_seed0.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_01_bowl_next_to_butter/goal_seed1.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_01_bowl_next_to_butter/goal_seed2.png
+er_spatial_02_bowl_left_of_ketchup
+  language: pick up the black bowl to the left of the ketchup and place it on the plate
+  goal: (And (On akita_black_bowl_1 plate_1
+  init: er_extension/rendered_images/er_spatial/er_spatial_02_bowl_left_of_ketchup/init_seed0.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_02_bowl_left_of_ketchup/init_seed1.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_02_bowl_left_of_ketchup/init_seed2.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_02_bowl_left_of_ketchup/goal_seed0.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_02_bowl_left_of_ketchup/goal_seed1.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_02_bowl_left_of_ketchup/goal_seed2.png
+er_spatial_03_bowl_right_of_milk
+  language: pick up the black bowl to the right of the milk and place it on the plate
+  goal: (And (On akita_black_bowl_1 plate_1
+  init: er_extension/rendered_images/er_spatial/er_spatial_03_bowl_right_of_milk/init_seed0.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_03_bowl_right_of_milk/init_seed1.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_03_bowl_right_of_milk/init_seed2.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_03_bowl_right_of_milk/goal_seed0.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_03_bowl_right_of_milk/goal_seed1.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_03_bowl_right_of_milk/goal_seed2.png
+er_spatial_04_butter_next_to_bowl_kitchen1
+  language: pick up the butter next to the black bowl and put it on the plate
+  goal: (And (On butter_1 plate_1
+  init: er_extension/rendered_images/er_spatial/er_spatial_04_butter_next_to_bowl_kitchen1/init_seed0.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_04_butter_next_to_bowl_kitchen1/init_seed1.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_04_butter_next_to_bowl_kitchen1/init_seed2.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_04_butter_next_to_bowl_kitchen1/goal_seed0.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_04_butter_next_to_bowl_kitchen1/goal_seed1.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_04_butter_next_to_bowl_kitchen1/goal_seed2.png
+er_spatial_05_cream_cheese_behind_plate_kitchen1
+  language: pick up the cream cheese behind the plate and put it on the cabinet
+  goal: (And (On cream_cheese_1 wooden_cabinet_1_top_side
+  init: er_extension/rendered_images/er_spatial/er_spatial_05_cream_cheese_behind_plate_kitchen1/init_seed0.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_05_cream_cheese_behind_plate_kitchen1/init_seed1.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_05_cream_cheese_behind_plate_kitchen1/init_seed2.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_05_cream_cheese_behind_plate_kitchen1/goal_seed0.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_05_cream_cheese_behind_plate_kitchen1/goal_seed1.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_05_cream_cheese_behind_plate_kitchen1/goal_seed2.png
+er_spatial_06_butter_next_to_soup_living2
+  language: pick up the butter next to the soup and put it in the basket
+  goal: (And (On butter_1 basket_1_contain_region
+  init: er_extension/rendered_images/er_spatial/er_spatial_06_butter_next_to_soup_living2/init_seed0.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_06_butter_next_to_soup_living2/init_seed1.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_06_butter_next_to_soup_living2/init_seed2.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_06_butter_next_to_soup_living2/goal_seed0.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_06_butter_next_to_soup_living2/goal_seed1.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_06_butter_next_to_soup_living2/goal_seed2.png
+er_spatial_07_milk_left_of_tomato_living2
+  language: pick up the milk to the left of the tomato sauce and put it in the basket
+  goal: (And (On milk_1 basket_1_contain_region
+  init: er_extension/rendered_images/er_spatial/er_spatial_07_milk_left_of_tomato_living2/init_seed0.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_07_milk_left_of_tomato_living2/init_seed1.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_07_milk_left_of_tomato_living2/init_seed2.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_07_milk_left_of_tomato_living2/goal_seed0.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_07_milk_left_of_tomato_living2/goal_seed1.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_07_milk_left_of_tomato_living2/goal_seed2.png
+er_spatial_08_ketchup_in_front_of_bowl_kitchen5
+  language: pick up the ketchup in front of the black bowl and put it on the plate
+  goal: (And (On ketchup_1 plate_1
+  init: er_extension/rendered_images/er_spatial/er_spatial_08_ketchup_in_front_of_bowl_kitchen5/init_seed0.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_08_ketchup_in_front_of_bowl_kitchen5/init_seed1.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_08_ketchup_in_front_of_bowl_kitchen5/init_seed2.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_08_ketchup_in_front_of_bowl_kitchen5/goal_seed0.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_08_ketchup_in_front_of_bowl_kitchen5/goal_seed1.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_08_ketchup_in_front_of_bowl_kitchen5/goal_seed2.png
+er_spatial_09_tomato_right_of_plate_kitchen5
+  language: pick up the tomato sauce to the right of the plate and put it on the cabinet
+  goal: (And (On tomato_sauce_1 wooden_cabinet_1_top_side
+  init: er_extension/rendered_images/er_spatial/er_spatial_09_tomato_right_of_plate_kitchen5/init_seed0.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_09_tomato_right_of_plate_kitchen5/init_seed1.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_09_tomato_right_of_plate_kitchen5/init_seed2.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_09_tomato_right_of_plate_kitchen5/goal_seed0.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_09_tomato_right_of_plate_kitchen5/goal_seed1.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_09_tomato_right_of_plate_kitchen5/goal_seed2.png
+er_spatial_10_pudding_next_to_butter_living2
+  language: pick up the pudding next to the butter and put it in the basket
+  goal: (And (On chocolate_pudding_1 basket_1_contain_region
+  init: er_extension/rendered_images/er_spatial/er_spatial_10_pudding_next_to_butter_living2/init_seed0.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_10_pudding_next_to_butter_living2/init_seed1.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_10_pudding_next_to_butter_living2/init_seed2.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_10_pudding_next_to_butter_living2/goal_seed0.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_10_pudding_next_to_butter_living2/goal_seed1.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_10_pudding_next_to_butter_living2/goal_seed2.png
+er_spatial_11_bowl_next_to_cream_cheese_with_ketchup
+  language: pick up the black bowl next to the cream cheese and place it on the plate
+  goal: (And (On akita_black_bowl_1 plate_1
+  init: er_extension/rendered_images/er_spatial/er_spatial_11_bowl_next_to_cream_cheese_with_ketchup/init_seed0.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_11_bowl_next_to_cream_cheese_with_ketchup/init_seed1.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_11_bowl_next_to_cream_cheese_with_ketchup/init_seed2.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_11_bowl_next_to_cream_cheese_with_ketchup/goal_seed0.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_11_bowl_next_to_cream_cheese_with_ketchup/goal_seed1.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_11_bowl_next_to_cream_cheese_with_ketchup/goal_seed2.png
+er_spatial_12_bowl_left_of_tomato_with_milk
+  language: pick up the black bowl to the left of the tomato sauce and place it on the plate
+  goal: (And (On akita_black_bowl_1 plate_1
+  init: er_extension/rendered_images/er_spatial/er_spatial_12_bowl_left_of_tomato_with_milk/init_seed0.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_12_bowl_left_of_tomato_with_milk/init_seed1.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_12_bowl_left_of_tomato_with_milk/init_seed2.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_12_bowl_left_of_tomato_with_milk/goal_seed0.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_12_bowl_left_of_tomato_with_milk/goal_seed1.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_12_bowl_left_of_tomato_with_milk/goal_seed2.png
+er_spatial_13_butter_behind_bowl_with_ketchup_kitchen1
+  language: pick up the butter behind the black bowl and put it on the plate
+  goal: (And (On butter_1 plate_1
+  init: er_extension/rendered_images/er_spatial/er_spatial_13_butter_behind_bowl_with_ketchup_kitchen1/init_seed0.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_13_butter_behind_bowl_with_ketchup_kitchen1/init_seed1.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_13_butter_behind_bowl_with_ketchup_kitchen1/init_seed2.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_13_butter_behind_bowl_with_ketchup_kitchen1/goal_seed0.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_13_butter_behind_bowl_with_ketchup_kitchen1/goal_seed1.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_13_butter_behind_bowl_with_ketchup_kitchen1/goal_seed2.png
+er_spatial_14_milk_right_of_cream_cheese_with_butter_kitchen5
+  language: pick up the milk to the right of the cream cheese and put it on the cabinet
+  goal: (And (On milk_1 wooden_cabinet_1_top_side
+  init: er_extension/rendered_images/er_spatial/er_spatial_14_milk_right_of_cream_cheese_with_butter_kitchen5/init_seed0.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_14_milk_right_of_cream_cheese_with_butter_kitchen5/init_seed1.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_14_milk_right_of_cream_cheese_with_butter_kitchen5/init_seed2.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_14_milk_right_of_cream_cheese_with_butter_kitchen5/goal_seed0.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_14_milk_right_of_cream_cheese_with_butter_kitchen5/goal_seed1.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_14_milk_right_of_cream_cheese_with_butter_kitchen5/goal_seed2.png
+er_spatial_15_soup_next_to_milk_with_butter_living2
+  language: pick up the soup next to the milk and put it in the basket
+  goal: (And (On alphabet_soup_1 basket_1_contain_region
+  init: er_extension/rendered_images/er_spatial/er_spatial_15_soup_next_to_milk_with_butter_living2/init_seed0.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_15_soup_next_to_milk_with_butter_living2/init_seed1.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_15_soup_next_to_milk_with_butter_living2/init_seed2.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_15_soup_next_to_milk_with_butter_living2/goal_seed0.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_15_soup_next_to_milk_with_butter_living2/goal_seed1.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_15_soup_next_to_milk_with_butter_living2/goal_seed2.png
+er_spatial_16_ketchup_left_of_pudding_with_cream_cheese_living2
+  language: pick up the ketchup to the left of the pudding and put it in the basket
+  goal: (And (On ketchup_1 basket_1_contain_region
+  init: er_extension/rendered_images/er_spatial/er_spatial_16_ketchup_left_of_pudding_with_cream_cheese_living2/init_seed0.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_16_ketchup_left_of_pudding_with_cream_cheese_living2/init_seed1.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_16_ketchup_left_of_pudding_with_cream_cheese_living2/init_seed2.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_16_ketchup_left_of_pudding_with_cream_cheese_living2/goal_seed0.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_16_ketchup_left_of_pudding_with_cream_cheese_living2/goal_seed1.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_16_ketchup_left_of_pudding_with_cream_cheese_living2/goal_seed2.png
+er_spatial_17_bowl_in_front_of_butter_with_tomato
+  language: pick up the black bowl in front of the butter and place it on the plate
+  goal: (And (On akita_black_bowl_1 plate_1
+  init: er_extension/rendered_images/er_spatial/er_spatial_17_bowl_in_front_of_butter_with_tomato/init_seed0.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_17_bowl_in_front_of_butter_with_tomato/init_seed1.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_17_bowl_in_front_of_butter_with_tomato/init_seed2.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_17_bowl_in_front_of_butter_with_tomato/goal_seed0.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_17_bowl_in_front_of_butter_with_tomato/goal_seed1.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_17_bowl_in_front_of_butter_with_tomato/goal_seed2.png
+er_spatial_18_tomato_next_to_ketchup_with_soup_living2
+  language: pick up the tomato sauce next to the ketchup and put it in the basket
+  goal: (And (On tomato_sauce_1 basket_1_contain_region
+  init: er_extension/rendered_images/er_spatial/er_spatial_18_tomato_next_to_ketchup_with_soup_living2/init_seed0.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_18_tomato_next_to_ketchup_with_soup_living2/init_seed1.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_18_tomato_next_to_ketchup_with_soup_living2/init_seed2.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_18_tomato_next_to_ketchup_with_soup_living2/goal_seed0.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_18_tomato_next_to_ketchup_with_soup_living2/goal_seed1.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_18_tomato_next_to_ketchup_with_soup_living2/goal_seed2.png
+er_spatial_19_cream_cheese_right_of_bowl_with_milk_kitchen1
+  language: pick up the cream cheese to the right of the bowl and put it on the cabinet
+  goal: (And (On cream_cheese_1 wooden_cabinet_1_top_side
+  init: er_extension/rendered_images/er_spatial/er_spatial_19_cream_cheese_right_of_bowl_with_milk_kitchen1/init_seed0.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_19_cream_cheese_right_of_bowl_with_milk_kitchen1/init_seed1.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_19_cream_cheese_right_of_bowl_with_milk_kitchen1/init_seed2.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_19_cream_cheese_right_of_bowl_with_milk_kitchen1/goal_seed0.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_19_cream_cheese_right_of_bowl_with_milk_kitchen1/goal_seed1.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_19_cream_cheese_right_of_bowl_with_milk_kitchen1/goal_seed2.png
+er_spatial_20_pudding_behind_butter_with_ketchup_milk
+  language: pick up the pudding behind the butter and put it in the basket
+  goal: (And (On chocolate_pudding_1 basket_1_contain_region
+  init: er_extension/rendered_images/er_spatial/er_spatial_20_pudding_behind_butter_with_ketchup_milk/init_seed0.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_20_pudding_behind_butter_with_ketchup_milk/init_seed1.png
+  init: er_extension/rendered_images/er_spatial/er_spatial_20_pudding_behind_butter_with_ketchup_milk/init_seed2.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_20_pudding_behind_butter_with_ketchup_milk/goal_seed0.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_20_pudding_behind_butter_with_ketchup_milk/goal_seed1.png
+  goal: er_extension/rendered_images/er_spatial/er_spatial_20_pudding_behind_butter_with_ketchup_milk/goal_seed2.png

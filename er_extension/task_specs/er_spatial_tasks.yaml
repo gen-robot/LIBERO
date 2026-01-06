@@ -1,0 +1,278 @@
+# ER-SPATIAL Task Definitions (Redesigned for Diversity)
+# Principle: Same goal, but NOVEL spatial reference for locating the object
+# Use diverse scenes, objects, and spatial relations
+#
+# 10 two-source tasks + 10 three-source tasks = 20 total
+
+version: "2.0"
+group: ER-SPATIAL
+task_count: 20
+
+# Scene templates with different spatial configurations
+scenes:
+  kitchen_spatial:
+    source: libero_spatial/pick_up_the_black_bowl_next_to_the_ramekin_and_place_it_on_the_plate.bddl
+    problem: LIBERO_Tabletop_Manipulation
+    table: main_table
+    
+  kitchen1:
+    source: libero_90/KITCHEN_SCENE1_put_the_black_bowl_on_the_plate.bddl
+    problem: LIBERO_Kitchen_Tabletop_Manipulation
+    table: kitchen_table
+    
+  kitchen5:
+    source: libero_90/KITCHEN_SCENE5_put_the_black_bowl_on_the_plate.bddl
+    problem: LIBERO_Kitchen_Tabletop_Manipulation
+    table: kitchen_table
+    
+  living2:
+    source: libero_90/LIVING_ROOM_SCENE2_pick_up_the_butter_and_put_it_in_the_basket.bddl
+    problem: LIBERO_Living_Room_Tabletop_Manipulation
+    table: living_room_table
+    
+  living5:
+    source: libero_90/LIVING_ROOM_SCENE5_put_the_red_mug_on_the_left_plate.bddl
+    problem: LIBERO_Living_Room_Tabletop_Manipulation
+    table: living_room_table
+
+# Spatial relations and their offsets (dx, dy from landmark center)
+spatial_relations:
+  next_to: [-0.08, 0.0]
+  left_of: [-0.10, 0.0]
+  right_of: [0.10, 0.0]
+  in_front_of: [0.08, 0.0]
+  behind: [-0.08, 0.0]
+
+# ============================================================================
+# TWO-SOURCE TASKS (10 tasks) - Diverse objects and landmarks
+# ============================================================================
+
+tasks:
+  # Kitchen spatial - bowl with different landmarks
+  - id: er_spatial_01
+    name: bowl_next_to_butter
+    scene: kitchen_spatial
+    language: "pick up the black bowl next to the butter and place it on the plate"
+    manipulated_object: {instance: akita_black_bowl_1, type: akita_black_bowl}
+    landmark: {instance: butter_1, type: butter}
+    relation: next_to
+    goal_target: plate_1
+    goal: "(On akita_black_bowl_1 plate_1)"
+    
+  - id: er_spatial_02
+    name: bowl_left_of_ketchup
+    scene: kitchen_spatial
+    language: "pick up the black bowl to the left of the ketchup and place it on the plate"
+    manipulated_object: {instance: akita_black_bowl_1, type: akita_black_bowl}
+    landmark: {instance: ketchup_1, type: ketchup}
+    relation: left_of
+    goal_target: plate_1
+    goal: "(On akita_black_bowl_1 plate_1)"
+    
+  - id: er_spatial_03
+    name: bowl_right_of_milk
+    scene: kitchen_spatial
+    language: "pick up the black bowl to the right of the milk and place it on the plate"
+    manipulated_object: {instance: akita_black_bowl_1, type: akita_black_bowl}
+    landmark: {instance: milk_1, type: milk}
+    relation: right_of
+    goal_target: plate_1
+    goal: "(On akita_black_bowl_1 plate_1)"
+
+  # Kitchen scene 1 - different manipulated objects
+  - id: er_spatial_04
+    name: butter_next_to_bowl_kitchen1
+    scene: kitchen1
+    language: "pick up the butter next to the black bowl and put it on the plate"
+    manipulated_object: {instance: butter_1, type: butter}
+    landmark: {instance: akita_black_bowl_1, type: akita_black_bowl}
+    relation: next_to
+    goal_target: plate_1
+    goal: "(On butter_1 plate_1)"
+    
+  - id: er_spatial_05
+    name: cream_cheese_behind_plate_kitchen1
+    scene: kitchen1
+    language: "pick up the cream cheese behind the plate and put it on the cabinet"
+    manipulated_object: {instance: cream_cheese_1, type: cream_cheese}
+    landmark: {instance: plate_1, type: plate}
+    relation: behind
+    goal_target: wooden_cabinet_1_top_side
+    goal: "(On cream_cheese_1 wooden_cabinet_1_top_side)"
+
+  # Living room - different objects with spatial refs
+  - id: er_spatial_06
+    name: butter_next_to_soup_living2
+    scene: living2
+    language: "pick up the butter next to the soup and put it in the basket"
+    manipulated_object: {instance: butter_1, type: butter}
+    landmark: {instance: alphabet_soup_1, type: alphabet_soup}
+    relation: next_to
+    goal_target: basket_1_contain_region
+    goal: "(On butter_1 basket_1_contain_region)"
+    
+  - id: er_spatial_07
+    name: milk_left_of_tomato_living2
+    scene: living2
+    language: "pick up the milk to the left of the tomato sauce and put it in the basket"
+    manipulated_object: {instance: milk_1, type: milk}
+    landmark: {instance: tomato_sauce_1, type: tomato_sauce}
+    relation: left_of
+    goal_target: basket_1_contain_region
+    goal: "(On milk_1 basket_1_contain_region)"
+
+  # More kitchen variants
+  - id: er_spatial_08
+    name: ketchup_in_front_of_bowl_kitchen5
+    scene: kitchen5
+    language: "pick up the ketchup in front of the black bowl and put it on the plate"
+    manipulated_object: {instance: ketchup_1, type: ketchup}
+    landmark: {instance: akita_black_bowl_1, type: akita_black_bowl}
+    relation: in_front_of
+    goal_target: plate_1
+    goal: "(On ketchup_1 plate_1)"
+    
+  - id: er_spatial_09
+    name: tomato_right_of_plate_kitchen5
+    scene: kitchen5
+    language: "pick up the tomato sauce to the right of the plate and put it on the cabinet"
+    manipulated_object: {instance: tomato_sauce_1, type: tomato_sauce}
+    landmark: {instance: plate_1, type: plate}
+    relation: right_of
+    goal_target: wooden_cabinet_1_top_side
+    goal: "(On tomato_sauce_1 wooden_cabinet_1_top_side)"
+    
+  - id: er_spatial_10
+    name: pudding_next_to_butter_living2
+    scene: living2
+    language: "pick up the pudding next to the butter and put it in the basket"
+    manipulated_object: {instance: chocolate_pudding_1, type: chocolate_pudding}
+    landmark: {instance: butter_1, type: butter}
+    relation: next_to
+    goal_target: basket_1_contain_region
+    goal: "(On chocolate_pudding_1 basket_1_contain_region)"
+
+# ============================================================================
+# THREE-SOURCE TASKS (10 tasks) - Add distractor objects
+# ============================================================================
+
+  - id: er_spatial_11
+    name: bowl_next_to_cream_cheese_with_ketchup
+    scene: kitchen_spatial
+    language: "pick up the black bowl next to the cream cheese and place it on the plate"
+    manipulated_object: {instance: akita_black_bowl_1, type: akita_black_bowl}
+    landmark: {instance: cream_cheese_1, type: cream_cheese}
+    relation: next_to
+    goal_target: plate_1
+    goal: "(On akita_black_bowl_1 plate_1)"
+    add_objects:
+      - {instance: ketchup_1, type: ketchup}
+      
+  - id: er_spatial_12
+    name: bowl_left_of_tomato_with_milk
+    scene: kitchen_spatial
+    language: "pick up the black bowl to the left of the tomato sauce and place it on the plate"
+    manipulated_object: {instance: akita_black_bowl_1, type: akita_black_bowl}
+    landmark: {instance: tomato_sauce_1, type: tomato_sauce}
+    relation: left_of
+    goal_target: plate_1
+    goal: "(On akita_black_bowl_1 plate_1)"
+    add_objects:
+      - {instance: milk_1, type: milk}
+      
+  - id: er_spatial_13
+    name: butter_behind_bowl_with_ketchup_kitchen1
+    scene: kitchen1
+    language: "pick up the butter behind the black bowl and put it on the plate"
+    manipulated_object: {instance: butter_1, type: butter}
+    landmark: {instance: akita_black_bowl_1, type: akita_black_bowl}
+    relation: behind
+    goal_target: plate_1
+    goal: "(On butter_1 plate_1)"
+    add_objects:
+      - {instance: ketchup_1, type: ketchup}
+      
+  - id: er_spatial_14
+    name: milk_right_of_cream_cheese_with_butter_kitchen5
+    scene: kitchen5
+    language: "pick up the milk to the right of the cream cheese and put it on the cabinet"
+    manipulated_object: {instance: milk_1, type: milk}
+    landmark: {instance: cream_cheese_1, type: cream_cheese}
+    relation: right_of
+    goal_target: wooden_cabinet_1_top_side
+    goal: "(On milk_1 wooden_cabinet_1_top_side)"
+    add_objects:
+      - {instance: butter_1, type: butter}
+      
+  - id: er_spatial_15
+    name: soup_next_to_milk_with_butter_living2
+    scene: living2
+    language: "pick up the soup next to the milk and put it in the basket"
+    manipulated_object: {instance: alphabet_soup_1, type: alphabet_soup}
+    landmark: {instance: milk_1, type: milk}
+    relation: next_to
+    goal_target: basket_1_contain_region
+    goal: "(On alphabet_soup_1 basket_1_contain_region)"
+    add_objects:
+      - {instance: butter_1, type: butter}
+      
+  - id: er_spatial_16
+    name: ketchup_left_of_pudding_with_cream_cheese_living2
+    scene: living2
+    language: "pick up the ketchup to the left of the pudding and put it in the basket"
+    manipulated_object: {instance: ketchup_1, type: ketchup}
+    landmark: {instance: chocolate_pudding_1, type: chocolate_pudding}
+    relation: left_of
+    goal_target: basket_1_contain_region
+    goal: "(On ketchup_1 basket_1_contain_region)"
+    add_objects:
+      - {instance: cream_cheese_1, type: cream_cheese}
+      
+  - id: er_spatial_17
+    name: bowl_in_front_of_butter_with_tomato
+    scene: kitchen_spatial
+    language: "pick up the black bowl in front of the butter and place it on the plate"
+    manipulated_object: {instance: akita_black_bowl_1, type: akita_black_bowl}
+    landmark: {instance: butter_1, type: butter}
+    relation: in_front_of
+    goal_target: plate_1
+    goal: "(On akita_black_bowl_1 plate_1)"
+    add_objects:
+      - {instance: tomato_sauce_1, type: tomato_sauce}
+      
+  - id: er_spatial_18
+    name: tomato_next_to_ketchup_with_soup_living2
+    scene: living2
+    language: "pick up the tomato sauce next to the ketchup and put it in the basket"
+    manipulated_object: {instance: tomato_sauce_1, type: tomato_sauce}
+    landmark: {instance: ketchup_1, type: ketchup}
+    relation: next_to
+    goal_target: basket_1_contain_region
+    goal: "(On tomato_sauce_1 basket_1_contain_region)"
+    add_objects:
+      - {instance: alphabet_soup_1, type: alphabet_soup}
+      
+  - id: er_spatial_19
+    name: cream_cheese_right_of_bowl_with_milk_kitchen1
+    scene: kitchen1
+    language: "pick up the cream cheese to the right of the bowl and put it on the cabinet"
+    manipulated_object: {instance: cream_cheese_1, type: cream_cheese}
+    landmark: {instance: akita_black_bowl_1, type: akita_black_bowl}
+    relation: right_of
+    goal_target: wooden_cabinet_1_top_side
+    goal: "(On cream_cheese_1 wooden_cabinet_1_top_side)"
+    add_objects:
+      - {instance: milk_1, type: milk}
+      
+  - id: er_spatial_20
+    name: pudding_behind_butter_with_ketchup_milk
+    scene: living2
+    language: "pick up the pudding behind the butter and put it in the basket"
+    manipulated_object: {instance: chocolate_pudding_1, type: chocolate_pudding}
+    landmark: {instance: butter_1, type: butter}
+    relation: behind
+    goal_target: basket_1_contain_region
+    goal: "(On chocolate_pudding_1 basket_1_contain_region)"
+    add_objects:
+      - {instance: ketchup_1, type: ketchup}
+      - {instance: milk_1, type: milk}

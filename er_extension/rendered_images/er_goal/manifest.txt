@@ -1,0 +1,180 @@
+er_goal_01_butter_on_plate_kitchen1
+  language: put the butter on the plate
+  goal: (And (On butter_1 plate_1
+  init: er_extension/rendered_images/er_goal/er_goal_01_butter_on_plate_kitchen1/init_seed0.png
+  init: er_extension/rendered_images/er_goal/er_goal_01_butter_on_plate_kitchen1/init_seed1.png
+  init: er_extension/rendered_images/er_goal/er_goal_01_butter_on_plate_kitchen1/init_seed2.png
+  goal: er_extension/rendered_images/er_goal/er_goal_01_butter_on_plate_kitchen1/goal_seed0.png
+  goal: er_extension/rendered_images/er_goal/er_goal_01_butter_on_plate_kitchen1/goal_seed1.png
+  goal: er_extension/rendered_images/er_goal/er_goal_01_butter_on_plate_kitchen1/goal_seed2.png
+er_goal_02_cream_cheese_on_cabinet_kitchen1
+  language: put the cream cheese on top of the cabinet
+  goal: (And (On cream_cheese_1 wooden_cabinet_1_top_side
+  init: er_extension/rendered_images/er_goal/er_goal_02_cream_cheese_on_cabinet_kitchen1/init_seed0.png
+  init: er_extension/rendered_images/er_goal/er_goal_02_cream_cheese_on_cabinet_kitchen1/init_seed1.png
+  init: er_extension/rendered_images/er_goal/er_goal_02_cream_cheese_on_cabinet_kitchen1/init_seed2.png
+  goal: er_extension/rendered_images/er_goal/er_goal_02_cream_cheese_on_cabinet_kitchen1/goal_seed0.png
+  goal: er_extension/rendered_images/er_goal/er_goal_02_cream_cheese_on_cabinet_kitchen1/goal_seed1.png
+  goal: er_extension/rendered_images/er_goal/er_goal_02_cream_cheese_on_cabinet_kitchen1/goal_seed2.png
+er_goal_03_ketchup_on_stove_kitchen3
+  language: put the ketchup on the stove
+  goal: (And (On ketchup_1 flat_stove_1_cook_region
+  init: er_extension/rendered_images/er_goal/er_goal_03_ketchup_on_stove_kitchen3/init_seed0.png
+  init: er_extension/rendered_images/er_goal/er_goal_03_ketchup_on_stove_kitchen3/init_seed1.png
+  init: er_extension/rendered_images/er_goal/er_goal_03_ketchup_on_stove_kitchen3/init_seed2.png
+  goal: er_extension/rendered_images/er_goal/er_goal_03_ketchup_on_stove_kitchen3/goal_seed0.png
+  goal: er_extension/rendered_images/er_goal/er_goal_03_ketchup_on_stove_kitchen3/goal_seed1.png
+  goal: er_extension/rendered_images/er_goal/er_goal_03_ketchup_on_stove_kitchen3/goal_seed2.png
+er_goal_04_milk_on_wine_rack_kitchen4
+  language: put the milk on the wine rack
+  goal: (And (On milk_1 wine_rack_1
+  init: er_extension/rendered_images/er_goal/er_goal_04_milk_on_wine_rack_kitchen4/init_seed0.png
+  init: er_extension/rendered_images/er_goal/er_goal_04_milk_on_wine_rack_kitchen4/init_seed1.png
+  init: er_extension/rendered_images/er_goal/er_goal_04_milk_on_wine_rack_kitchen4/init_seed2.png
+  goal: er_extension/rendered_images/er_goal/er_goal_04_milk_on_wine_rack_kitchen4/goal_seed0.png
+  goal: er_extension/rendered_images/er_goal/er_goal_04_milk_on_wine_rack_kitchen4/goal_seed1.png
+  goal: er_extension/rendered_images/er_goal/er_goal_04_milk_on_wine_rack_kitchen4/goal_seed2.png
+er_goal_05_tomato_on_plate_kitchen5
+  language: put the tomato sauce on the plate
+  goal: (And (On tomato_sauce_1 plate_1
+  init: er_extension/rendered_images/er_goal/er_goal_05_tomato_on_plate_kitchen5/init_seed0.png
+  init: er_extension/rendered_images/er_goal/er_goal_05_tomato_on_plate_kitchen5/init_seed1.png
+  init: er_extension/rendered_images/er_goal/er_goal_05_tomato_on_plate_kitchen5/init_seed2.png
+  goal: er_extension/rendered_images/er_goal/er_goal_05_tomato_on_plate_kitchen5/goal_seed0.png
+  goal: er_extension/rendered_images/er_goal/er_goal_05_tomato_on_plate_kitchen5/goal_seed1.png
+  goal: er_extension/rendered_images/er_goal/er_goal_05_tomato_on_plate_kitchen5/goal_seed2.png
+er_goal_06_butter_in_basket_living1
+  language: put the butter in the basket
+  goal: (And (On butter_1 basket_1_contain_region
+  init: er_extension/rendered_images/er_goal/er_goal_06_butter_in_basket_living1/init_seed0.png
+  init: er_extension/rendered_images/er_goal/er_goal_06_butter_in_basket_living1/init_seed1.png
+  init: er_extension/rendered_images/er_goal/er_goal_06_butter_in_basket_living1/init_seed2.png
+  goal: er_extension/rendered_images/er_goal/er_goal_06_butter_in_basket_living1/goal_seed0.png
+  goal: er_extension/rendered_images/er_goal/er_goal_06_butter_in_basket_living1/goal_seed1.png
+  goal: er_extension/rendered_images/er_goal/er_goal_06_butter_in_basket_living1/goal_seed2.png
+er_goal_07_milk_in_tray_living3
+  language: put the milk in the tray
+  goal: (And (On milk_1 wooden_tray_1_contain_region
+  init: er_extension/rendered_images/er_goal/er_goal_07_milk_in_tray_living3/init_seed0.png
+  init: er_extension/rendered_images/er_goal/er_goal_07_milk_in_tray_living3/init_seed1.png
+  init: er_extension/rendered_images/er_goal/er_goal_07_milk_in_tray_living3/init_seed2.png
+  goal: er_extension/rendered_images/er_goal/er_goal_07_milk_in_tray_living3/goal_seed0.png
+  goal: er_extension/rendered_images/er_goal/er_goal_07_milk_in_tray_living3/goal_seed1.png
+  goal: er_extension/rendered_images/er_goal/er_goal_07_milk_in_tray_living3/goal_seed2.png
+er_goal_08_cream_cheese_in_caddy_study1
+  language: put the cream cheese in the caddy
+  goal: (And (On cream_cheese_1 desk_caddy_1_front_region
+  init: er_extension/rendered_images/er_goal/er_goal_08_cream_cheese_in_caddy_study1/init_seed0.png
+  init: er_extension/rendered_images/er_goal/er_goal_08_cream_cheese_in_caddy_study1/init_seed1.png
+  init: er_extension/rendered_images/er_goal/er_goal_08_cream_cheese_in_caddy_study1/init_seed2.png
+  goal: er_extension/rendered_images/er_goal/er_goal_08_cream_cheese_in_caddy_study1/goal_seed0.png
+  goal: er_extension/rendered_images/er_goal/er_goal_08_cream_cheese_in_caddy_study1/goal_seed1.png
+  goal: er_extension/rendered_images/er_goal/er_goal_08_cream_cheese_in_caddy_study1/goal_seed2.png
+er_goal_09_pudding_on_cabinet_kitchen9
+  language: put the chocolate pudding on top of the cabinet
+  goal: (And (On chocolate_pudding_1 wooden_cabinet_1_top_side
+  init: er_extension/rendered_images/er_goal/er_goal_09_pudding_on_cabinet_kitchen9/init_seed0.png
+  init: er_extension/rendered_images/er_goal/er_goal_09_pudding_on_cabinet_kitchen9/init_seed1.png
+  init: er_extension/rendered_images/er_goal/er_goal_09_pudding_on_cabinet_kitchen9/init_seed2.png
+  goal: er_extension/rendered_images/er_goal/er_goal_09_pudding_on_cabinet_kitchen9/goal_seed0.png
+  goal: er_extension/rendered_images/er_goal/er_goal_09_pudding_on_cabinet_kitchen9/goal_seed1.png
+  goal: er_extension/rendered_images/er_goal/er_goal_09_pudding_on_cabinet_kitchen9/goal_seed2.png
+er_goal_10_orange_juice_in_basket_living1
+  language: put the orange juice in the basket
+  goal: (And (On orange_juice_1 basket_1_contain_region
+  init: er_extension/rendered_images/er_goal/er_goal_10_orange_juice_in_basket_living1/init_seed0.png
+  init: er_extension/rendered_images/er_goal/er_goal_10_orange_juice_in_basket_living1/init_seed1.png
+  init: er_extension/rendered_images/er_goal/er_goal_10_orange_juice_in_basket_living1/init_seed2.png
+  goal: er_extension/rendered_images/er_goal/er_goal_10_orange_juice_in_basket_living1/goal_seed0.png
+  goal: er_extension/rendered_images/er_goal/er_goal_10_orange_juice_in_basket_living1/goal_seed1.png
+  goal: er_extension/rendered_images/er_goal/er_goal_10_orange_juice_in_basket_living1/goal_seed2.png
+er_goal_11_butter_on_plate_with_ketchup_kitchen1
+  language: put the butter on the plate
+  goal: (And (On butter_1 plate_1
+  init: er_extension/rendered_images/er_goal/er_goal_11_butter_on_plate_with_ketchup_kitchen1/init_seed0.png
+  init: er_extension/rendered_images/er_goal/er_goal_11_butter_on_plate_with_ketchup_kitchen1/init_seed1.png
+  init: er_extension/rendered_images/er_goal/er_goal_11_butter_on_plate_with_ketchup_kitchen1/init_seed2.png
+  goal: er_extension/rendered_images/er_goal/er_goal_11_butter_on_plate_with_ketchup_kitchen1/goal_seed0.png
+  goal: er_extension/rendered_images/er_goal/er_goal_11_butter_on_plate_with_ketchup_kitchen1/goal_seed1.png
+  goal: er_extension/rendered_images/er_goal/er_goal_11_butter_on_plate_with_ketchup_kitchen1/goal_seed2.png
+er_goal_12_milk_on_stove_with_cream_cheese_kitchen3
+  language: put the milk on the stove
+  goal: (And (On milk_1 flat_stove_1_cook_region
+  init: er_extension/rendered_images/er_goal/er_goal_12_milk_on_stove_with_cream_cheese_kitchen3/init_seed0.png
+  init: er_extension/rendered_images/er_goal/er_goal_12_milk_on_stove_with_cream_cheese_kitchen3/init_seed1.png
+  init: er_extension/rendered_images/er_goal/er_goal_12_milk_on_stove_with_cream_cheese_kitchen3/init_seed2.png
+  goal: er_extension/rendered_images/er_goal/er_goal_12_milk_on_stove_with_cream_cheese_kitchen3/goal_seed0.png
+  goal: er_extension/rendered_images/er_goal/er_goal_12_milk_on_stove_with_cream_cheese_kitchen3/goal_seed1.png
+  goal: er_extension/rendered_images/er_goal/er_goal_12_milk_on_stove_with_cream_cheese_kitchen3/goal_seed2.png
+er_goal_13_tomato_on_rack_with_butter_kitchen4
+  language: put the tomato sauce on the wine rack
+  goal: (And (On tomato_sauce_1 wine_rack_1
+  init: er_extension/rendered_images/er_goal/er_goal_13_tomato_on_rack_with_butter_kitchen4/init_seed0.png
+  init: er_extension/rendered_images/er_goal/er_goal_13_tomato_on_rack_with_butter_kitchen4/init_seed1.png
+  init: er_extension/rendered_images/er_goal/er_goal_13_tomato_on_rack_with_butter_kitchen4/init_seed2.png
+  goal: er_extension/rendered_images/er_goal/er_goal_13_tomato_on_rack_with_butter_kitchen4/goal_seed0.png
+  goal: er_extension/rendered_images/er_goal/er_goal_13_tomato_on_rack_with_butter_kitchen4/goal_seed1.png
+  goal: er_extension/rendered_images/er_goal/er_goal_13_tomato_on_rack_with_butter_kitchen4/goal_seed2.png
+er_goal_14_pudding_in_basket_with_ketchup_living1
+  language: put the chocolate pudding in the basket
+  goal: (And (On chocolate_pudding_1 basket_1_contain_region
+  init: er_extension/rendered_images/er_goal/er_goal_14_pudding_in_basket_with_ketchup_living1/init_seed0.png
+  init: er_extension/rendered_images/er_goal/er_goal_14_pudding_in_basket_with_ketchup_living1/init_seed1.png
+  init: er_extension/rendered_images/er_goal/er_goal_14_pudding_in_basket_with_ketchup_living1/init_seed2.png
+  goal: er_extension/rendered_images/er_goal/er_goal_14_pudding_in_basket_with_ketchup_living1/goal_seed0.png
+  goal: er_extension/rendered_images/er_goal/er_goal_14_pudding_in_basket_with_ketchup_living1/goal_seed1.png
+  goal: er_extension/rendered_images/er_goal/er_goal_14_pudding_in_basket_with_ketchup_living1/goal_seed2.png
+er_goal_15_orange_juice_in_tray_with_milk_living3
+  language: put the orange juice in the tray
+  goal: (And (On orange_juice_1 wooden_tray_1_contain_region
+  init: er_extension/rendered_images/er_goal/er_goal_15_orange_juice_in_tray_with_milk_living3/init_seed0.png
+  init: er_extension/rendered_images/er_goal/er_goal_15_orange_juice_in_tray_with_milk_living3/init_seed1.png
+  init: er_extension/rendered_images/er_goal/er_goal_15_orange_juice_in_tray_with_milk_living3/init_seed2.png
+  goal: er_extension/rendered_images/er_goal/er_goal_15_orange_juice_in_tray_with_milk_living3/goal_seed0.png
+  goal: er_extension/rendered_images/er_goal/er_goal_15_orange_juice_in_tray_with_milk_living3/goal_seed1.png
+  goal: er_extension/rendered_images/er_goal/er_goal_15_orange_juice_in_tray_with_milk_living3/goal_seed2.png
+er_goal_16_butter_in_caddy_with_soup_study1
+  language: put the butter in the caddy
+  goal: (And (On butter_1 desk_caddy_1_front_region
+  init: er_extension/rendered_images/er_goal/er_goal_16_butter_in_caddy_with_soup_study1/init_seed0.png
+  init: er_extension/rendered_images/er_goal/er_goal_16_butter_in_caddy_with_soup_study1/init_seed1.png
+  init: er_extension/rendered_images/er_goal/er_goal_16_butter_in_caddy_with_soup_study1/init_seed2.png
+  goal: er_extension/rendered_images/er_goal/er_goal_16_butter_in_caddy_with_soup_study1/goal_seed0.png
+  goal: er_extension/rendered_images/er_goal/er_goal_16_butter_in_caddy_with_soup_study1/goal_seed1.png
+  goal: er_extension/rendered_images/er_goal/er_goal_16_butter_in_caddy_with_soup_study1/goal_seed2.png
+er_goal_17_ketchup_on_cabinet_with_milk_kitchen5
+  language: put the ketchup on top of the cabinet
+  goal: (And (On ketchup_1 wooden_cabinet_1_top_side
+  init: er_extension/rendered_images/er_goal/er_goal_17_ketchup_on_cabinet_with_milk_kitchen5/init_seed0.png
+  init: er_extension/rendered_images/er_goal/er_goal_17_ketchup_on_cabinet_with_milk_kitchen5/init_seed1.png
+  init: er_extension/rendered_images/er_goal/er_goal_17_ketchup_on_cabinet_with_milk_kitchen5/init_seed2.png
+  goal: er_extension/rendered_images/er_goal/er_goal_17_ketchup_on_cabinet_with_milk_kitchen5/goal_seed0.png
+  goal: er_extension/rendered_images/er_goal/er_goal_17_ketchup_on_cabinet_with_milk_kitchen5/goal_seed1.png
+  goal: er_extension/rendered_images/er_goal/er_goal_17_ketchup_on_cabinet_with_milk_kitchen5/goal_seed2.png
+er_goal_18_cream_cheese_on_stove_with_butter_kitchen9
+  language: put the cream cheese on the stove
+  goal: (And (On cream_cheese_1 flat_stove_1_cook_region
+  init: er_extension/rendered_images/er_goal/er_goal_18_cream_cheese_on_stove_with_butter_kitchen9/init_seed0.png
+  init: er_extension/rendered_images/er_goal/er_goal_18_cream_cheese_on_stove_with_butter_kitchen9/init_seed1.png
+  init: er_extension/rendered_images/er_goal/er_goal_18_cream_cheese_on_stove_with_butter_kitchen9/init_seed2.png
+  goal: er_extension/rendered_images/er_goal/er_goal_18_cream_cheese_on_stove_with_butter_kitchen9/goal_seed0.png
+  goal: er_extension/rendered_images/er_goal/er_goal_18_cream_cheese_on_stove_with_butter_kitchen9/goal_seed1.png
+  goal: er_extension/rendered_images/er_goal/er_goal_18_cream_cheese_on_stove_with_butter_kitchen9/goal_seed2.png
+er_goal_19_soup_in_basket_with_tomato_living1
+  language: put the alphabet soup in the basket
+  goal: (And (On alphabet_soup_1 basket_1_contain_region
+  init: er_extension/rendered_images/er_goal/er_goal_19_soup_in_basket_with_tomato_living1/init_seed0.png
+  init: er_extension/rendered_images/er_goal/er_goal_19_soup_in_basket_with_tomato_living1/init_seed1.png
+  init: er_extension/rendered_images/er_goal/er_goal_19_soup_in_basket_with_tomato_living1/init_seed2.png
+  goal: er_extension/rendered_images/er_goal/er_goal_19_soup_in_basket_with_tomato_living1/goal_seed0.png
+  goal: er_extension/rendered_images/er_goal/er_goal_19_soup_in_basket_with_tomato_living1/goal_seed1.png
+  goal: er_extension/rendered_images/er_goal/er_goal_19_soup_in_basket_with_tomato_living1/goal_seed2.png
+er_goal_20_milk_in_caddy_with_pudding_study1
+  language: put the milk in the caddy
+  goal: (And (On milk_1 desk_caddy_1_left_region
+  init: er_extension/rendered_images/er_goal/er_goal_20_milk_in_caddy_with_pudding_study1/init_seed0.png
+  init: er_extension/rendered_images/er_goal/er_goal_20_milk_in_caddy_with_pudding_study1/init_seed1.png
+  init: er_extension/rendered_images/er_goal/er_goal_20_milk_in_caddy_with_pudding_study1/init_seed2.png
+  goal: er_extension/rendered_images/er_goal/er_goal_20_milk_in_caddy_with_pudding_study1/goal_seed0.png
+  goal: er_extension/rendered_images/er_goal/er_goal_20_milk_in_caddy_with_pudding_study1/goal_seed1.png
+  goal: er_extension/rendered_images/er_goal/er_goal_20_milk_in_caddy_with_pudding_study1/goal_seed2.png

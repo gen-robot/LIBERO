@@ -1,0 +1,252 @@
+# ER-GOAL Task Definitions (Redesigned for Diversity)
+# Principle: Same action pattern applied to NOVEL object-target combinations
+# Use diverse scenes (KITCHEN, LIVING_ROOM, STUDY) with different goal targets
+#
+# 10 two-source tasks + 10 three-source tasks = 20 total
+
+version: "2.0"
+group: ER-GOAL
+task_count: 20
+
+# Scene templates with their objects and available targets
+scenes:
+  kitchen1:
+    source: libero_90/KITCHEN_SCENE1_put_the_black_bowl_on_the_plate.bddl
+    problem: LIBERO_Kitchen_Tabletop_Manipulation
+    table: kitchen_table
+    available_targets: [plate_1, wooden_cabinet_1_top_side]
+    
+  kitchen3:
+    source: libero_90/KITCHEN_SCENE3_put_the_moka_pot_on_the_stove.bddl
+    problem: LIBERO_Kitchen_Tabletop_Manipulation
+    table: kitchen_table
+    available_targets: [flat_stove_1_cook_region]
+    
+  kitchen4:
+    source: libero_90/KITCHEN_SCENE4_put_the_wine_bottle_on_the_wine_rack.bddl
+    problem: LIBERO_Kitchen_Tabletop_Manipulation
+    table: kitchen_table
+    available_targets: [wine_rack_1, wooden_cabinet_1_top_side, wooden_cabinet_1_bottom_region]
+    
+  kitchen5:
+    source: libero_90/KITCHEN_SCENE5_put_the_black_bowl_on_the_plate.bddl
+    problem: LIBERO_Kitchen_Tabletop_Manipulation
+    table: kitchen_table
+    available_targets: [plate_1, wooden_cabinet_1_top_side, wooden_cabinet_1_top_region]
+    
+  kitchen9:
+    source: libero_90/KITCHEN_SCENE9_put_the_frying_pan_on_the_cabinet_shelf.bddl
+    problem: LIBERO_Kitchen_Tabletop_Manipulation
+    table: kitchen_table
+    available_targets: [wooden_cabinet_1_top_side, flat_stove_1_cook_region]
+    
+  living1:
+    source: libero_90/LIVING_ROOM_SCENE1_pick_up_the_alphabet_soup_and_put_it_in_the_basket.bddl
+    problem: LIBERO_Living_Room_Tabletop_Manipulation
+    table: living_room_table
+    available_targets: [basket_1_contain_region]
+    
+  living3:
+    source: libero_90/LIVING_ROOM_SCENE3_pick_up_the_butter_and_put_it_in_the_tray.bddl
+    problem: LIBERO_Living_Room_Tabletop_Manipulation
+    table: living_room_table
+    available_targets: [wooden_tray_1_contain_region]
+    
+  study1:
+    source: libero_90/STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_front_compartment_of_the_caddy.bddl
+    problem: LIBERO_Study_Tabletop_Manipulation
+    table: study_table
+    available_targets: [desk_caddy_1_front_region, desk_caddy_1_left_region, desk_caddy_1_right_region]
+
+# ============================================================================
+# TWO-SOURCE TASKS (10 tasks) - Use diverse scenes and targets
+# ============================================================================
+
+tasks:
+  # Kitchen scenes - novel object to familiar target
+  - id: er_goal_01
+    name: butter_on_plate_kitchen1
+    scene: kitchen1
+    language: "put the butter on the plate"
+    manipulated_object: {instance: butter_1, type: butter}
+    goal_target: plate_1
+    goal: "(On butter_1 plate_1)"
+    
+  - id: er_goal_02
+    name: cream_cheese_on_cabinet_kitchen1
+    scene: kitchen1
+    language: "put the cream cheese on top of the cabinet"
+    manipulated_object: {instance: cream_cheese_1, type: cream_cheese}
+    goal_target: wooden_cabinet_1_top_side
+    goal: "(On cream_cheese_1 wooden_cabinet_1_top_side)"
+    
+  - id: er_goal_03
+    name: ketchup_on_stove_kitchen3
+    scene: kitchen3
+    language: "put the ketchup on the stove"
+    manipulated_object: {instance: ketchup_1, type: ketchup}
+    goal_target: flat_stove_1_cook_region
+    goal: "(On ketchup_1 flat_stove_1_cook_region)"
+    
+  - id: er_goal_04
+    name: milk_on_wine_rack_kitchen4
+    scene: kitchen4
+    language: "put the milk on the wine rack"
+    manipulated_object: {instance: milk_1, type: milk}
+    goal_target: wine_rack_1
+    goal: "(On milk_1 wine_rack_1)"
+    
+  - id: er_goal_05
+    name: tomato_on_plate_kitchen5
+    scene: kitchen5
+    language: "put the tomato sauce on the plate"
+    manipulated_object: {instance: tomato_sauce_1, type: tomato_sauce}
+    goal_target: plate_1
+    goal: "(On tomato_sauce_1 plate_1)"
+
+  # Living room scenes - novel object to basket/tray
+  - id: er_goal_06
+    name: butter_in_basket_living1
+    scene: living1
+    language: "put the butter in the basket"
+    manipulated_object: {instance: butter_1, type: butter}
+    goal_target: basket_1_contain_region
+    goal: "(On butter_1 basket_1_contain_region)"
+    
+  - id: er_goal_07
+    name: milk_in_tray_living3
+    scene: living3
+    language: "put the milk in the tray"
+    manipulated_object: {instance: milk_1, type: milk}
+    goal_target: wooden_tray_1_contain_region
+    goal: "(On milk_1 wooden_tray_1_contain_region)"
+    
+  # Study scenes - novel object to caddy
+  - id: er_goal_08
+    name: cream_cheese_in_caddy_study1
+    scene: study1
+    language: "put the cream cheese in the caddy"
+    manipulated_object: {instance: cream_cheese_1, type: cream_cheese}
+    goal_target: desk_caddy_1_front_region
+    goal: "(On cream_cheese_1 desk_caddy_1_front_region)"
+
+  - id: er_goal_09
+    name: pudding_on_cabinet_kitchen9
+    scene: kitchen9
+    language: "put the chocolate pudding on top of the cabinet"
+    manipulated_object: {instance: chocolate_pudding_1, type: chocolate_pudding}
+    goal_target: wooden_cabinet_1_top_side
+    goal: "(On chocolate_pudding_1 wooden_cabinet_1_top_side)"
+    
+  - id: er_goal_10
+    name: orange_juice_in_basket_living1
+    scene: living1
+    language: "put the orange juice in the basket"
+    manipulated_object: {instance: orange_juice_1, type: orange_juice}
+    goal_target: basket_1_contain_region
+    goal: "(On orange_juice_1 basket_1_contain_region)"
+
+# ============================================================================
+# THREE-SOURCE TASKS (10 tasks) - Add distractor objects
+# ============================================================================
+
+  - id: er_goal_11
+    name: butter_on_plate_with_ketchup_kitchen1
+    scene: kitchen1
+    language: "put the butter on the plate"
+    manipulated_object: {instance: butter_1, type: butter}
+    goal_target: plate_1
+    goal: "(On butter_1 plate_1)"
+    add_objects:
+      - {instance: ketchup_1, type: ketchup}
+      
+  - id: er_goal_12
+    name: milk_on_stove_with_cream_cheese_kitchen3
+    scene: kitchen3
+    language: "put the milk on the stove"
+    manipulated_object: {instance: milk_1, type: milk}
+    goal_target: flat_stove_1_cook_region
+    goal: "(On milk_1 flat_stove_1_cook_region)"
+    add_objects:
+      - {instance: cream_cheese_1, type: cream_cheese}
+      
+  - id: er_goal_13
+    name: tomato_on_rack_with_butter_kitchen4
+    scene: kitchen4
+    language: "put the tomato sauce on the wine rack"
+    manipulated_object: {instance: tomato_sauce_1, type: tomato_sauce}
+    goal_target: wine_rack_1
+    goal: "(On tomato_sauce_1 wine_rack_1)"
+    add_objects:
+      - {instance: butter_1, type: butter}
+      
+  - id: er_goal_14
+    name: pudding_in_basket_with_ketchup_living1
+    scene: living1
+    language: "put the chocolate pudding in the basket"
+    manipulated_object: {instance: chocolate_pudding_1, type: chocolate_pudding}
+    goal_target: basket_1_contain_region
+    goal: "(On chocolate_pudding_1 basket_1_contain_region)"
+    add_objects:
+      - {instance: ketchup_1, type: ketchup}
+      
+  - id: er_goal_15
+    name: orange_juice_in_tray_with_milk_living3
+    scene: living3
+    language: "put the orange juice in the tray"
+    manipulated_object: {instance: orange_juice_1, type: orange_juice}
+    goal_target: wooden_tray_1_contain_region
+    goal: "(On orange_juice_1 wooden_tray_1_contain_region)"
+    add_objects:
+      - {instance: milk_1, type: milk}
+      
+  - id: er_goal_16
+    name: butter_in_caddy_with_soup_study1
+    scene: study1
+    language: "put the butter in the caddy"
+    manipulated_object: {instance: butter_1, type: butter}
+    goal_target: desk_caddy_1_front_region
+    goal: "(On butter_1 desk_caddy_1_front_region)"
+    add_objects:
+      - {instance: alphabet_soup_1, type: alphabet_soup}
+      
+  - id: er_goal_17
+    name: ketchup_on_cabinet_with_milk_kitchen5
+    scene: kitchen5
+    language: "put the ketchup on top of the cabinet"
+    manipulated_object: {instance: ketchup_1, type: ketchup}
+    goal_target: wooden_cabinet_1_top_side
+    goal: "(On ketchup_1 wooden_cabinet_1_top_side)"
+    add_objects:
+      - {instance: milk_1, type: milk}
+      
+  - id: er_goal_18
+    name: cream_cheese_on_stove_with_butter_kitchen9
+    scene: kitchen9
+    language: "put the cream cheese on the stove"
+    manipulated_object: {instance: cream_cheese_1, type: cream_cheese}
+    goal_target: flat_stove_1_cook_region
+    goal: "(On cream_cheese_1 flat_stove_1_cook_region)"
+    add_objects:
+      - {instance: butter_1, type: butter}
+      
+  - id: er_goal_19
+    name: soup_in_basket_with_tomato_living1
+    scene: living1
+    language: "put the alphabet soup in the basket"
+    manipulated_object: {instance: alphabet_soup_1, type: alphabet_soup}
+    goal_target: basket_1_contain_region
+    goal: "(On alphabet_soup_1 basket_1_contain_region)"
+    add_objects:
+      - {instance: tomato_sauce_1, type: tomato_sauce}
+      - {instance: butter_1, type: butter}
+      
+  - id: er_goal_20
+    name: milk_in_caddy_with_pudding_study1
+    scene: study1
+    language: "put the milk in the caddy"
+    manipulated_object: {instance: milk_1, type: milk}
+    goal_target: desk_caddy_1_left_region
+    goal: "(On milk_1 desk_caddy_1_left_region)"
+    add_objects:
+      - {instance: chocolate_pudding_1, type: chocolate_pudding}

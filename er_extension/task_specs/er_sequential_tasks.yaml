@@ -1,0 +1,365 @@
+# ER-SEQUENTIAL Task Definitions (Redesigned for Diversity)
+# Principle: Compose NOVEL action sequences from individual trained actions
+# Use diverse scenes (KITCHEN, LIVING_ROOM, STUDY) and action combinations
+#
+# 10 two-step tasks + 10 three-step tasks = 20 total
+
+version: "2.0"
+group: ER-SEQUENTIAL
+task_count: 20
+
+# Scene configurations with available actions
+scenes:
+  kitchen1:
+    source: libero_90/KITCHEN_SCENE1_put_the_black_bowl_on_the_plate.bddl
+    problem: LIBERO_Kitchen_Tabletop_Manipulation
+    table: kitchen_table
+    
+  kitchen3:
+    source: libero_90/KITCHEN_SCENE3_turn_on_the_stove.bddl
+    problem: LIBERO_Kitchen_Tabletop_Manipulation
+    table: kitchen_table
+    
+  kitchen4:
+    source: libero_90/KITCHEN_SCENE4_put_the_wine_bottle_on_the_wine_rack.bddl
+    problem: LIBERO_Kitchen_Tabletop_Manipulation
+    table: kitchen_table
+    
+  kitchen5:
+    source: libero_90/KITCHEN_SCENE5_put_the_black_bowl_on_the_plate.bddl
+    problem: LIBERO_Kitchen_Tabletop_Manipulation
+    table: kitchen_table
+    
+  kitchen10:
+    source: libero_90/KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet.bddl
+    problem: LIBERO_Kitchen_Tabletop_Manipulation
+    table: kitchen_table
+    
+  living1:
+    source: libero_90/LIVING_ROOM_SCENE1_pick_up_the_alphabet_soup_and_put_it_in_the_basket.bddl
+    problem: LIBERO_Living_Room_Tabletop_Manipulation
+    table: living_room_table
+    
+  living2:
+    source: libero_90/LIVING_ROOM_SCENE2_pick_up_the_butter_and_put_it_in_the_basket.bddl
+    problem: LIBERO_Living_Room_Tabletop_Manipulation
+    table: living_room_table
+
+# ============================================================================
+# TWO-STEP TASKS (10 tasks)
+# ============================================================================
+
+tasks:
+  # Kitchen - object placement sequences
+  - id: er_seq_01
+    name: bowl_plate_then_butter_cabinet_k1
+    scene: kitchen1
+    language: "put the black bowl on the plate and then put the butter on the cabinet"
+    steps:
+      - object: akita_black_bowl_1
+        target: plate_1
+      - object: butter_1
+        target: wooden_cabinet_1_top_side
+    objects:
+      - {instance: akita_black_bowl_1, type: akita_black_bowl}
+      - {instance: butter_1, type: butter}
+      - {instance: plate_1, type: plate}
+    goal: "(And (On akita_black_bowl_1 plate_1) (On butter_1 wooden_cabinet_1_top_side))"
+    
+  - id: er_seq_02
+    name: turn_stove_then_moka_k3
+    scene: kitchen3
+    language: "turn on the stove and then put the moka pot on it"
+    steps:
+      - action: turn_on
+        target: flat_stove_1
+      - object: moka_pot_1
+        target: flat_stove_1_cook_region
+    objects:
+      - {instance: moka_pot_1, type: moka_pot}
+    goal: "(And (Turnedon flat_stove_1) (On moka_pot_1 flat_stove_1_cook_region))"
+    
+  - id: er_seq_03
+    name: wine_rack_then_bowl_cabinet_k4
+    scene: kitchen4
+    language: "put the wine bottle on the rack and then put the bowl on the cabinet"
+    steps:
+      - object: wine_bottle_1
+        target: wine_rack_1
+      - object: akita_black_bowl_1
+        target: wooden_cabinet_1_top_side
+    objects:
+      - {instance: wine_bottle_1, type: wine_bottle}
+      - {instance: akita_black_bowl_1, type: akita_black_bowl}
+    goal: "(And (On wine_bottle_1 wine_rack_1) (On akita_black_bowl_1 wooden_cabinet_1_top_side))"
+    
+  - id: er_seq_04
+    name: open_drawer_then_butter_in_k10
+    scene: kitchen10
+    language: "open the top drawer and put the butter in it"
+    steps:
+      - action: open
+        target: wooden_cabinet_1_top_region
+      - object: butter_1
+        target: wooden_cabinet_1_top_region
+    objects:
+      - {instance: butter_1, type: butter}
+    goal: "(And (Open wooden_cabinet_1_top_region) (On butter_1 wooden_cabinet_1_top_region))"
+    
+  - id: er_seq_05
+    name: ketchup_plate_then_close_drawer_k5
+    scene: kitchen5
+    language: "put the ketchup on the plate and close the top drawer"
+    steps:
+      - object: ketchup_1
+        target: plate_1
+      - action: close
+        target: wooden_cabinet_1_top_region
+    objects:
+      - {instance: ketchup_1, type: ketchup}
+      - {instance: plate_1, type: plate}
+    goal: "(And (On ketchup_1 plate_1) (Closed wooden_cabinet_1_top_region))"
+
+  # Living room - basket/tray sequences  
+  - id: er_seq_06
+    name: soup_basket_then_butter_basket_l1
+    scene: living1
+    language: "put the soup in the basket and then put the butter in the basket"
+    steps:
+      - object: alphabet_soup_1
+        target: basket_1_contain_region
+      - object: butter_1
+        target: basket_1_contain_region
+    objects:
+      - {instance: alphabet_soup_1, type: alphabet_soup}
+      - {instance: butter_1, type: butter}
+    goal: "(And (On alphabet_soup_1 basket_1_contain_region) (On butter_1 basket_1_contain_region))"
+    
+  - id: er_seq_07
+    name: milk_basket_then_ketchup_basket_l2
+    scene: living2
+    language: "put the milk in the basket and then put the ketchup in the basket"
+    steps:
+      - object: milk_1
+        target: basket_1_contain_region
+      - object: ketchup_1
+        target: basket_1_contain_region
+    objects:
+      - {instance: milk_1, type: milk}
+      - {instance: ketchup_1, type: ketchup}
+    goal: "(And (On milk_1 basket_1_contain_region) (On ketchup_1 basket_1_contain_region))"
+
+  # Mixed kitchen actions
+  - id: er_seq_08
+    name: cream_cheese_plate_then_milk_cabinet_k1
+    scene: kitchen1
+    language: "put the cream cheese on the plate and then put the milk on the cabinet"
+    steps:
+      - object: cream_cheese_1
+        target: plate_1
+      - object: milk_1
+        target: wooden_cabinet_1_top_side
+    objects:
+      - {instance: cream_cheese_1, type: cream_cheese}
+      - {instance: milk_1, type: milk}
+      - {instance: plate_1, type: plate}
+    goal: "(And (On cream_cheese_1 plate_1) (On milk_1 wooden_cabinet_1_top_side))"
+    
+  - id: er_seq_09
+    name: bowl_stove_then_turn_on_k3
+    scene: kitchen3
+    language: "put the bowl on the stove and turn it on"
+    steps:
+      - object: akita_black_bowl_1
+        target: flat_stove_1_cook_region
+      - action: turn_on
+        target: flat_stove_1
+    objects:
+      - {instance: akita_black_bowl_1, type: akita_black_bowl}
+    goal: "(And (On akita_black_bowl_1 flat_stove_1_cook_region) (Turnedon flat_stove_1))"
+    
+  - id: er_seq_10
+    name: tomato_basket_then_cream_cheese_basket_l1
+    scene: living1
+    language: "put the tomato sauce in the basket and then put the cream cheese in the basket"
+    steps:
+      - object: tomato_sauce_1
+        target: basket_1_contain_region
+      - object: cream_cheese_1
+        target: basket_1_contain_region
+    objects:
+      - {instance: tomato_sauce_1, type: tomato_sauce}
+      - {instance: cream_cheese_1, type: cream_cheese}
+    goal: "(And (On tomato_sauce_1 basket_1_contain_region) (On cream_cheese_1 basket_1_contain_region))"
+
+# ============================================================================
+# THREE-STEP TASKS (10 tasks)
+# ============================================================================
+
+  - id: er_seq_11
+    name: open_drawer_bowl_plate_close_drawer_k10
+    scene: kitchen10
+    language: "open the drawer, put the bowl on the plate, and close the drawer"
+    steps:
+      - action: open
+        target: wooden_cabinet_1_top_region
+      - object: akita_black_bowl_1
+        target: plate_1
+      - action: close
+        target: wooden_cabinet_1_top_region
+    objects:
+      - {instance: akita_black_bowl_1, type: akita_black_bowl}
+      - {instance: plate_1, type: plate}
+    goal: "(And (On akita_black_bowl_1 plate_1) (Closed wooden_cabinet_1_top_region))"
+    
+  - id: er_seq_12
+    name: turn_stove_moka_bowl_plate_k3
+    scene: kitchen3
+    language: "turn on the stove, put the moka pot on it, and put the bowl on the plate"
+    steps:
+      - action: turn_on
+        target: flat_stove_1
+      - object: moka_pot_1
+        target: flat_stove_1_cook_region
+      - object: akita_black_bowl_1
+        target: plate_1
+    objects:
+      - {instance: moka_pot_1, type: moka_pot}
+      - {instance: akita_black_bowl_1, type: akita_black_bowl}
+      - {instance: plate_1, type: plate}
+    goal: "(And (Turnedon flat_stove_1) (On moka_pot_1 flat_stove_1_cook_region) (On akita_black_bowl_1 plate_1))"
+    
+  - id: er_seq_13
+    name: wine_rack_butter_cabinet_bowl_plate_k4
+    scene: kitchen4
+    language: "put the wine on the rack, put the butter on the cabinet, and put the bowl on the plate"
+    steps:
+      - object: wine_bottle_1
+        target: wine_rack_1
+      - object: butter_1
+        target: wooden_cabinet_1_top_side
+      - object: akita_black_bowl_1
+        target: plate_1
+    objects:
+      - {instance: wine_bottle_1, type: wine_bottle}
+      - {instance: butter_1, type: butter}
+      - {instance: akita_black_bowl_1, type: akita_black_bowl}
+      - {instance: plate_1, type: plate}
+    goal: "(And (On wine_bottle_1 wine_rack_1) (On butter_1 wooden_cabinet_1_top_side) (On akita_black_bowl_1 plate_1))"
+    
+  - id: er_seq_14
+    name: soup_butter_ketchup_basket_l1
+    scene: living1
+    language: "put the soup, butter, and ketchup in the basket"
+    steps:
+      - object: alphabet_soup_1
+        target: basket_1_contain_region
+      - object: butter_1
+        target: basket_1_contain_region
+      - object: ketchup_1
+        target: basket_1_contain_region
+    objects:
+      - {instance: alphabet_soup_1, type: alphabet_soup}
+      - {instance: butter_1, type: butter}
+      - {instance: ketchup_1, type: ketchup}
+    goal: "(And (On alphabet_soup_1 basket_1_contain_region) (On butter_1 basket_1_contain_region) (On ketchup_1 basket_1_contain_region))"
+    
+  - id: er_seq_15
+    name: milk_tomato_cream_cheese_basket_l2
+    scene: living2
+    language: "put the milk, tomato sauce, and cream cheese in the basket"
+    steps:
+      - object: milk_1
+        target: basket_1_contain_region
+      - object: tomato_sauce_1
+        target: basket_1_contain_region
+      - object: cream_cheese_1
+        target: basket_1_contain_region
+    objects:
+      - {instance: milk_1, type: milk}
+      - {instance: tomato_sauce_1, type: tomato_sauce}
+      - {instance: cream_cheese_1, type: cream_cheese}
+    goal: "(And (On milk_1 basket_1_contain_region) (On tomato_sauce_1 basket_1_contain_region) (On cream_cheese_1 basket_1_contain_region))"
+    
+  - id: er_seq_16
+    name: open_drawer_ketchup_in_close_k5
+    scene: kitchen5
+    language: "open the drawer, put the ketchup in it, and close the drawer"
+    steps:
+      - action: open
+        target: wooden_cabinet_1_top_region
+      - object: ketchup_1
+        target: wooden_cabinet_1_top_region
+      - action: close
+        target: wooden_cabinet_1_top_region
+    objects:
+      - {instance: ketchup_1, type: ketchup}
+    goal: "(And (On ketchup_1 wooden_cabinet_1_top_region) (Closed wooden_cabinet_1_top_region))"
+    
+  - id: er_seq_17
+    name: bowl_plate_butter_plate_ketchup_cabinet_k1
+    scene: kitchen1
+    language: "put the bowl on the plate, put the butter on the plate, and put the ketchup on the cabinet"
+    steps:
+      - object: akita_black_bowl_1
+        target: plate_1
+      - object: butter_1
+        target: plate_1
+      - object: ketchup_1
+        target: wooden_cabinet_1_top_side
+    objects:
+      - {instance: akita_black_bowl_1, type: akita_black_bowl}
+      - {instance: butter_1, type: butter}
+      - {instance: ketchup_1, type: ketchup}
+      - {instance: plate_1, type: plate}
+    goal: "(And (On akita_black_bowl_1 plate_1) (On butter_1 plate_1) (On ketchup_1 wooden_cabinet_1_top_side))"
+    
+  - id: er_seq_18
+    name: turn_stove_moka_cream_cheese_plate_k3
+    scene: kitchen3
+    language: "turn on the stove, put the moka pot on it, and put the cream cheese on the plate"
+    steps:
+      - action: turn_on
+        target: flat_stove_1
+      - object: moka_pot_1
+        target: flat_stove_1_cook_region
+      - object: cream_cheese_1
+        target: plate_1
+    objects:
+      - {instance: moka_pot_1, type: moka_pot}
+      - {instance: cream_cheese_1, type: cream_cheese}
+      - {instance: plate_1, type: plate}
+    goal: "(And (Turnedon flat_stove_1) (On moka_pot_1 flat_stove_1_cook_region) (On cream_cheese_1 plate_1))"
+    
+  - id: er_seq_19
+    name: wine_rack_bowl_cabinet_close_drawer_k4
+    scene: kitchen4
+    language: "put the wine on the rack, put the bowl on the cabinet, and close the bottom drawer"
+    steps:
+      - object: wine_bottle_1
+        target: wine_rack_1
+      - object: akita_black_bowl_1
+        target: wooden_cabinet_1_top_side
+      - action: close
+        target: wooden_cabinet_1_bottom_region
+    objects:
+      - {instance: wine_bottle_1, type: wine_bottle}
+      - {instance: akita_black_bowl_1, type: akita_black_bowl}
+    goal: "(And (On wine_bottle_1 wine_rack_1) (On akita_black_bowl_1 wooden_cabinet_1_top_side) (Closed wooden_cabinet_1_bottom_region))"
+    
+  - id: er_seq_20
+    name: pudding_butter_tomato_basket_l1
+    scene: living1
+    language: "put the pudding, butter, and tomato sauce in the basket"
+    steps:
+      - object: chocolate_pudding_1
+        target: basket_1_contain_region
+      - object: butter_1
+        target: basket_1_contain_region
+      - object: tomato_sauce_1
+        target: basket_1_contain_region
+    objects:
+      - {instance: chocolate_pudding_1, type: chocolate_pudding}
+      - {instance: butter_1, type: butter}
+      - {instance: tomato_sauce_1, type: tomato_sauce}
+    goal: "(And (On chocolate_pudding_1 basket_1_contain_region) (On butter_1 basket_1_contain_region) (On tomato_sauce_1 basket_1_contain_region))"
