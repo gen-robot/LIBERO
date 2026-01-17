@@ -1,0 +1,159 @@
+(define (problem LIBERO_Tabletop_Manipulation)
+  (:domain robosuite)
+  (:language pick up the black bowl to the left of the tomato sauce and place it on the plate)
+    (:regions
+      (plate_region
+          (:target main_table)
+          (:ranges (
+              (0.0500 0.1900 0.0700 0.2100)
+            )
+          )
+      )
+      (next_to_plate_region
+          (:target main_table)
+          (:ranges (
+              (0.0000 0.3000 0.0200 0.3200)
+            )
+          )
+      )
+      (box_region
+          (:target main_table)
+          (:ranges (
+              (0.0600 0.0200 0.0800 0.0400)
+            )
+          )
+      )
+      (next_to_box_region
+          (:target main_table)
+          (:ranges (
+              (0.1200 -0.0800 0.1400 -0.0600)
+            )
+          )
+      )
+      (between_plate_ramekin_region
+          (:target main_table)
+          (:ranges (
+              (-0.0600 0.1900 -0.0400 0.2100)
+            )
+          )
+      )
+      (ramekin_region
+          (:target main_table)
+          (:ranges (
+              (-0.2100 0.1900 -0.1900 0.2100)
+            )
+          )
+      )
+      (next_to_ramekin_region
+          (:target main_table)
+          (:ranges (
+              (-0.1900 0.3100 -0.1700 0.3300)
+            )
+          )
+      )
+      (table_center
+          (:target main_table)
+          (:ranges (
+              (-0.1000 -0.0100 -0.0500 0.0100)
+            )
+          )
+      )
+      (table_front
+          (:target main_table)
+          (:ranges (
+              (0.1900 -0.0100 0.2100 0.0100)
+            )
+          )
+      )
+      (cabinet_region
+          (:target main_table)
+          (:ranges (
+              (0.0200 -0.2800 0.0400 -0.2600)
+            )
+          )
+          (:yaw_rotation (
+              (2.6613777765410678 2.7242096296128633)
+            )
+          )
+      )
+      (stove_region
+          (:target main_table)
+          (:ranges (
+              (-0.4200 -0.1500 -0.4000 -0.1300)
+            )
+          )
+      )
+      (top_region
+          (:target wooden_cabinet_1)
+      )
+      (middle_region
+          (:target wooden_cabinet_1)
+      )
+      (bottom_region
+          (:target wooden_cabinet_1)
+      )
+      (top_side
+          (:target wooden_cabinet_1)
+      )
+      (cook_region
+          (:target flat_stove_1)
+      )
+      (tomato_sauce_init_region
+          (:target main_table)
+          (:ranges (
+              (-0.1800 -0.1500 -0.1200 -0.0900)
+            )
+          )
+      )
+      (akita_black_bowl_init_region
+          (:target main_table)
+          (:ranges (
+              (-0.3400 -0.1900 -0.2000 -0.0500)
+            )
+          )
+      )
+      (milk_init_region
+          (:target main_table)
+          (:ranges (
+              (-0.0300 -0.1700 0.0300 -0.0700)
+            )
+          )
+      )
+    )
+
+  (:fixtures
+    main_table - table
+    wooden_cabinet_1 - wooden_cabinet
+    flat_stove_1 - flat_stove
+  )
+
+  (:objects
+    akita_black_bowl_1 akita_black_bowl_2 - akita_black_bowl
+    cookies_1 - cookies
+    glazed_rim_porcelain_ramekin_1 - glazed_rim_porcelain_ramekin
+    plate_1 - plate
+    tomato_sauce_1 - tomato_sauce
+    milk_1 - milk
+  )
+
+  (:obj_of_interest
+    akita_black_bowl_1
+    plate_1
+  )
+
+    (:init
+    (On akita_black_bowl_2 main_table_next_to_box_region)
+    (On plate_1 main_table_plate_region)
+    (On cookies_1 main_table_box_region)
+    (On glazed_rim_porcelain_ramekin_1 main_table_ramekin_region)
+    (On wooden_cabinet_1 main_table_cabinet_region)
+    (On flat_stove_1 main_table_stove_region)
+    (On tomato_sauce_1 main_table_tomato_sauce_init_region)
+    (On milk_1 main_table_milk_init_region)
+    (On akita_black_bowl_1 plate_1)
+  )
+
+  (:goal
+    (And (On akita_black_bowl_1 plate_1))
+  )
+)

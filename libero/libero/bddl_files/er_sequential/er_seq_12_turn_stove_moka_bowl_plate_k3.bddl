@@ -41,14 +41,14 @@
       (akita_black_bowl_init_region
           (:target kitchen_table)
           (:ranges (
-              (-0.2100 -0.1000 -0.0900 0.0200)
+              (-0.2200 -0.1100 -0.0800 0.0300)
             )
           )
       )
       (plate_init_region
           (:target kitchen_table)
           (:ranges (
-              (-0.0700 0.1300 0.0700 0.2700)
+              (-0.0600 0.1400 0.0600 0.2600)
             )
           )
       )
@@ -81,6 +81,6 @@
   )
 
   (:goal
-    (And (Turnedon flat_stove_1) (On moka_pot_1 flat_stove_1_cook_region) (On akita_black_bowl_1 plate_1))
+    (And (Turnon flat_stove_1) (On moka_pot_1 flat_stove_1_cook_region) (On akita_black_bowl_1 plate_1))
   )
 )

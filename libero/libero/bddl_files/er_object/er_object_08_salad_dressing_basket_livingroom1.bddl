@@ -5,7 +5,7 @@
       (basket_init_region
           (:target living_room_table)
           (:ranges (
-              (-0.09 0.09 0.09 0.27)
+              (-0.11 0.07999999999999999 0.11 0.28)
             )
           )
           (:yaw_rotation (
@@ -19,7 +19,7 @@
       (salad_dressing_init_region
           (:target living_room_table)
           (:ranges (
-              (-0.025 -0.125 0.025 -0.07500000000000001)
+              (-0.025 -0.14 0.025 -0.060000000000000005)
             )
           )
           (:yaw_rotation (

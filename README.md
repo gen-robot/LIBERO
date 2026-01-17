@@ -28,23 +28,38 @@ ______________________________________________________________________
   - [Task](#Task)
   - [Training](#Training)
   - [Evaluation](#Evaluation)
+    - [Lifelong Learning Evaluation](#Lifelong-Learning-Evaluation)
+    - [VLA Model Evaluation](#VLA-Model-Evaluation)
 - [Citation](#Citation)
 - [License](#License)
 
 
-# Installtion
-Please run the following commands in the given order to install the dependency for **LIBERO**.
-```
-conda create -n libero python=3.8.13
-conda activate libero
-git clone https://github.com/Lifelong-Robot-Learning/LIBERO.git
-cd LIBERO
-pip install -r requirements.txt
-pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
+# Installation
+
+## Using uv (recommended)
+
+```bash
+# Create virtual environment
+uv venv --python 3.8 .venv
+source .venv/bin/activate
+
+# Install dependencies
+uv pip sync requirements.txt --extra-index-url https://download.pytorch.org/whl/cu113 --index-strategy=unsafe-best-match
+uv pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0+cu113 --extra-index-url https://download.pytorch.org/whl/cu113
+
+# Install libero package
+uv pip install -e .
 ```
 
-Then install the `libero` package:
-```
+## Using conda + pip
+
+```bash
+conda create -n libero python=3.8.13
+conda activate libero
+pip install -r requirements.txt
+pip install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
+
+# Install libero package
 pip install -e .
 ```
 
@@ -139,6 +154,8 @@ Please see the documentation for the details of reproducing the study results.
 
 ## Evaluation
 
+### Lifelong Learning Evaluation
+
 By default the policies will be evaluated on the fly during training. If you have limited computing resource of GPUs, we offer an evaluation script for you to evaluate models separately.
 
 ```shell
@@ -151,6 +168,48 @@ python libero/lifelong/evaluate.py --benchmark BENCHMARK_NAME \
                                    --load_task LOAD_TASK \
                                    --device_id CUDA_ID
 ```
+
+### VLA Model Evaluation
+
+For evaluating VLA models (e.g., openpi policies), use the standalone eval module:
+
+```bash
+# Create virtual environment for eval
+uv venv --python 3.8 eval/.venv
+source eval/.venv/bin/activate
+
+# Install all dependencies (eval + libero)
+uv pip sync eval/requirements.txt requirements.txt --extra-index-url https://download.pytorch.org/whl/cu113 --index-strategy=unsafe-best-match
+
+# Install libero package
+uv pip install -e .
+
+# Set PYTHONPATH
+export PYTHONPATH=$PYTHONPATH:$PWD/eval
+```
+
+**Terminal 1: Start the model server** (from openpi directory)
+```bash
+uv run scripts/serve_policy.py --env LIBERO
+```
+
+**Terminal 2: Run evaluation**
+```bash
+source eval/.venv/bin/activate
+export PYTHONPATH=$PYTHONPATH:$PWD/eval
+
+# Evaluate on specific task suites
+python eval/eval.py --args.task-suite-name libero_10 --args.host localhost --args.port 8000
+python eval/eval.py --args.task-suite-name libero_90 --args.host localhost --args.port 8000
+python eval/eval.py --args.task-suite-name libero_spatial --args.host localhost --args.port 8000
+python eval/eval.py --args.task-suite-name libero_object --args.host localhost --args.port 8000
+python eval/eval.py --args.task-suite-name libero_goal --args.host localhost --args.port 8000
+
+# Use glx for Mujoco (if you have egl errors)
+MUJOCO_GL=glx python eval/eval.py --args.task-suite-name libero_90 --args.host localhost --args.port 8000
+```
+
+See `eval/README.md` for full documentation.
 
 # Citation
 If you find **LIBERO** to be useful in your own research, please consider citing our paper:

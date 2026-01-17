@@ -28,7 +28,7 @@
       (basket_init_region
           (:target kitchen_table)
           (:ranges (
-              (-0.09 0.09 0.09 0.27)
+              (-0.11 0.07999999999999999 0.11 0.28)
             )
           )
           (:yaw_rotation (

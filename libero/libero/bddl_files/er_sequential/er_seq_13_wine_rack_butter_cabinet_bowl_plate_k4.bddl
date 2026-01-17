@@ -61,14 +61,14 @@
       (butter_init_region
           (:target kitchen_table)
           (:ranges (
-              (-0.1800 -0.1450 -0.1200 -0.0950)
+              (-0.1900 -0.1400 -0.1100 -0.1000)
             )
           )
       )
       (plate_init_region
           (:target kitchen_table)
           (:ranges (
-              (-0.2200 0.1300 -0.0800 0.2700)
+              (-0.2100 0.1400 -0.0900 0.2600)
             )
           )
       )
@@ -105,6 +105,6 @@
   )
 
   (:goal
-    (And (On wine_bottle_1 wine_rack_1) (On butter_1 wooden_cabinet_1_top_side) (On akita_black_bowl_1 plate_1))
+    (And (On wine_bottle_1 wine_rack_1) (On butter_1 white_cabinet_1_top_side) (On akita_black_bowl_1 plate_1))
   )
 )

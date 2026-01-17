@@ -61,6 +61,6 @@
   )
 
   (:goal
-    (And (Turnedon flat_stove_1) (On moka_pot_1 flat_stove_1_cook_region))
+    (And (Turnon flat_stove_1) (On moka_pot_1 flat_stove_1_cook_region))
   )
 )

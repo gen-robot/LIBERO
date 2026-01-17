@@ -11,23 +11,7 @@ import argparse
 from dataclasses import dataclass, field
 from typing import Dict, List, Tuple, Optional
 
-
-OBJECT_SIZES = {
-    'akita_black_bowl': (0.12, 0.12),
-    'plate': (0.14, 0.14),
-    'butter': (0.06, 0.05),
-    'cream_cheese': (0.07, 0.06),
-    'ketchup': (0.05, 0.05),
-    'milk': (0.07, 0.07),
-    'tomato_sauce': (0.06, 0.06),
-    'chocolate_pudding': (0.07, 0.07),
-    'alphabet_soup': (0.07, 0.07),
-    'orange_juice': (0.07, 0.07),
-    'basket': (0.15, 0.15),
-    'wooden_cabinet': (0.22, 0.22),
-    'flat_stove': (0.28, 0.22),
-    'default': (0.08, 0.08),
-}
+from er_constants import OBJECT_SIZES, COLLISION_MARGIN, get_object_size
 
 SPATIAL_OFFSETS = {
     'next_to': (-0.10, 0.0),

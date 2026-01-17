@@ -85,6 +85,6 @@
   )
 
   (:goal
-    (And (On wine_bottle_1 wine_rack_1) (On akita_black_bowl_1 wooden_cabinet_1_top_side) (Closed wooden_cabinet_1_bottom_region))
+    (And (On wine_bottle_1 wine_rack_1) (On akita_black_bowl_1 white_cabinet_1_top_side) (Close white_cabinet_1_bottom_region))
   )
 )

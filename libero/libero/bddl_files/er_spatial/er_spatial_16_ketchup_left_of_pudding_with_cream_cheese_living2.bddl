@@ -96,21 +96,21 @@
       (chocolate_pudding_init_region
           (:target living_room_table)
           (:ranges (
-              (-0.1850 0.1650 -0.1150 0.2350)
+              (-0.1800 0.1700 -0.1200 0.2300)
             )
           )
       )
       (ketchup_init_region_1
           (:target living_room_table)
           (:ranges (
-              (-0.2950 0.1750 -0.2450 0.2250)
+              (-0.2900 0.1600 -0.2500 0.2400)
             )
           )
       )
       (cream_cheese_init_region_1
           (:target living_room_table)
           (:ranges (
-              (0.1150 0.1700 0.1850 0.2300)
+              (0.1150 0.1750 0.1850 0.2250)
             )
           )
       )

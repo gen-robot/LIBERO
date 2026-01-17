@@ -18,40 +18,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Set
 import yaml
 
-
-# Object sizes (width, depth) for collision detection - actual footprint sizes
-OBJECT_SIZES = {
-    'basket': (0.18, 0.18),
-    'wooden_tray': (0.16, 0.12),
-    'alphabet_soup': (0.06, 0.06),
-    'butter': (0.05, 0.04),
-    'cream_cheese': (0.06, 0.05),
-    'ketchup': (0.05, 0.05),
-    'milk': (0.06, 0.06),
-    'orange_juice': (0.06, 0.06),
-    'tomato_sauce': (0.05, 0.05),
-    'salad_dressing': (0.05, 0.05),
-    'chocolate_pudding': (0.06, 0.06),
-    'bbq_sauce': (0.05, 0.05),
-    'black_book': (0.10, 0.08),
-    'yellow_book': (0.10, 0.08),
-    'white_yellow_mug': (0.08, 0.08),
-    'porcelain_mug': (0.08, 0.08),
-    'red_coffee_mug': (0.08, 0.08),
-    'plate': (0.14, 0.14),
-    'akita_black_bowl': (0.10, 0.10),
-    'moka_pot': (0.08, 0.08),
-    'wine_bottle': (0.06, 0.06),
-    'chefmate_8_frypan': (0.18, 0.18),
-    'cookies': (0.08, 0.08),
-    'glazed_rim_porcelain_ramekin': (0.08, 0.08),
-    'wooden_cabinet': (0.25, 0.20),
-    'white_cabinet': (0.25, 0.20),
-    'wine_rack': (0.15, 0.12),
-    'desk_caddy': (0.18, 0.15),
-    'flat_stove': (0.20, 0.15),
-    'default': (0.08, 0.08),
-}
+from er_constants import OBJECT_SIZES, COLLISION_MARGIN, get_object_size
 
 
 @dataclass
@@ -247,11 +214,6 @@ def get_table_name(fixtures: Dict[str, str]) -> str:
     return list(fixtures.keys())[0] if fixtures else "main_table"
 
 
-def get_object_size(obj_type: str) -> Tuple[float, float]:
-    """Get object footprint size (width, depth) for placement."""
-    return OBJECT_SIZES.get(obj_type, OBJECT_SIZES['default'])
-
-
 def extract_obj_type_from_region_name(region_name: str) -> str:
     """Extract object type from region name like 'butter_init_region' -> 'butter'."""
     name = region_name.lower()
@@ -340,7 +302,7 @@ def allocate_object_region(
     occupied = get_occupied_boxes(existing_regions)
     
     # Use larger margin for better separation
-    collision_margin = 0.06
+    collision_margin = COLLISION_MARGIN
 
     # Define well-spaced placement zones
     if is_target:

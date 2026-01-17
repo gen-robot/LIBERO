@@ -61,14 +61,14 @@
       (plate_init_region_1
           (:target kitchen_table)
           (:ranges (
-              (-0.2200 0.0500 -0.0800 0.1900)
+              (-0.2100 -0.0200 -0.0900 0.1000)
             )
           )
       )
       (tomato_sauce_init_region
           (:target kitchen_table)
           (:ranges (
-              (-0.0100 0.0900 0.0500 0.1500)
+              (-0.0100 0.0600 0.0500 0.1200)
             )
           )
       )
@@ -88,7 +88,7 @@
 
   (:obj_of_interest
     tomato_sauce_1
-    wooden_cabinet_1_top_side
+    white_cabinet_1_top_side
   )
 
   (:init
@@ -101,6 +101,6 @@
   )
 
   (:goal
-    (And (On tomato_sauce_1 wooden_cabinet_1_top_side))
+    (And (On tomato_sauce_1 white_cabinet_1_top_side))
   )
 )

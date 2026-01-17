@@ -96,21 +96,21 @@
       (milk_init_region_1
           (:target living_room_table)
           (:ranges (
-              (-0.1850 0.1650 -0.1150 0.2350)
+              (-0.1800 0.1500 -0.1200 0.2500)
             )
           )
       )
       (alphabet_soup_init_region_1
           (:target living_room_table)
           (:ranges (
-              (-0.3350 0.1650 -0.2650 0.2350)
+              (-0.3300 0.1700 -0.2700 0.2300)
             )
           )
       )
       (butter_init_region_1
           (:target living_room_table)
           (:ranges (
-              (0.1200 0.1750 0.1800 0.2250)
+              (0.1100 0.1800 0.1900 0.2200)
             )
           )
       )

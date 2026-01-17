@@ -61,7 +61,7 @@
       (cream_cheese_init_region
           (:target study_table)
           (:ranges (
-              (-0.1850 -0.0700 -0.1150 -0.0100)
+              (-0.1850 -0.0650 -0.1150 -0.0150)
             )
           )
       )
@@ -91,6 +91,6 @@
   )
 
   (:goal
-    (And (On cream_cheese_1 desk_caddy_1_front_region))
+    (And (On cream_cheese_1 desk_caddy_1_front_contain_region))
   )
 )

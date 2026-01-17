@@ -39,7 +39,7 @@
       (basket_init_region
           (:target kitchen_table)
           (:ranges (
-              (-0.09 -0.14 0.09 0.039999999999999994)
+              (-0.11 -0.15000000000000002 0.11 0.05)
             )
           )
           (:yaw_rotation (
@@ -53,7 +53,7 @@
       (tomato_sauce_init_region
           (:target kitchen_table)
           (:ranges (
-              (-0.205 -0.07500000000000001 -0.155 -0.025)
+              (-0.23 0.05 -0.17 0.11)
             )
           )
           (:yaw_rotation (

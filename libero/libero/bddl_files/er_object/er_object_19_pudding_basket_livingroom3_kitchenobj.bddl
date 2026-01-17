@@ -5,7 +5,7 @@
       (basket_init_region
           (:target living_room_table)
           (:ranges (
-              (-0.09 0.09 0.09 0.27)
+              (-0.11 0.07999999999999999 0.11 0.28)
             )
           )
           (:yaw_rotation (
@@ -30,7 +30,7 @@
       (plate_init_region
           (:target living_room_table)
           (:ranges (
-              (-0.25 -0.12000000000000001 -0.10999999999999999 0.020000000000000004)
+              (-0.24 -0.11 -0.12 0.009999999999999995)
             )
           )
           (:yaw_rotation (
@@ -41,7 +41,7 @@
       (glazed_rim_porcelain_ramekin_init_region
           (:target living_room_table)
           (:ranges (
-              (0.13999999999999999 -0.09 0.22 -0.010000000000000002)
+              (0.13 -0.1 0.22999999999999998 0.0)
             )
           )
           (:yaw_rotation (

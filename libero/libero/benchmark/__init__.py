@@ -60,6 +60,13 @@ libero_suites = [
     "libero_90",
     "libero_10",
 ]
+
+er_suites = [
+    "er_object",
+    "er_goal",
+    "er_spatial",
+    "er_sequential",
+]
 task_maps = {}
 max_len = 0
 for libero_suite in libero_suites:
@@ -72,6 +79,20 @@ for libero_suite in libero_suites:
             language=language,
             problem="Libero",
             problem_folder=libero_suite,
+            bddl_file=f"{task}.bddl",
+            init_states_file=f"{task}.pruned_init",
+        )
+
+for er_suite in er_suites:
+    task_maps[er_suite] = {}
+
+    for task in libero_task_map[er_suite]:
+        language = grab_language_from_filename(task + ".bddl")
+        task_maps[er_suite][task] = Task(
+            name=task,
+            language=language,
+            problem="Libero",
+            problem_folder=er_suite,
             bddl_file=f"{task}.bddl",
             init_states_file=f"{task}.pruned_init",
         )
@@ -216,4 +237,36 @@ class LIBERO_100(Benchmark):
     def __init__(self, task_order_index=0):
         super().__init__(task_order_index=task_order_index)
         self.name = "libero_100"
+        self._make_benchmark()
+
+
+@register_benchmark
+class ER_OBJECT(Benchmark):
+    def __init__(self, task_order_index=0):
+        super().__init__(task_order_index=task_order_index)
+        self.name = "er_object"
+        self._make_benchmark()
+
+
+@register_benchmark
+class ER_GOAL(Benchmark):
+    def __init__(self, task_order_index=0):
+        super().__init__(task_order_index=task_order_index)
+        self.name = "er_goal"
+        self._make_benchmark()
+
+
+@register_benchmark
+class ER_SPATIAL(Benchmark):
+    def __init__(self, task_order_index=0):
+        super().__init__(task_order_index=task_order_index)
+        self.name = "er_spatial"
+        self._make_benchmark()
+
+
+@register_benchmark
+class ER_SEQUENTIAL(Benchmark):
+    def __init__(self, task_order_index=0):
+        super().__init__(task_order_index=task_order_index)
+        self.name = "er_sequential"
         self._make_benchmark()

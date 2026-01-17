@@ -85,6 +85,6 @@
   )
 
   (:goal
-    (And (On ketchup_1 plate_1) (Closed wooden_cabinet_1_top_region))
+    (And (On ketchup_1 plate_1) (Close white_cabinet_1_top_region))
   )
 )

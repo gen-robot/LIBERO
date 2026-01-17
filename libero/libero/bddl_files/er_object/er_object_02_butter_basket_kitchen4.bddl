@@ -39,7 +39,7 @@
       (basket_init_region
           (:target kitchen_table)
           (:ranges (
-              (-0.09 -0.14 0.09 0.039999999999999994)
+              (-0.11 -0.15000000000000002 0.11 0.05)
             )
           )
           (:yaw_rotation (
@@ -53,7 +53,7 @@
       (butter_init_region
           (:target kitchen_table)
           (:ranges (
-              (-0.205 -0.07 -0.155 -0.030000000000000002)
+              (-0.24000000000000002 0.06 -0.16 0.1)
             )
           )
           (:yaw_rotation (

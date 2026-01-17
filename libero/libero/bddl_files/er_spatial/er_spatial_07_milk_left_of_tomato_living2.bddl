@@ -103,7 +103,7 @@
       (milk_init_region_1
           (:target living_room_table)
           (:ranges (
-              (-0.3050 0.1650 -0.2350 0.2350)
+              (-0.3000 0.1500 -0.2400 0.2500)
             )
           )
       )
