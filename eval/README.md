@@ -94,6 +94,10 @@ python eval/eval_parallel.py --args.task-suite-name libero_90 --args.num-workers
 
 # Disable video saving for faster evaluation
 python eval/eval_parallel.py --args.task-suite-name libero_10 --args.num-workers 8 --args.save-video false
+
+# Use the Osmesa renderer to avoid OpenGL/EGL library dependency issues.
+
+LD_LIBRARY_PATH=/usr/local/nvidia/lib64:/usr/local/nvidia/lib:/usr/lib/x86_64-linux-gnu MUJOCO_GL=osmesa python eval/eval_parallel.py --args.task-suite-name libero_90 --args.num-workers 16 --args.host localhost --args.port 8000
 ```
 
 **Speedup estimate:**

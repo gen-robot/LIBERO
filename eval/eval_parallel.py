@@ -10,6 +10,7 @@ Usage:
 
 import collections
 import dataclasses
+import json
 import logging
 import math
 import multiprocessing as mp
@@ -123,7 +124,7 @@ def run_episode(
     """
     # Import here to avoid issues with multiprocessing
     from libero.libero import benchmark, get_libero_path
-    from libero.libero.envs import OffScreenRenderEnv
+    from libero.libero.envs import SegmentationRenderEnv
 
     # Get task info
     benchmark_dict = benchmark.get_benchmark_dict()
@@ -138,12 +139,11 @@ def run_episode(
     task_description = swap_left_right(task_description)
     
     task_bddl_file = pathlib.Path(get_libero_path("bddl_files")) / task.problem_folder / task.bddl_file
-    env_args = {
-        "bddl_file_name": str(task_bddl_file),
-        "camera_heights": LIBERO_ENV_RESOLUTION,
-        "camera_widths": LIBERO_ENV_RESOLUTION,
-    }
-    env = OffScreenRenderEnv(**env_args)
+    env = SegmentationRenderEnv(
+        bddl_file_name=str(task_bddl_file),
+        camera_heights=LIBERO_ENV_RESOLUTION,
+        camera_widths=LIBERO_ENV_RESOLUTION,
+    )
     env.seed(seed + worker_id)  # Different seed per worker for variety
     
     # Connect to policy server
@@ -159,13 +159,28 @@ def run_episode(
     t = 0
     replay_images = []
     done = False
+    current_raw_text = None
+    episode_text_log: List[Dict] = []
+    episode_seg_log: Dict[str, List[np.ndarray]] = {}
     
     while t < max_steps + num_steps_wait:
+        # During dummy steps we do not record video / text / segmentation.
         if t < num_steps_wait:
             obs, reward, done, info = env.step(LIBERO_DUMMY_ACTION)
             t += 1
             continue
-        
+
+        # From this point on (after dummy steps), we record segmentation and text.
+        seg_items = {k: v for k, v in obs.items() if "seg" in k.lower()}
+        if seg_items:
+            if not episode_seg_log:
+                episode_seg_log = {k: [] for k in seg_items}
+            for k, v in seg_items.items():
+                seg = np.array(v)
+                # Rotate segmentation by 180° to match the image rotation.
+                seg = seg[::-1, ::-1]
+                episode_seg_log[k].append(seg)
+
         # Preprocess images
         img = np.ascontiguousarray(obs["agentview_image"][::-1, ::-1])
         wrist_img = np.ascontiguousarray(obs["robot0_eye_in_hand_image"][::-1, ::-1])
@@ -175,10 +190,7 @@ def run_episode(
         wrist_img = image_tools.convert_to_uint8(
             image_tools.resize_with_pad(wrist_img, resize_size, resize_size)
         )
-        
-        if save_video:
-            replay_images.append(img)
-        
+
         if not action_plan:
             element = {
                 "observation/image": img,
@@ -190,10 +202,32 @@ def run_episode(
                 )),
                 "prompt": str(task_description),
             }
-            
-            action_chunk = client.infer(element)["actions"]
+
+            infer_result = client.infer(element)
+            action_chunk = infer_result["actions"]
+            raw_text = (
+                infer_result.get("generated_text")
+                or infer_result.get("text")
+                or infer_result.get("caption")
+            )
+            if raw_text is not None:
+                current_raw_text = str(raw_text)
+
             action_plan.extend(action_chunk[:replan_steps])
-        
+
+        # After we possibly updated current_raw_text, log generated text for this step.
+        episode_text_log.append(
+            {
+                # Use evaluation-relative step index (0-based, excluding dummy steps).
+                "t": int(t - num_steps_wait),
+                "generated_text": current_raw_text,
+            }
+        )
+
+        if save_video:
+            # Store raw image frames only; text overlays are handled offline.
+            replay_images.append(img)
+
         action = action_plan.popleft()
         obs, reward, done, info = env.step(action.tolist())
         
@@ -201,17 +235,50 @@ def run_episode(
             break
         t += 1
     
-    env.close()
-    
-    # Save video
+    # Save video and logs
     video_path = None
     if save_video and replay_images:
         suffix = "success" if done else "failure"
-        task_segment = task_description.replace(" ", "_")[:40]
-        video_path = str(
-            pathlib.Path(video_out_path) / f"task{task_id:02d}_ep{episode_idx:02d}_{task_segment}_{suffix}.mp4"
-        )
-        imageio.mimwrite(video_path, [np.asarray(x) for x in replay_images], fps=10)
+        # Do not truncate the task description in the filename.
+        task_segment = task_description.replace(" ", "_")
+        video_path = pathlib.Path(video_out_path) / f"task{task_id:02d}_ep{episode_idx:02d}_{task_segment}_{suffix}.mp4"
+        imageio.mimwrite(str(video_path), [np.asarray(x) for x in replay_images], fps=60)
+
+        # Save generated text log aligned with video filename.
+        # Build segmentation id ↔ instance name mapping from the environment, if available.
+        seg_name_to_id: Dict[str, int] = {}
+        seg_id_to_name: Dict[int, str] = {}
+        if hasattr(env, "instance_to_id"):
+            for name, seg_id in env.instance_to_id.items():
+                seg_name_to_id[name] = int(seg_id)
+                seg_id_to_name[int(seg_id)] = name
+        if hasattr(env, "segmentation_robot_id") and env.segmentation_robot_id is not None:
+            robot_base_id = int(env.segmentation_robot_id)
+            seg_id_to_name[robot_base_id + 1] = "robot"
+
+        text_log_path = video_path.with_suffix(".json")
+        with text_log_path.open("w", encoding="utf-8") as f:
+            json.dump(
+                {
+                    "task_id": task_id,
+                    "episode_idx": episode_idx,
+                    "task_description": task_description,
+                    "segmentation_instance_to_id": seg_name_to_id,
+                    "segmentation_id_to_instance": seg_id_to_name,
+                    "steps": episode_text_log,
+                },
+                f,
+                ensure_ascii=False,
+                indent=2,
+            )
+
+        # Save segmentation ground-truth if available.
+        if episode_seg_log:
+            seg_arrays = {k: np.stack(v, axis=0) for k, v in episode_seg_log.items()}
+            seg_path = video_path.with_suffix(".segmentation.npz")
+            np.savez_compressed(seg_path, **seg_arrays)
+
+    env.close()
     
     return EpisodeResult(
         task_id=task_id,
@@ -388,4 +455,3 @@ if __name__ == "__main__":
     )
     
     tyro.cli(eval_libero_parallel)
-

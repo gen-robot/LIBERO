@@ -2,8 +2,9 @@
 .hydra
 *pyc
 datasets
+data
 results
-outputs/*
+output/*
 /MUJOCO_LOG.TXT
 wandb
 experiments/
