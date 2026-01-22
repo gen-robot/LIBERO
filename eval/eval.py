@@ -136,10 +136,18 @@ def eval_libero(args: Args) -> None:
 
                     # Prepare a resized segmentation mask for the policy server, if requested.
                     if args.enable_gt_segmentation:
-                        # Pick a deterministic key (e.g., the first in sorted order) to use as the
-                        # primary segmentation map sent to the server.
-                        seg_key = sorted(seg_items.keys())[0]
+                        # Prefer the main-agent-view segmentation if available.
+                        agentview_keys = [
+                            k for k in seg_items.keys() if "agentview" in k.lower()
+                        ]
+                        if agentview_keys:
+                            seg_key = sorted(agentview_keys)[0]
+                        else:
+                            # Fallback: deterministic but generic choice.
+                            seg_key = sorted(seg_items.keys())[0]
+
                         seg_for_server = np.array(seg_items[seg_key])
+                        # Rotate segmentation by 180° to match the RGB image rotation.
                         seg_for_server = seg_for_server[::-1, ::-1]
                         current_segmentation_for_server = _resize_segmentation_mask(
                             seg_for_server,
@@ -179,12 +187,14 @@ def eval_libero(args: Args) -> None:
                             seg_id_to_name = {}
                             if hasattr(env, "instance_to_id"):
                                 for name, seg_id in env.instance_to_id.items():
-                                    seg_name_to_id[name] = int(seg_id)
-                                    seg_id_to_name[int(seg_id)] = name
+                                    seg_id = int(seg_id)
+                                    seg_name_to_id[name] = seg_id
+                                    # Use string keys so msgpack strict_map_key=True accepts them.
+                                    seg_id_to_name[str(seg_id)] = name
                             if hasattr(env, "segmentation_robot_id") and env.segmentation_robot_id is not None:
                                 robot_base_id = int(env.segmentation_robot_id)
                                 # In SegmentationRenderEnv, robot pixels are typically encoded as robot_id + 1.
-                                seg_id_to_name[robot_base_id + 1] = "robot"
+                                seg_id_to_name[str(robot_base_id + 1)] = "robot"
 
                         # Attach segmentation mask and mapping to the observation payload.
                         element["observation/gt_segmentation"] = current_segmentation_for_server.astype(
@@ -314,6 +324,9 @@ def _resize_segmentation_mask(seg, target_h, target_w):
     This keeps label ids intact while roughly matching the policy image resolution.
     """
     seg = np.asarray(seg)
+    # Some envs return masks as (H, W, 1); squeeze the last dim in that case.
+    if seg.ndim == 3 and seg.shape[-1] == 1:
+        seg = seg[..., 0]
     if seg.ndim != 2:
         raise ValueError(f"Expected 2D segmentation mask, got shape {seg.shape}")
 
