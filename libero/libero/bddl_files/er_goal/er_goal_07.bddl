@@ -1,0 +1,84 @@
+(define (problem LIBERO_Kitchen_Tabletop_Manipulation)
+  (:domain robosuite)
+  (:language put the tomato sauce on the stove)
+    (:regions
+      (flat_stove_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.2100 0.1900 -0.1900 0.2100)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (frypan_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.0750 -0.2750 -0.0250 -0.2250)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (moka_pot_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (0.0250 -0.0250 0.0750 0.0250)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (cook_region
+          (:target flat_stove_1)
+      )
+      (tomato_sauce_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (0.0750 0.1050 0.1650 0.1950)
+            )
+          )
+      )
+      (wine_bottle_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.1450 -0.1050 -0.0950 -0.0550)
+            )
+          )
+      )
+    )
+
+  (:fixtures
+    kitchen_table - kitchen_table
+    flat_stove_1 - flat_stove
+  )
+
+  (:objects
+    tomato_sauce_1 - tomato_sauce
+    chefmate_8_frypan_1 - chefmate_8_frypan
+    moka_pot_1 - moka_pot
+    wine_bottle_1 - wine_bottle
+  )
+
+  (:obj_of_interest
+    tomato_sauce_1
+  )
+
+  (:init
+    (On flat_stove_1 kitchen_table_flat_stove_init_region)
+    (On chefmate_8_frypan_1 kitchen_table_frypan_init_region)
+    (On moka_pot_1 kitchen_table_moka_pot_init_region)
+    (On tomato_sauce_1 kitchen_table_tomato_sauce_init_region)
+    (On wine_bottle_1 kitchen_table_wine_bottle_init_region)
+  )
+
+  (:goal
+    (And (On tomato_sauce_1 flat_stove_1_cook_region))
+  )
+)
