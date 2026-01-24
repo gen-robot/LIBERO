@@ -101,19 +101,19 @@ def convert_goal_predicate_to_init(pred_name: str, args: List[str]) -> str:
     
     Note: (In obj container) goals become (On obj container) for init,
     since LIBERO uses (On ...) for all object placements in init section.
+    LIBERO predicates: Turnon, Turnoff, Open, Close (not Turnedon/Closed)
     """
     if pred_name == 'On':
         return f"(On {args[0]} {args[1]})"
     elif pred_name == 'In':
-        # (In obj container_region) -> (On obj container_region) for init placement
         return f"(On {args[0]} {args[1]})"
     elif pred_name == 'Open':
         return f"(Open {args[0]})"
     elif pred_name == 'Close':
         return f"(Close {args[0]})"
-    elif pred_name in ('TurnOn', 'Turnon'):
+    elif pred_name == 'Turnon':
         return f"(Turnon {args[0]})"
-    elif pred_name in ('TurnOff', 'Turnoff'):
+    elif pred_name == 'Turnoff':
         return f"(Turnoff {args[0]})"
     return ""
 
@@ -142,22 +142,37 @@ def create_goal_bddl(original_bddl_path: str, output_path: str) -> bool:
     
     # Track objects that will be moved to goal positions
     goal_placement_objects = set()
+    # Track state predicates (Open/Close, Turnon/Turnoff) that conflict
+    goal_state_subjects = {}
     for pred_name, args in goal_predicates:
         if pred_name in ('On', 'In') and args:
             goal_placement_objects.add(args[0])
+        elif pred_name in ('Open', 'Close') and args:
+            goal_state_subjects[args[0]] = 'door_state'
+        elif pred_name in ('Turnon', 'Turnoff') and args:
+            goal_state_subjects[args[0]] = 'power_state'
     
     # Build new init - remove old placements for goal objects, add goal placements
     new_init_predicates = []
     
     for pred in existing_init:
-        # Skip placements for objects that will be placed at goal
         skip = False
+        # Skip placements for objects that will be placed at goal
         for obj in goal_placement_objects:
-            # Check if this predicate is placing the goal object
             if f' {obj} ' in pred or pred.endswith(f' {obj})'):
                 if '(On ' in pred or '(In ' in pred:
                     skip = True
                     break
+        # Skip conflicting state predicates
+        if not skip:
+            for subj, state_type in goal_state_subjects.items():
+                if subj in pred:
+                    if state_type == 'door_state' and ('(Open ' in pred or '(Close ' in pred):
+                        skip = True
+                        break
+                    if state_type == 'power_state' and ('(Turnon ' in pred or '(Turnoff ' in pred):
+                        skip = True
+                        break
         if not skip:
             new_init_predicates.append(pred)
     

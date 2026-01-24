@@ -15,7 +15,43 @@ objects behind large fixtures that would occlude them from the camera view.
 """
 
 # Safety margin added to object footprints during collision detection (meters)
-COLLISION_MARGIN = 0.04
+COLLISION_MARGIN = 0.05
+
+# Object size multiplier for collision detection
+# Objects/fixtures are expanded by this factor to prevent physics instability
+COLLISION_SIZE_MULTIPLIER = 1.5
+
+# Random placement tolerance - how much variation around center point
+# Smaller = more deterministic placement, more stable evaluations
+# The region will be: center ± PLACEMENT_TOLERANCE
+PLACEMENT_TOLERANCE = 0.005  # 5mm random range for very stable eval
+
+# Placement zones for objects (front/center of table, away from fixtures)
+# Format: list of (x, y) centers, ordered by priority
+# Positive y = front of table (toward camera), negative y = back of table
+OBJECT_PLACEMENT_POSITIONS = [
+    # Front row - best visibility, away from fixtures
+    (0.0, 0.15), (-0.12, 0.15), (0.12, 0.15),
+    # Mid-front row
+    (0.0, 0.08), (-0.15, 0.08), (0.15, 0.08),
+    # Center row
+    (-0.08, 0.0), (0.08, 0.0), (0.0, 0.0),
+    # Mid-back row (still visible)
+    (-0.12, -0.08), (0.12, -0.08), (0.0, -0.08),
+]
+
+# Placement zones for target objects (where robot needs to place)
+# Slightly more centered for reachability
+TARGET_PLACEMENT_POSITIONS = [
+    (0.0, 0.12), (-0.10, 0.12), (0.10, 0.12),
+    (0.0, 0.05), (-0.12, 0.05), (0.12, 0.05),
+]
+
+# Placement zones for fixtures (back/sides of table)
+FIXTURE_PLACEMENT_POSITIONS = [
+    (0.0, -0.20), (-0.25, -0.15), (0.25, -0.15),  # Back row
+    (-0.30, 0.0), (0.30, 0.0),  # Sides
+]
 
 # Object footprint sizes (width_x, depth_y) in meters
 # Extracted from XML collision geom extents
@@ -26,20 +62,21 @@ OBJECT_SIZES = {
     # white_cabinet.xml: same dimensions as wooden
     'white_cabinet': (0.25, 0.22),
     # flat_stove.xml: burner at (0.15,0) with size 0.095, button section
-    'flat_stove': (0.30, 0.20),
+    'flat_stove': (0.33, 0.23),
     # wine_rack.xml: extends ±0.093 x, ±0.069 y, plus tilted planes
-    'wine_rack': (0.20, 0.16),
+    'wine_rack': (0.24, 0.2),
     # desk_caddy.xml: extends ±0.067 x, ±0.209 y
-    'desk_caddy': (0.14, 0.44),
+    'desk_caddy': (0.2, 0.44),
 
     # === Medium containers (may contain objects, wide footprints) ===
     # basket.xml: walls at ±0.076 x, ±0.069 y, contain_region ±0.061
-    # INCREASED: to avoid collision with tray/bowl and ensure visibility
-    'basket': (0.22, 0.20),
+    # INCREASED significantly to avoid collision with tray/bowl
+    'basket': (0.32, 0.3),
     # wooden_tray.xml: extends ±0.147 x, ±0.085 y
-    'wooden_tray': (0.30, 0.18),
+    # INCREASED to avoid collision with basket
+    'wooden_tray': (0.4, 0.3),
     # chefmate_8_frypan.xml: pan ±0.055, handle to x=0.193
-    'chefmate_8_frypan': (0.28, 0.12),
+    'chefmate_8_frypan': (0.28, 0.15),
 
     # === Dishes and bowls ===
     # plate.xml: circular, extends ±0.048 radius
@@ -72,28 +109,29 @@ OBJECT_SIZES = {
     'yellow_book': (0.12, 0.04),
 
     # === Small food items (HOPE dataset, scaled) ===
+    # INCREASED all sizes to prevent collisions in crowded scenes
     # butter.xml: size 0.009 x 0.020 x 0.038 (scaled 0.0075)
-    'butter': (0.08, 0.04),
+    'butter': (0.10, 0.06),
     # milk.xml: size 0.026 x 0.026 x 0.055 (with handle)
-    'milk': (0.06, 0.10),
+    'milk': (0.08, 0.12),
     # ketchup.xml: small bottle
-    'ketchup': (0.04, 0.08),
+    'ketchup': (0.06, 0.10),
     # cream_cheese.xml: box shape
-    'cream_cheese': (0.07, 0.05),
+    'cream_cheese': (0.09, 0.07),
     # alphabet_soup.xml: can shape
-    'alphabet_soup': (0.06, 0.06),
+    'alphabet_soup': (0.08, 0.08),
     # orange_juice.xml: carton (similar to milk)
-    'orange_juice': (0.06, 0.10),
+    'orange_juice': (0.08, 0.12),
     # tomato_sauce.xml: can shape
-    'tomato_sauce': (0.06, 0.06),
+    'tomato_sauce': (0.08, 0.08),
     # salad_dressing.xml: bottle
-    'salad_dressing': (0.05, 0.08),
+    'salad_dressing': (0.07, 0.10),
     # chocolate_pudding.xml: cup shape
-    'chocolate_pudding': (0.06, 0.06),
+    'chocolate_pudding': (0.08, 0.08),
     # bbq_sauce.xml: bottle
-    'bbq_sauce': (0.05, 0.08),
+    'bbq_sauce': (0.07, 0.10),
     # cookies.xml: box shape
-    'cookies': (0.08, 0.08),
+    'cookies': (0.10, 0.10),
 
     # Default for unknown objects (conservative)
     'default': (0.10, 0.10),
@@ -124,23 +162,29 @@ OBJECT_HEIGHTS = {
 }
 
 
-def get_object_size(obj_type: str) -> tuple:
-    """Get the (width, depth) footprint size for an object type."""
+def get_object_size(obj_type: str, for_collision: bool = True) -> tuple:
+    """Get the (width, depth) footprint size for an object type.
+    
+    Args:
+        obj_type: Object type name
+        for_collision: If True, apply COLLISION_SIZE_MULTIPLIER for collision detection
+    """
     # Try exact match first
     if obj_type in OBJECT_SIZES:
-        return OBJECT_SIZES[obj_type]
+        size = OBJECT_SIZES[obj_type]
+    elif obj_type.rstrip('_0123456789') in OBJECT_SIZES:
+        size = OBJECT_SIZES[obj_type.rstrip('_0123456789')]
+    else:
+        # Try to find a partial match in the object name
+        size = OBJECT_SIZES['default']
+        for key in OBJECT_SIZES:
+            if key in obj_type.lower():
+                size = OBJECT_SIZES[key]
+                break
     
-    # Try partial match (e.g., 'butter_1' -> 'butter')
-    base_type = obj_type.rstrip('_0123456789')
-    if base_type in OBJECT_SIZES:
-        return OBJECT_SIZES[base_type]
-    
-    # Try to find a partial match in the object name
-    for key in OBJECT_SIZES:
-        if key in obj_type.lower():
-            return OBJECT_SIZES[key]
-    
-    return OBJECT_SIZES['default']
+    if for_collision:
+        return (size[0] * COLLISION_SIZE_MULTIPLIER, size[1] * COLLISION_SIZE_MULTIPLIER)
+    return size
 
 
 def get_object_height(obj_type: str) -> float:

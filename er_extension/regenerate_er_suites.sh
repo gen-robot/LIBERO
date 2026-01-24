@@ -1,5 +1,5 @@
 #!/bin/bash
-# Regenerate all ER suites and visualize them
+# Regenerate all ER suites (40 tasks each) and visualize them
 # Usage: ./regenerate_er_suites.sh [suite_name]
 # Examples:
 #   ./regenerate_er_suites.sh           # Regenerate all ER suites
@@ -24,15 +24,15 @@ fi
 export PYTHONPATH="$PROJECT_ROOT:$PROJECT_ROOT/er_extension/scripts:$PYTHONPATH"
 export MUJOCO_GL=egl
 
-# Define suites to process
+# Define suites to process - now includes all 4 ER suites
 if [ -n "$1" ]; then
     SUITES=("$1")
 else
-    SUITES=("er_goal" "er_spatial" "er_sequential")
+    SUITES=("er_object" "er_goal" "er_spatial" "er_sequential")
 fi
 
 echo "============================================================"
-echo "ER Suite Regeneration Pipeline"
+echo "ER Suite Regeneration Pipeline (40 tasks per suite)"
 echo "Project root: $PROJECT_ROOT"
 echo "Suites to process: ${SUITES[*]}"
 echo "============================================================"
@@ -87,4 +87,3 @@ echo "All done!"
 echo "Visualizations saved to: $PROJECT_ROOT/visualizations/"
 echo "============================================================"
 ls -la "$PROJECT_ROOT/visualizations/"*_grid.png 2>/dev/null || echo "No grid images found"
-

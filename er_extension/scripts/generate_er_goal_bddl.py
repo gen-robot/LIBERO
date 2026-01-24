@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Generate ER-GOAL BDDL files from task specifications.
-Redesigned for diversity across KITCHEN, LIVING_ROOM, and STUDY scenes.
+Updated to work with v3.0 YAML format (source_a, source_b, source_c).
 """
 
 import os
@@ -10,9 +10,11 @@ import yaml
 import argparse
 from dataclasses import dataclass, field
 from typing import Dict, List, Tuple, Optional
-from pathlib import Path
 
-from er_constants import OBJECT_SIZES, COLLISION_MARGIN, get_object_size
+from er_constants import (
+    OBJECT_SIZES, COLLISION_MARGIN, PLACEMENT_TOLERANCE, get_object_size,
+    OBJECT_PLACEMENT_POSITIONS
+)
 
 
 @dataclass
@@ -167,9 +169,13 @@ def parse_bddl_file(filepath: str) -> BDDLFile:
             init.append(match.group(0))
 
     goal = ""
-    goal_match = re.search(r'\(:goal\s+\(And ([^)]+\))\s*\)', content)
+    goal_match = re.search(r'\(:goal\s+\(And\s+(\([^)]+\))\s*\)\s*\)', content, re.DOTALL)
     if goal_match:
-        goal = goal_match.group(1)
+        goal = goal_match.group(1).strip()
+    else:
+        goal_match = re.search(r'\(:goal\s+(\([^)]+\))\s*\)', content, re.DOTALL)
+        if goal_match:
+            goal = goal_match.group(1).strip()
 
     return BDDLFile(
         problem_name=problem_name,
@@ -195,110 +201,174 @@ def boxes_overlap(box1, box2, margin=0.04) -> bool:
 
 
 def get_occupied_boxes(regions: Dict[str, Region]) -> List[Tuple[float, float, float, float]]:
+    """Get occupied boxes using actual object sizes from OBJECT_SIZES.
+    
+    Considers both *_init_region patterns and fixture regions (cabinet_region, stove_region).
+    """
+    # Fixture region names that should be considered for collision
+    fixture_regions = {'cabinet_region', 'stove_region', 'wine_rack_region', 'desk_caddy_region'}
+    fixture_types = {'cabinet_region': 'wooden_cabinet', 'stove_region': 'flat_stove',
+                     'wine_rack_region': 'wine_rack', 'desk_caddy_region': 'desk_caddy'}
+    
     occupied = []
-    for region in regions.values():
-        if region.ranges:
-            occupied.append(region.ranges[0])
+    for name, region in regions.items():
+        if not region.ranges:
+            continue
+        r = region.ranges[0]
+        cx, cy = (r[0] + r[2]) / 2, (r[1] + r[3]) / 2
+        
+        if '_init_region' in name:
+            obj_type = name.replace('_init_region', '').rstrip('_0123456789')
+        elif name in fixture_regions:
+            obj_type = fixture_types[name]
+        else:
+            continue
+            
+        obj_w, obj_d = get_object_size(obj_type)
+        occupied.append((cx - obj_w/2, cy - obj_d/2, cx + obj_w/2, cy + obj_d/2))
     return occupied
 
 
 def allocate_region(table_name: str, obj_type: str, regions: Dict[str, Region],
                     margin: float = 0.05) -> Tuple[Region, str]:
     """Allocate a non-overlapping region for an object."""
-    size = OBJECT_SIZES.get(obj_type, OBJECT_SIZES['default'])
-    half_w, half_d = size[0] / 2, size[1] / 2
+    # Use expanded size (1.5x) for collision detection
+    collision_w, collision_d = get_object_size(obj_type, for_collision=True)
+    half_cw, half_cd = collision_w / 2, collision_d / 2
+    # Use actual size for region bounds
+    actual_w, actual_d = get_object_size(obj_type, for_collision=False)
+    half_w, half_d = actual_w / 2, actual_d / 2
     occupied = get_occupied_boxes(regions)
     
-    # Grid search for free position
-    candidates = []
-    for x in [-0.15, -0.08, 0.0, 0.08, 0.15]:
-        for y in [-0.12, -0.04, 0.04, 0.12, 0.20]:
-            candidates.append((x, y))
+    # Use predefined positions from er_constants for consistent, spread-out placement
+    candidates = list(OBJECT_PLACEMENT_POSITIONS)
     
     for cx, cy in candidates:
-        new_box = (cx - half_w, cy - half_d, cx + half_w, cy + half_d)
-        collision = any(boxes_overlap(new_box, obox, margin) for obox in occupied)
+        # Use expanded size for collision detection
+        collision_box = (cx - half_cw, cy - half_cd, cx + half_cw, cy + half_cd)
+        collision = any(boxes_overlap(collision_box, obox, COLLISION_MARGIN) for obox in occupied)
         if not collision:
             region_name = f"{obj_type}_init_region"
             counter = 1
             while region_name in regions:
                 region_name = f"{obj_type}_init_region_{counter}"
                 counter += 1
-            region = Region(name=region_name, target=table_name, ranges=[new_box])
+            # Region bounds use object size for proper physics spawning
+            region_box = (cx - half_w - PLACEMENT_TOLERANCE, cy - half_d - PLACEMENT_TOLERANCE,
+                          cx + half_w + PLACEMENT_TOLERANCE, cy + half_d + PLACEMENT_TOLERANCE)
+            region = Region(name=region_name, target=table_name, ranges=[region_box])
             return region, region_name
     
-    # Fallback
     cx, cy = 0.12, 0.15
-    new_box = (cx - half_w, cy - half_d, cx + half_w, cy + half_d)
+    region_box = (cx - half_w - PLACEMENT_TOLERANCE, cy - half_d - PLACEMENT_TOLERANCE,
+                  cx + half_w + PLACEMENT_TOLERANCE, cy + half_d + PLACEMENT_TOLERANCE)
     region_name = f"{obj_type}_init_region"
-    return Region(name=region_name, target=table_name, ranges=[new_box]), region_name
+    return Region(name=region_name, target=table_name, ranges=[region_box]), region_name
 
 
-def generate_er_goal_bddl(task_spec: dict, yaml_config: dict, bddl_base: str) -> BDDLFile:
-    """Generate a single ER-GOAL BDDL file."""
-    scene_key = task_spec['scene']
-    scene_config = yaml_config['scenes'][scene_key]
+def get_table_name(fixtures: Dict[str, str]) -> str:
+    """Get the main table name from fixtures."""
+    priority = ['kitchen_table', 'living_room_table', 'study_table', 'main_table', 'floor']
+    for table in priority:
+        if table in fixtures:
+            return table
+    for inst, ftype in fixtures.items():
+        if 'table' in ftype.lower() or 'floor' in ftype.lower():
+            return inst
+    return list(fixtures.keys())[0] if fixtures else "main_table"
+
+
+def extract_object_type(instance: str) -> str:
+    """Extract object type from instance name like butter_1 -> butter."""
+    if instance.endswith('_1') or instance.endswith('_2'):
+        return instance.rsplit('_', 1)[0]
+    return instance
+
+
+def generate_er_goal_bddl(task_spec: dict, bddl_base: str) -> BDDLFile:
+    """Generate a single ER-GOAL BDDL file using v3.0 format."""
+    source_b = task_spec['source_b']
+    source_a = task_spec['source_a']
+    source_c = task_spec.get('source_c')
     
-    source_file = os.path.join(bddl_base, scene_config['source'])
-    source = parse_bddl_file(source_file)
+    scene_file = os.path.join(bddl_base, source_b['file'])
+    scene_bddl = parse_bddl_file(scene_file)
+    
+    table_name = get_table_name(scene_bddl.fixtures)
+    
+    problem_name_map = {
+        'kitchen_table': 'LIBERO_Kitchen_Tabletop_Manipulation',
+        'living_room_table': 'LIBERO_Living_Room_Tabletop_Manipulation',
+        'study_table': 'LIBERO_Study_Tabletop_Manipulation',
+    }
+    problem_name = problem_name_map.get(table_name, 'LIBERO_Tabletop_Manipulation')
     
     output = BDDLFile(
-        problem_name=scene_config['problem'],
-        language=task_spec['language'],
+        problem_name=problem_name,
+        language=task_spec['instruction'],
     )
     
-    table_name = scene_config['table']
+    output.fixtures = dict(scene_bddl.fixtures)
+    output.regions = dict(scene_bddl.regions)
+    output.init = list(scene_bddl.init)
     
-    # Copy fixtures and regions from source
-    output.fixtures = dict(source.fixtures)
-    output.regions = dict(source.regions)
+    take_items = source_a.get('take', [])
+    for item in take_items:
+        if item.endswith('_1') or item.endswith('_2'):
+            obj_type = extract_object_type(item)
+            if item not in scene_bddl.objects:
+                output.objects[item] = obj_type
+                # Add contain_region for containers
+                if obj_type in ['basket', 'wooden_tray']:
+                    contain_region = Region(name="contain_region", target=item)
+                    output.regions["contain_region"] = contain_region
     
-    # Copy objects from source
-    output.objects = dict(source.objects)
+    for inst, otype in scene_bddl.objects.items():
+        output.objects[inst] = otype
     
-    # Add manipulated object
-    manip_obj = task_spec['manipulated_object']
-    output.objects[manip_obj['instance']] = manip_obj['type']
+    # Fix goal by replacing invalid fixture/region references
+    goal = task_spec['goal']
+    fixture_names = set(output.fixtures.keys())
     
-    # Add distractor objects if specified
-    add_objects = task_spec.get('add_objects', [])
-    for obj in add_objects:
-        output.objects[obj['instance']] = obj['type']
+    # Auto-fix cabinet mismatches
+    if 'wooden_cabinet_1' in goal and 'wooden_cabinet_1' not in fixture_names:
+        if 'white_cabinet_1' in fixture_names:
+            goal = goal.replace('wooden_cabinet_1', 'white_cabinet_1')
+    if 'white_cabinet_1' in goal and 'white_cabinet_1' not in fixture_names:
+        if 'wooden_cabinet_1' in fixture_names:
+            goal = goal.replace('white_cabinet_1', 'wooden_cabinet_1')
     
-    # Set obj of interest
-    output.obj_of_interest = [manip_obj['instance']]
-    if task_spec['goal_target'] not in [r.target for r in output.regions.values()]:
-        output.obj_of_interest.append(task_spec['goal_target'].split('_')[0] + '_1')
+    output.goal = goal
     
-    # Allocate regions for new objects
-    if manip_obj['instance'] not in [stmt.split()[1] for stmt in source.init if stmt.startswith('(On')]:
-        region, region_name = allocate_region(table_name, manip_obj['type'], output.regions)
-        output.regions[region_name] = region
-    
-    for obj in add_objects:
-        region, region_name = allocate_region(table_name, obj['type'], output.regions)
-        output.regions[region_name] = region
-    
-    # Build init statements
-    output.init = list(source.init)
-    
-    # Add placements for new objects
     initialized = {stmt.split()[1] for stmt in output.init if stmt.startswith('(On')}
     
-    if manip_obj['instance'] not in initialized:
-        for rname, region in output.regions.items():
-            if manip_obj['type'] in rname and region.target == table_name:
-                output.init.append(f"(On {manip_obj['instance']} {table_name}_{rname})")
-                break
+    for item in take_items:
+        if item.endswith('_1') or item.endswith('_2'):
+            if item not in initialized:
+                obj_type = extract_object_type(item)
+                region, region_name = allocate_region(table_name, obj_type, output.regions)
+                output.regions[region_name] = region
+                output.init.append(f"(On {item} {table_name}_{region_name})")
     
-    for obj in add_objects:
-        if obj['instance'] not in initialized:
-            for rname, region in output.regions.items():
-                if obj['type'] in rname and region.target == table_name:
-                    output.init.append(f"(On {obj['instance']} {table_name}_{rname})")
-                    break
+    if source_c:
+        distractor_items = source_c.get('take', [])
+        for item in distractor_items:
+            if item.endswith('_1') or item.endswith('_2'):
+                if item not in output.objects:
+                    obj_type = extract_object_type(item)
+                    output.objects[item] = obj_type
+                    region, region_name = allocate_region(table_name, obj_type, output.regions)
+                    output.regions[region_name] = region
+                    output.init.append(f"(On {item} {table_name}_{region_name})")
     
-    output.goal = task_spec['goal']
+    manip_obj = None
+    for item in take_items:
+        if item.endswith('_1') or item.endswith('_2'):
+            manip_obj = item
+            break
+    
+    if manip_obj:
+        output.obj_of_interest = [manip_obj]
     
     return output
 
@@ -308,6 +378,7 @@ def main():
     parser.add_argument("--yaml-file", type=str, default="er_extension/task_specs/er_goal_tasks.yaml")
     parser.add_argument("--bddl-base", type=str, default="libero/libero/bddl_files")
     parser.add_argument("--output-dir", type=str, default="libero/libero/bddl_files/er_goal")
+    parser.add_argument("--task-id", type=str, help="Generate only specific task ID")
     args = parser.parse_args()
     
     os.makedirs(args.output_dir, exist_ok=True)
@@ -315,16 +386,19 @@ def main():
     with open(args.yaml_file, 'r') as f:
         yaml_config = yaml.safe_load(f)
     
+    tasks = yaml_config['tasks']
+    if args.task_id:
+        tasks = [t for t in tasks if args.task_id in t['id']]
+    
     success_count = 0
-    for task_spec in yaml_config['tasks']:
+    for task_spec in tasks:
         task_id = task_spec['id']
-        task_name = task_spec['name']
         
-        print(f"Generating: {task_id}_{task_name}")
+        print(f"Generating: {task_id}")
         
         try:
-            output = generate_er_goal_bddl(task_spec, yaml_config, args.bddl_base)
-            output_file = os.path.join(args.output_dir, f"{task_id}_{task_name}.bddl")
+            output = generate_er_goal_bddl(task_spec, args.bddl_base)
+            output_file = os.path.join(args.output_dir, f"{task_id}.bddl")
             with open(output_file, 'w') as f:
                 f.write(output.to_bddl())
             print(f"  -> {output_file}")
@@ -334,7 +408,7 @@ def main():
             import traceback
             traceback.print_exc()
     
-    print(f"\nGenerated {success_count}/{len(yaml_config['tasks'])} BDDL files")
+    print(f"\nGenerated {success_count}/{len(tasks)} BDDL files")
 
 
 if __name__ == "__main__":
