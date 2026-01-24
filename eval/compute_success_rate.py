@@ -16,6 +16,20 @@ def parse_args() -> argparse.Namespace:
         required=True,
         help="Directory containing JSON result files.",
     )
+    parser.add_argument(
+        "--quiet",
+        action="store_true",
+        help="Do not print per-file success/failure lists (faster in terminals).",
+    )
+    parser.add_argument(
+        "--max-list",
+        type=int,
+        default=200,
+        help=(
+            "Max files to print for success/failure lists (0 = no limit). "
+            "Ignored when --quiet is set."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -43,13 +57,21 @@ def main() -> None:
     num_failure = len(failure_files)
     used_total = num_success + num_failure
 
-    print("\nSuccess files:")
-    for p in success_files:
-        print(f"  {p.name}")
+    if not args.quiet:
+        max_list = args.max_list
 
-    print("\nFailure files:")
-    for p in failure_files:
-        print(f"  {p.name}")
+        def _print_list(title: str, files: list[Path]) -> None:
+            print(f"\n{title}:")
+            if max_list == 0 or len(files) <= max_list:
+                for p in files:
+                    print(f"  {p.name}")
+                return
+            for p in files[:max_list]:
+                print(f"  {p.name}")
+            print(f"  ... ({len(files) - max_list} more)")
+
+        _print_list("Success files", success_files)
+        _print_list("Failure files", failure_files)
 
     if used_total == 0:
         print("\nNo files with 'success' or 'failure' in filename. Success rate undefined.")
@@ -63,4 +85,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except BrokenPipeError:
+        pass

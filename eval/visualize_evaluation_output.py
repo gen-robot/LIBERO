@@ -100,7 +100,7 @@ def _parse_annotations(full_text: str) -> Tuple[List[Tuple[Tuple[int, int], Tupl
     points: List[Tuple[int, int]] = []
 
     # --------- Parse bounding boxes ----------
-    bbox_markers = ["bounding box:", "bounding boxes:"]
+    bbox_markers = ["bounding box:", "bounding boxes:", "bbox:"]
     for marker in bbox_markers:
         idx = lower.find(marker)
         if idx == -1:
