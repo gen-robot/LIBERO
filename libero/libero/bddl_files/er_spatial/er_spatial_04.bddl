@@ -68,17 +68,6 @@
             )
           )
       )
-      (butter_init_region
-          (:target living_room_table)
-          (:ranges (
-              (0.0250 0.0250 0.0750 0.0750)
-            )
-          )
-          (:yaw_rotation (
-              (0.0 0.0)
-            )
-          )
-      )
       (ketchup_init_region
           (:target living_room_table)
           (:ranges (
@@ -93,17 +82,24 @@
       (contain_region
           (:target basket_1)
       )
-      (akita_black_bowl_init_region
+      (akita_black_bowl_landmark_point
           (:target living_room_table)
           (:ranges (
-              (0.0250 0.0750 0.1750 0.2250)
+              (-0.0001 0.0499 0.0001 0.0501)
             )
           )
       )
-      (butter_init_region_1
+      (butter_a1_point
           (:target living_room_table)
           (:ranges (
-              (-0.1750 0.0150 -0.0650 0.0850)
+              (0.0999 0.0499 0.1001 0.0501)
+            )
+          )
+      )
+      (butter_a2_point
+          (:target living_room_table)
+          (:ranges (
+              (-0.1801 -0.1801 -0.1799 -0.1799)
             )
           )
       )
@@ -114,13 +110,7 @@
   )
 
   (:objects
-    alphabet_soup_1 - alphabet_soup
-    cream_cheese_1 - cream_cheese
-    tomato_sauce_1 - tomato_sauce
-    ketchup_1 - ketchup
-    orange_juice_1 - orange_juice
-    milk_1 - milk
-    butter_1 - butter
+    butter_1 butter_2 - butter
     basket_1 - basket
     akita_black_bowl_1 - akita_black_bowl
   )
@@ -131,15 +121,10 @@
   )
 
   (:init
-    (On alphabet_soup_1 living_room_table_alphabet_soup_init_region)
-    (On cream_cheese_1 living_room_table_cream_cheese_init_region)
-    (On tomato_sauce_1 living_room_table_tomato_sauce_init_region)
-    (On ketchup_1 living_room_table_ketchup_init_region)
-    (On milk_1 living_room_table_milk_init_region)
-    (On orange_juice_1 living_room_table_orange_juice_init_region)
     (On basket_1 living_room_table_basket_init_region)
-    (On akita_black_bowl_1 living_room_table_akita_black_bowl_init_region)
-    (On butter_1 living_room_table_butter_init_region_1)
+    (On akita_black_bowl_1 living_room_table_akita_black_bowl_landmark_point)
+    (On butter_1 living_room_table_butter_a1_point)
+    (On butter_2 living_room_table_butter_a2_point)
   )
 
   (:goal

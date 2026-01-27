@@ -13,17 +13,6 @@
             )
           )
       )
-      (akita_black_bowl_init_region
-          (:target kitchen_table)
-          (:ranges (
-              (-0.0250 -0.0250 0.0250 0.0250)
-            )
-          )
-          (:yaw_rotation (
-              (0.0 0.0)
-            )
-          )
-      )
       (plate_init_region
           (:target kitchen_table)
           (:ranges (
@@ -50,7 +39,7 @@
       (butter_init_region
           (:target kitchen_table)
           (:ranges (
-              (0.0650 0.1150 0.1750 0.1850)
+              (-0.0550 0.0450 0.0550 0.1150)
             )
           )
       )
@@ -62,9 +51,8 @@
   )
 
   (:objects
-    butter_1 - butter
-    akita_black_bowl_1 - akita_black_bowl
     plate_1 - plate
+    butter_1 - butter
   )
 
   (:obj_of_interest
@@ -72,7 +60,6 @@
   )
 
   (:init
-    (On akita_black_bowl_1 kitchen_table_akita_black_bowl_init_region)
     (On plate_1 kitchen_table_plate_init_region)
     (On wooden_cabinet_1 kitchen_table_wooden_cabinet_init_region)
     (On butter_1 kitchen_table_butter_init_region)

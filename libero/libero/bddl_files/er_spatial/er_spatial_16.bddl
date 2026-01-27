@@ -1,0 +1,157 @@
+(define (problem LIBERO_Living_Room_Tabletop_Manipulation)
+  (:domain robosuite)
+  (:language pick up the chocolate pudding next to the tray and put it in the basket)
+    (:regions
+      (wooden_tray_init_region
+          (:target living_room_table)
+          (:ranges (
+              (-0.11 0.35 -0.08 0.38)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (cream_cheese_init_region
+          (:target living_room_table)
+          (:ranges (
+              (0.0750 -0.2250 0.1250 -0.1750)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (tomato_sauce_init_region
+          (:target living_room_table)
+          (:ranges (
+              (-0.1250 0.0250 -0.0750 0.0750)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (alphabet_soup_init_region
+          (:target living_room_table)
+          (:ranges (
+              (-0.1250 -0.1750 -0.0750 -0.1250)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (butter_init_region
+          (:target living_room_table)
+          (:ranges (
+              (0.0250 0.0250 0.0750 0.0750)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (ketchup_init_region
+          (:target living_room_table)
+          (:ranges (
+              (-0.2750 -0.1750 -0.2250 -0.1250)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (chocolate_pudding_init_region
+          (:target living_room_table)
+          (:ranges (
+              (-0.2250 0.1950 -0.1350 0.2850)
+            )
+          )
+      )
+      (contain_region
+          (:target basket_1)
+      )
+      (wooden_tray_contain_region
+          (:target wooden_tray_1)
+      )
+      (basket_init_region
+          (:target living_room_table)
+          (:ranges (
+              (-0.2 -0.22 -0.15 -0.18)
+            )
+          )
+      )
+      (wooden_tray_init_region_1
+          (:target living_room_table)
+          (:ranges (
+              (-0.11 0.25 -0.08 0.28)
+            )
+          )
+      )
+      (chocolate_pudding_a1_point
+          (:target living_room_table)
+          (:ranges (
+              (-0.0201 0.0699 -0.0199 0.09)
+            )
+          )
+      )
+      (chocolate_pudding_a2_point
+          (:target living_room_table)
+          (:ranges (
+              (0.18 -0.2 0.2 -0.18)
+            )
+          )
+      )
+      (wine_bottle_init_region
+          (:target living_room_table)
+          (:ranges (
+              (-0.1450 -0.1050 -0.0950 -0.0550)
+            )
+          )
+      )
+      (black_book_init_region
+          (:target living_room_table)
+          (:ranges (
+              (0.0550 -0.1050 0.1850 -0.0550)
+            )
+          )
+      )
+    )
+
+  (:fixtures
+    living_room_table - living_room_table
+  )
+
+  (:objects
+    wooden_tray_1 - wooden_tray
+    chocolate_pudding_1 chocolate_pudding_2 - chocolate_pudding
+    basket_1 - basket
+    wine_bottle_1 - wine_bottle
+    black_book_distractor - black_book
+  )
+
+  (:obj_of_interest
+    chocolate_pudding_1
+    wooden_tray_1
+  )
+
+  (:init
+    (On wooden_tray_1 living_room_table_wooden_tray_init_region_1)
+    (On chocolate_pudding_1 living_room_table_chocolate_pudding_a1_point)
+    (On chocolate_pudding_2 living_room_table_chocolate_pudding_a2_point)
+    (On basket_1 living_room_table_basket_init_region)
+    (On wine_bottle_1 living_room_table_wine_bottle_init_region)
+    (On black_book_distractor living_room_table_black_book_init_region)
+  )
+
+  (:goal
+    (And (In chocolate_pudding_1 basket_1_contain_region))
+  )
+)

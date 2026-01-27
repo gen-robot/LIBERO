@@ -1,11 +1,11 @@
 (define (problem LIBERO_Living_Room_Tabletop_Manipulation)
   (:domain robosuite)
-  (:language put the salad dressing in the tray)
+  (:language put the milk on the plate)
     (:regions
-      (wooden_tray_init_region
+      (plate_left_region
           (:target living_room_table)
           (:ranges (
-              (-0.0100 0.2500 0.0100 0.2700)
+              (-0.0250 -0.3250 0.0250 -0.2750)
             )
           )
           (:yaw_rotation (
@@ -13,68 +13,10 @@
             )
           )
       )
-      (cream_cheese_init_region
+      (milk_init_region
           (:target living_room_table)
           (:ranges (
-              (0.0750 -0.2250 0.1250 -0.1750)
-            )
-          )
-          (:yaw_rotation (
-              (0.0 0.0)
-            )
-          )
-      )
-      (tomato_sauce_init_region
-          (:target living_room_table)
-          (:ranges (
-              (-0.1250 0.0250 -0.0750 0.0750)
-            )
-          )
-          (:yaw_rotation (
-              (0.0 0.0)
-            )
-          )
-      )
-      (alphabet_soup_init_region
-          (:target living_room_table)
-          (:ranges (
-              (-0.1250 -0.1750 -0.0750 -0.1250)
-            )
-          )
-          (:yaw_rotation (
-              (0.0 0.0)
-            )
-          )
-      )
-      (butter_init_region
-          (:target living_room_table)
-          (:ranges (
-              (0.0250 0.0250 0.0750 0.0750)
-            )
-          )
-          (:yaw_rotation (
-              (0.0 0.0)
-            )
-          )
-      )
-      (ketchup_init_region
-          (:target living_room_table)
-          (:ranges (
-              (-0.2750 -0.1750 -0.2250 -0.1250)
-            )
-          )
-          (:yaw_rotation (
-              (0.0 0.0)
-            )
-          )
-      )
-      (contain_region
-          (:target wooden_tray_1)
-      )
-      (salad_dressing_init_region
-          (:target living_room_table)
-          (:ranges (
-              (0.0800 0.0950 0.1600 0.2050)
+              (-0.0450 0.0850 0.0450 0.2150)
             )
           )
       )
@@ -85,30 +27,20 @@
   )
 
   (:objects
-    salad_dressing_1 - salad_dressing
-    alphabet_soup_1 - alphabet_soup
-    cream_cheese_1 - cream_cheese
-    tomato_sauce_1 - tomato_sauce
-    ketchup_1 - ketchup
-    butter_1 - butter
-    wooden_tray_1 - wooden_tray
+    plate_1 - plate
+    milk_1 - milk
   )
 
   (:obj_of_interest
-    salad_dressing_1
+    milk_1
   )
 
   (:init
-    (On alphabet_soup_1 living_room_table_alphabet_soup_init_region)
-    (On cream_cheese_1 living_room_table_cream_cheese_init_region)
-    (On tomato_sauce_1 living_room_table_tomato_sauce_init_region)
-    (On ketchup_1 living_room_table_ketchup_init_region)
-    (On butter_1 living_room_table_butter_init_region)
-    (On wooden_tray_1 living_room_table_wooden_tray_init_region)
-    (On salad_dressing_1 living_room_table_salad_dressing_init_region)
+    (On plate_1 living_room_table_plate_left_region)
+    (On milk_1 living_room_table_milk_init_region)
   )
 
   (:goal
-    (And (On salad_dressing_1 wooden_tray_1_contain_region))
+    (And (On milk_1 plate_1))
   )
 )

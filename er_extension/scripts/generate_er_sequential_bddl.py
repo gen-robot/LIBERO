@@ -15,6 +15,20 @@ from er_constants import (
     OBJECT_SIZES, COLLISION_MARGIN, PLACEMENT_TOLERANCE, get_object_size,
     OBJECT_PLACEMENT_POSITIONS
 )
+from er_sim_constraints import (
+    MIN_REGION_GAP,
+    MIN_MANIP_FIXTURE_GAP,
+    MAX_MANIP_REGION_EXTENT,
+    REACH_BOUND,
+    add_object_unique,
+    alloc_unique_region_name,
+    allocate_region,
+    enforce_non_overlapping_table_placements,
+    ensure_instance_one,
+    infer_manip_and_target_from_goal,
+    occupied_table_region_boxes_from_init,
+    remove_instance_table_placement,
+)
 
 
 @dataclass
@@ -224,37 +238,19 @@ def get_occupied_boxes(regions: Dict[str, Region]) -> List[Tuple[float, float, f
     return occupied
 
 
-def allocate_region(table_name: str, obj_type: str, regions: Dict[str, Region]) -> Tuple[Region, str]:
-    """Allocate a non-overlapping region for an object."""
-    # Use expanded size (1.5x) for collision detection
-    collision_w, collision_d = get_object_size(obj_type, for_collision=True)
-    half_cw, half_cd = collision_w / 2, collision_d / 2
-    # Use actual size for region bounds
-    actual_w, actual_d = get_object_size(obj_type, for_collision=False)
-    half_w, half_d = actual_w / 2, actual_d / 2
-    occupied = get_occupied_boxes(regions)
-    
-    # Use predefined positions from er_constants for consistent, spread-out placement
-    candidates = list(OBJECT_PLACEMENT_POSITIONS)
-    
-    for cx, cy in candidates:
-        collision_box = (cx - half_cw, cy - half_cd, cx + half_cw, cy + half_cd)
-        if not any(boxes_overlap(collision_box, obox, COLLISION_MARGIN) for obox in occupied):
-            region_name = f"{obj_type}_init_region"
-            counter = 1
-            while region_name in regions:
-                region_name = f"{obj_type}_init_region_{counter}"
-                counter += 1
-            # Region bounds use actual object size for physics spawning
-            region_box = (cx - half_w - PLACEMENT_TOLERANCE, cy - half_d - PLACEMENT_TOLERANCE,
-                          cx + half_w + PLACEMENT_TOLERANCE, cy + half_d + PLACEMENT_TOLERANCE)
-            return Region(name=region_name, target=table_name, ranges=[region_box]), region_name
-    
-    # Fallback position
-    cx, cy = 0.1, 0.15
-    region_box = (cx - half_w - PLACEMENT_TOLERANCE, cy - half_d - PLACEMENT_TOLERANCE,
-                  cx + half_w + PLACEMENT_TOLERANCE, cy + half_d + PLACEMENT_TOLERANCE)
-    return Region(name=f"{obj_type}_init_region", target=table_name, ranges=[region_box]), f"{obj_type}_init_region"
+def _allocate_region_on_table(output: BDDLFile, table_name: str, obj_type: str, *, is_manip: bool) -> Tuple[Region, str]:
+    occupied_boxes = occupied_table_region_boxes_from_init(output.init, output.regions, table_name)
+    return allocate_region(
+        table_name,
+        obj_type,
+        output.regions,
+        region_cls=Region,
+        min_gap=MIN_REGION_GAP,
+        max_extent=MAX_MANIP_REGION_EXTENT if is_manip else None,
+        require_within_bound=REACH_BOUND if is_manip else None,
+        min_gap_to_fixtures=MIN_MANIP_FIXTURE_GAP if is_manip else None,
+        occupied_region_boxes=occupied_boxes,
+    )
 
 
 def get_table_name(fixtures: Dict[str, str]) -> str:
@@ -282,6 +278,81 @@ def has_real_table(bddl: BDDLFile) -> bool:
     return table != 'floor'
 
 
+def sanitize_unplaceable_fixtures(output: BDDLFile, table_name: str) -> None:
+    """
+    Guard against fixture-fixture interpenetration caused by missing / invalid fixture placement regions.
+
+    If a fixture is kept but its placement statement references a non-existent or non-ranged region
+    (e.g. `(On flat_stove_1 main_table_stove_region)` but `stove_region` is missing in `(:regions ...)`),
+    downstream env implementations may place the fixture at a fallback pose, often leading to overlaps.
+
+    This function removes such fixtures and any regions / init statements directly tied to them.
+    """
+    fixture_instances = [k for k in output.fixtures.keys() if k != table_name]
+    if not fixture_instances:
+        return
+
+    table_prefix = f"{table_name}_"
+    fixtures_to_remove: set[str] = set()
+
+    for fix_instance in fixture_instances:
+        placement_stmt = None
+        placement_region_key = None
+        for init_stmt in output.init:
+            stmt = init_stmt.strip()
+            if not stmt.startswith(f"(On {fix_instance} "):
+                continue
+            parts = stmt.replace("(", "").replace(")", "").split()
+            if len(parts) >= 3:
+                placement_stmt = init_stmt
+                placement_region_key = parts[2]
+            break
+
+        # If we can't even locate a placement statement, it's safer to drop the fixture.
+        if placement_stmt is None or placement_region_key is None:
+            fixtures_to_remove.add(fix_instance)
+            continue
+
+        if not placement_region_key.startswith(table_prefix):
+            fixtures_to_remove.add(fix_instance)
+            continue
+
+        placement_region_name = placement_region_key[len(table_prefix):]
+        placement_region = output.regions.get(placement_region_name)
+        if placement_region is None or not placement_region.ranges or placement_region.target != table_name:
+            fixtures_to_remove.add(fix_instance)
+
+    if not fixtures_to_remove:
+        return
+
+    for fix_instance in sorted(fixtures_to_remove):
+        print(f"  [warn] removing unplaceable fixture '{fix_instance}' (missing/invalid table placement region)")
+        output.fixtures.pop(fix_instance, None)
+
+    # Remove regions that target removed fixtures (fixture-internal regions).
+    output.regions = {k: v for k, v in output.regions.items() if v.target not in fixtures_to_remove}
+
+    # Remove init statements that place removed fixtures, or place objects onto removed fixtures' regions.
+    filtered_init: list[str] = []
+    for init_stmt in output.init:
+        stmt = init_stmt.strip()
+        if not stmt.startswith("(On "):
+            filtered_init.append(init_stmt)
+            continue
+        parts = stmt.replace("(", "").replace(")", "").split()
+        if len(parts) < 3:
+            filtered_init.append(init_stmt)
+            continue
+        subj = parts[1]
+        region_key = parts[2]
+        if subj in fixtures_to_remove:
+            continue
+        if any(region_key.startswith(f"{fix}_") for fix in fixtures_to_remove):
+            continue
+        filtered_init.append(init_stmt)
+    output.init = filtered_init
+
+
 def generate_er_sequential_bddl(task_spec: dict, bddl_base: str) -> BDDLFile:
     """Generate a single ER-SEQUENTIAL BDDL file using v3.0 format.
     
@@ -305,6 +376,7 @@ def generate_er_sequential_bddl(task_spec: dict, bddl_base: str) -> BDDLFile:
         object_source = source_a
     
     table_name = get_table_name(scene_bddl.fixtures)
+    inferred_manip, _ = infer_manip_and_target_from_goal(task_spec.get("goal", ""))
     
     problem_name_map = {
         'kitchen_table': 'LIBERO_Kitchen_Tabletop_Manipulation',
@@ -321,9 +393,14 @@ def generate_er_sequential_bddl(task_spec: dict, bddl_base: str) -> BDDLFile:
     output.fixtures = dict(scene_bddl.fixtures)
     output.regions = dict(scene_bddl.regions)
     output.init = list(scene_bddl.init)
+    base_initialized = {stmt.split()[1] for stmt in scene_bddl.init if stmt.strip().startswith("(On ")}
     
     for inst, otype in scene_bddl.objects.items():
         output.objects[inst] = otype
+
+    # Robustness: drop fixtures whose placement regions are missing/invalid to avoid
+    # fallback fixture poses that can cause immediate interpenetration.
+    sanitize_unplaceable_fixtures(output, table_name=table_name)
     
     # Add objects from the object source (whichever has floor)
     take_items = object_source.get('take', [])
@@ -332,33 +409,45 @@ def generate_er_sequential_bddl(task_spec: dict, bddl_base: str) -> BDDLFile:
     for item in take_items:
         if item.endswith('_1') or item.endswith('_2'):
             obj_type = extract_object_type(item)
-            if item not in output.objects:
-                output.objects[item] = obj_type
-                manip_objects.append(item)
-                # Add contain_region for containers
-                if obj_type in ['basket', 'wooden_tray']:
-                    contain_region = Region(name="contain_region", target=item)
-                    output.regions["contain_region"] = contain_region
+            final_name = add_object_unique(output, item, obj_type, prefer_name=item)
+            if final_name not in manip_objects:
+                manip_objects.append(final_name)
+            if obj_type in ['basket', 'wooden_tray']:
+                contain_region_name = alloc_unique_region_name(set(output.regions), "contain_region")
+                output.regions[contain_region_name] = Region(name=contain_region_name, target=final_name)
     
     initialized = {stmt.split()[1] for stmt in output.init if stmt.startswith('(On')}
     
     for item in manip_objects:
         if item not in initialized:
             obj_type = extract_object_type(item)
-            region, region_name = allocate_region(table_name, obj_type, output.regions)
+            region, region_name = _allocate_region_on_table(
+                output,
+                table_name,
+                obj_type,
+                is_manip=(inferred_manip is not None and item == inferred_manip),
+            )
             output.regions[region_name] = region
             output.init.append(f"(On {item} {table_name}_{region_name})")
+            initialized.add(item)
     
     if source_c:
+        initialized = {stmt.split()[1] for stmt in output.init if stmt.startswith('(On')}
         distractor_items = source_c.get('take', [])
         for item in distractor_items:
             if item.endswith('_1') or item.endswith('_2'):
-                if item not in output.objects:
-                    obj_type = extract_object_type(item)
-                    output.objects[item] = obj_type
-                    region, region_name = allocate_region(table_name, obj_type, output.regions)
+                obj_type = extract_object_type(item)
+                final_name = add_object_unique(output, item, obj_type, prefer_name=item)
+                if final_name not in initialized:
+                    region, region_name = _allocate_region_on_table(
+                        output,
+                        table_name,
+                        obj_type,
+                        is_manip=(inferred_manip is not None and final_name == inferred_manip),
+                    )
                     output.regions[region_name] = region
-                    output.init.append(f"(On {item} {table_name}_{region_name})")
+                    output.init.append(f"(On {final_name} {table_name}_{region_name})")
+                    initialized.add(final_name)
     
     # Fix goal by replacing invalid fixture/region references
     goal = task_spec['goal']
@@ -380,9 +469,14 @@ def generate_er_sequential_bddl(task_spec: dict, bddl_base: str) -> BDDLFile:
     # Fix invalid region references
     goal = goal.replace('desk_caddy_1_right_side', 'desk_caddy_1_front_contain_region')
     goal = goal.replace('desk_caddy_1_front_region', 'desk_caddy_1_front_contain_region')
-    
+
     # Fix In -> On for non-containers (AkitaBlackBowl doesn't support In)
     goal = re.sub(r'\(In (\w+) (akita_black_bowl_\d+)\)', r'(On \1 \2)', goal)
+
+    # Basket containment should use the basket's contain-region site object (e.g. basket_1_contain_region)
+    # rather than the basket body itself, because Basket (a scanned MujocoXMLObject) doesn't implement
+    # an `in_box()` API used by ObjectState.check_contain().
+    goal = re.sub(r"\(In (\w+) (basket_\d+)\)", r"(In \1 \2_contain_region)", goal)
     
     # Fix bare table references - table names need region suffix
     for tbl in ['study_table', 'living_room_table', 'kitchen_table', 'main_table']:
@@ -402,14 +496,109 @@ def generate_er_sequential_bddl(task_spec: dict, bddl_base: str) -> BDDLFile:
             goal = goal.replace(wrong_table, table_name)
     
     # Ensure basket contain_region exists if referenced
-    if 'basket_1_contain_region' in goal and 'contain_region' not in output.regions:
-        if 'basket_1' in object_names:
-            contain_region = Region(name="contain_region", target="basket_1")
-            output.regions["contain_region"] = contain_region
+    if re.search(r"\bbasket_\d+_contain_region\b", goal) and "contain_region" not in output.regions:
+        # In our ER suites we only use a single basket instance; `contain_region` must match the
+        # site name baked into the basket asset XML.
+        basket_instances = sorted([n for n in object_names if re.fullmatch(r"basket_\d+", n)])
+        if basket_instances:
+            output.regions["contain_region"] = Region(name="contain_region", target=basket_instances[0])
     
     output.goal = goal
-    
+
+    # Ensure any goal-referenced movable instances exist in the scene.
+    # Some sources (e.g. object suite providers) don't include target props
+    # like `plate_1`, but LIBERO's predicate evaluator expects them to exist.
+    goal_instances: set[str] = set()
+    for atom in re.findall(r"\(([^()]+)\)", output.goal or ""):
+        toks = atom.strip().split()
+        if not toks:
+            continue
+        pred = toks[0]
+        if pred == "On" and len(toks) >= 3:
+            goal_instances.update([toks[1], toks[2]])
+        elif pred == "In" and len(toks) >= 3:
+            goal_instances.update([toks[1], toks[2]])
+        elif pred in {"Open", "Close", "Turnon"} and len(toks) >= 2:
+            goal_instances.add(toks[1])
+
+    for inst in sorted(goal_instances):
+        if inst in output.objects or inst in output.fixtures:
+            continue
+        if inst == table_name:
+            continue
+        # Only auto-add movable-looking instances like `plate_1`.
+        if not re.match(r".+_\d+$", inst):
+            continue
+        obj_type = extract_object_type(inst)
+        add_object_unique(output, inst, obj_type, prefer_name=inst)
+        new_region, region_name = allocate_region(
+            table_name,
+            obj_type,
+            output.regions,
+            region_cls=Region,
+            min_gap=MIN_REGION_GAP,
+            collision_margin=COLLISION_MARGIN,
+            occupied_region_boxes=occupied_table_region_boxes_from_init(output.init, output.regions, table_name),
+        )
+        output.regions[region_name] = new_region
+        output.init.append(f"(On {inst} {table_name}_{region_name})")
+
+    # Constraint: if multiple same-type objects exist, ensure manipulated object is *_1.
+    manip_obj, _ = infer_manip_and_target_from_goal(output.goal)
+    if manip_obj is not None and manip_obj in output.objects:
+        ensure_instance_one(output, manip_obj)
+        manip_obj, _ = infer_manip_and_target_from_goal(output.goal)
+
     output.obj_of_interest = manip_objects[:3] if manip_objects else []
+
+    # Final pass: ensure table placements have non-overlapping region ranges.
+    fixed_instances: set[str] = {k for k in output.fixtures.keys() if k != table_name}
+    # NOTE: Do not freeze all base-scene `(On ...)` objects. Some upstream BDDL
+    # files define overlapping *_init_region ranges; we rely on the constraint
+    # pass to re-sample non-critical table placements to be collision-free.
+    # Keep large containers fixed; re-sampling them can fail on crowded tables.
+    fixed_instances |= {inst for inst, typ in output.objects.items() if typ in {"basket", "wooden_tray"}}
+    # Keep goal-referenced props fixed so they won't be dropped as "distractors".
+    fixed_instances |= {inst for inst in goal_instances if inst in output.objects}
+    if manip_obj is not None:
+        fixed_instances.add(manip_obj)
+    # If we still fail due to overlapping upstream init regions, drop one
+    # overlapping distractor placement and retry once. This keeps generation
+    # robust while preserving fixed instances (fixtures / containers / manip).
+    # First try: re-sample non-fixed placements.
+    # Fallback: if overlaps persist due to an extremely crowded scene template,
+    # drop a few non-fixed table distractors.
+    for _attempt in range(6):
+        try:
+            enforce_non_overlapping_table_placements(
+                output,
+                table_name,
+                fixed_instances=fixed_instances,
+                min_gap=MIN_REGION_GAP,
+            )
+            break
+        except RuntimeError as e:
+            msg = str(e)
+            m = re.search(r"Table placement regions overlap .*?: ([^ ]+) vs ([^ ]+)$", msg)
+            if not m:
+                raise
+            key_i, key_j = m.group(1), m.group(2)
+            inst_i = key_i.split(":", 1)[0]
+            inst_j = key_j.split(":", 1)[0]
+
+            victim = None
+            if inst_j not in fixed_instances:
+                victim = inst_j
+            elif inst_i not in fixed_instances:
+                victim = inst_i
+            if victim is None:
+                raise
+
+            remove_instance_table_placement(output, table_name, victim)
+            output.objects.pop(victim, None)
+    else:
+        # Should be unreachable because the loop either breaks or raises.
+        raise RuntimeError("Failed to enforce non-overlapping placements after retries")
     
     return output
 

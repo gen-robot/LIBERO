@@ -26,6 +26,9 @@ Object name resolution follows the requested rules:
 Outputs:
   - Per-episode detailed JSON: `<out_dir>/<episode>.cot_grounding_eval.json`
   - Folder summary JSON: `<out_dir>/cot_grounding_summary.json`
+
+Also reports a bbox IoU "tracking AUC" computed as the mean success rate over an IoU
+threshold grid {0.00, 0.05, ..., 1.00}.
 """
 
 from __future__ import annotations
@@ -372,6 +375,41 @@ def _point_in_mask(seg_frame: np.ndarray, seg_id: int, x: int, y: int) -> bool:
     return int(seg[y_i, x_i]) == int(seg_id)
 
 
+def _compute_iou_tracking_auc(
+    ious: List[float],
+    *,
+    threshold_step: float = 0.05,
+) -> Optional[Dict[str, Any]]:
+    """
+    Compute the success-plot AUC over an IoU threshold grid.
+
+    AUC here is defined as the mean of success rates S(t) over thresholds
+    t in {0.00, 0.05, ..., 1.00}, where S(t) = mean( IoU >= t ).
+    """
+    if not ious:
+        return None
+
+    if threshold_step <= 0:
+        raise ValueError(f"threshold_step must be > 0, got {threshold_step}")
+
+    # Use linspace to include 1.00 exactly for the default 0.05 grid.
+    num = int(round(1.0 / float(threshold_step))) + 1
+    thresholds = [round(float(t), 2) for t in np.linspace(0.0, 1.0, num=num)]
+
+    ious_arr = np.asarray(ious, dtype=np.float32)
+    thr_arr = np.asarray(thresholds, dtype=np.float32)
+    success = (ious_arr[None, :] >= thr_arr[:, None]).mean(axis=1)
+    auc = float(success.mean())
+
+    return {
+        "count": int(ious_arr.size),
+        "threshold_step": float(threshold_step),
+        "thresholds": thresholds,
+        "success": [float(x) for x in success.tolist()],
+        "auc": auc,
+    }
+
+
 @dataclasses.dataclass
 class Args:
     """Arguments for CoT grounding accuracy computation."""
@@ -381,6 +419,31 @@ class Args:
     out_dir_name: str = "cot_grounding_eval"
     seg_key: str = "agentview_segmentation_instance"
     bbox_iou_threshold: float = 0.8
+
+
+@dataclasses.dataclass
+class _Welford:
+    n: int = 0
+    mean: float = 0.0
+    m2: float = 0.0
+
+    def update(self, x: float) -> None:
+        self.n += 1
+        delta = x - self.mean
+        self.mean += delta / float(self.n)
+        delta2 = x - self.mean
+        self.m2 += delta * delta2
+
+    def finalize(self) -> Dict[str, Optional[float]]:
+        if self.n <= 0:
+            return {"count": 0, "mean": None, "std": None}
+        # Population standard deviation (ddof=0).
+        var = self.m2 / float(self.n)
+        return {
+            "count": int(self.n),
+            "mean": float(self.mean),
+            "std": float(np.sqrt(var)),
+        }
 
 
 def _evaluate_episode(
@@ -439,6 +502,7 @@ def _evaluate_episode(
         bbox_correct = 0
         point_total = 0
         point_correct = 0
+        bbox_ious_for_auc: List[float] = []
 
         step_results: List[Dict[str, Any]] = []
         for i, step in enumerate(steps):
@@ -476,6 +540,7 @@ def _evaluate_episode(
 
                 if not record.get("parse_ok"):
                     record["error"] = "bbox_parse_failed"
+                    bbox_ious_for_auc.append(0.0)
                     bbox_eval.append(record)
                     continue
 
@@ -486,6 +551,7 @@ def _evaluate_episode(
                 )
                 if resolved is None:
                     record["error"] = "object_mapping_failed"
+                    bbox_ious_for_auc.append(0.0)
                     bbox_eval.append(record)
                     continue
 
@@ -496,12 +562,14 @@ def _evaluate_episode(
                 gt_bbox = _compute_bbox_from_segmentation(seg_frame, resolved.seg_id)
                 if gt_bbox is None:
                     record["error"] = "gt_mask_empty"
+                    bbox_ious_for_auc.append(0.0)
                     bbox_eval.append(record)
                     continue
 
                 record["gt_bbox_xyxy"] = gt_bbox
                 iou = _iou_xyxy(record["pred_bbox_xyxy"], gt_bbox)
                 record["iou"] = float(iou)
+                bbox_ious_for_auc.append(float(iou))
                 is_correct = iou > float(args.bbox_iou_threshold)
                 record["correct"] = bool(is_correct)
                 if is_correct:
@@ -575,6 +643,10 @@ def _evaluate_episode(
                 "total": bbox_total,
                 "acc": _acc(bbox_correct, bbox_total),
                 "iou_threshold": float(args.bbox_iou_threshold),
+                "tracking_auc": _compute_iou_tracking_auc(
+                    bbox_ious_for_auc,
+                    threshold_step=0.05,
+                ),
             },
             "pointing": {
                 "correct": point_correct,
@@ -634,6 +706,8 @@ def main(args: Args) -> None:
     overall_bbox_correct = 0
     overall_point_total = 0
     overall_point_correct = 0
+    overall_iou_stats = _Welford()
+    overall_bbox_ious_for_auc: List[float] = []
 
     per_episode_summaries: List[Dict[str, Any]] = []
 
@@ -653,6 +727,23 @@ def main(args: Args) -> None:
         overall_bbox_correct += int(ep_summary["bbox"]["correct"])
         overall_point_total += int(ep_summary["pointing"]["total"])
         overall_point_correct += int(ep_summary["pointing"]["correct"])
+
+        # Aggregate IoU statistics across the whole folder (all bbox steps).
+        for step in episode_result.get("steps", []):
+            if not isinstance(step, dict):
+                continue
+            for bb in step.get("bbox", []) or []:
+                if not isinstance(bb, dict):
+                    continue
+                iou_val = bb.get("iou")
+                if iou_val is None:
+                    overall_bbox_ious_for_auc.append(0.0)
+                    continue
+                try:
+                    overall_bbox_ious_for_auc.append(float(iou_val))
+                    overall_iou_stats.update(float(iou_val))
+                except Exception:  # pylint: disable=broad-except
+                    continue
 
         out_path = out_dir / f"{json_path.stem}.cot_grounding_eval.json"
         out_path.write_text(
@@ -676,6 +767,11 @@ def main(args: Args) -> None:
                 "correct": overall_bbox_correct,
                 "total": overall_bbox_total,
                 "acc": _acc(overall_bbox_correct, overall_bbox_total),
+                "iou": overall_iou_stats.finalize(),
+                "tracking_auc": _compute_iou_tracking_auc(
+                    overall_bbox_ious_for_auc,
+                    threshold_step=0.05,
+                ),
             },
             "pointing": {
                 "correct": overall_point_correct,

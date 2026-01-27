@@ -1,0 +1,144 @@
+(define (problem LIBERO_Kitchen_Tabletop_Manipulation)
+  (:domain robosuite)
+  (:language pick up the alphabet soup next to the wine rack and put it in the basket)
+    (:regions
+      (white_cabinet_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.0100 0.2900 0.0100 0.3100)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (wine_rack_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.1100 -0.3100 -0.0900 -0.2900)
+            )
+          )
+          (:yaw_rotation (
+              (3.141592653589793 3.141592653589793)
+            )
+          )
+      )
+      (akita_black_bowl_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (0.18 -0.2150 0.2 -0.2)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (wine_bottle_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (0.18 0.085 0.2 0.09)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (top_side
+          (:target white_cabinet_1)
+      )
+      (top_region
+          (:target white_cabinet_1)
+      )
+      (middle_region
+          (:target white_cabinet_1)
+      )
+      (bottom_region
+          (:target white_cabinet_1)
+      )
+      (alphabet_soup_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.2250 0.1950 -0.1350 0.2850)
+            )
+          )
+      )
+      (contain_region
+          (:target basket_1)
+      )
+      (basket_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (0.13 -0.07 0.15 -0.04)
+            )
+          )
+      )
+      (alphabet_soup_a1_point
+          (:target kitchen_table)
+          (:ranges (
+              (-0.24 -0.11 -0.23 -0.1)
+            )
+          )
+      )
+      (alphabet_soup_a2_point
+          (:target kitchen_table)
+          (:ranges (
+              (0.2199 0.2199 0.2201 0.2201)
+            )
+          )
+      )
+      (white_yellow_mug_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.23 0.0850 -0.2 0.10)
+            )
+          )
+      )
+      (black_book_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.0850 -0.04 -0.0550 -0.02)
+            )
+          )
+      )
+    )
+
+  (:fixtures
+    kitchen_table - kitchen_table
+    white_cabinet_1 - white_cabinet
+    wine_rack_1 - wine_rack
+  )
+
+  (:objects
+    akita_black_bowl_1 - akita_black_bowl
+    wine_bottle_1 - wine_bottle
+    alphabet_soup_1 alphabet_soup_2 - alphabet_soup
+    basket_1 - basket
+    black_book_1 - black_book
+    white_yellow_mug_1 - white_yellow_mug
+  )
+
+  (:obj_of_interest
+    alphabet_soup_1
+    wine_rack_1
+  )
+
+  (:init
+    (On akita_black_bowl_1 kitchen_table_akita_black_bowl_init_region)
+    (On wine_bottle_1 kitchen_table_wine_bottle_init_region)
+    (On white_cabinet_1 kitchen_table_white_cabinet_init_region)
+    (On wine_rack_1 kitchen_table_wine_rack_init_region)
+    (Open white_cabinet_1_bottom_region)
+    (On basket_1 kitchen_table_basket_init_region)
+    (On black_book_1 kitchen_table_black_book_init_region)
+    (On white_yellow_mug_1 kitchen_table_white_yellow_mug_init_region)
+    (On alphabet_soup_1 kitchen_table_alphabet_soup_a1_point)
+    (On alphabet_soup_2 kitchen_table_alphabet_soup_a2_point)
+  )
+
+  (:goal
+    (And (In alphabet_soup_1 basket_1_contain_region))
+  )
+)

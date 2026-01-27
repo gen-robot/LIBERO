@@ -1,6 +1,6 @@
 (define (problem LIBERO_Kitchen_Tabletop_Manipulation)
   (:domain robosuite)
-  (:language put the bowl on the plate and then put the butter on the cabinet)
+  (:language put the bowl on the plate, then put the butter on the cabinet)
     (:regions
       (wooden_cabinet_init_region
           (:target kitchen_table)
@@ -24,17 +24,6 @@
             )
           )
       )
-      (plate_init_region
-          (:target kitchen_table)
-          (:ranges (
-              (-0.0250 0.2250 0.0250 0.2750)
-            )
-          )
-          (:yaw_rotation (
-              (0.0 0.0)
-            )
-          )
-      )
       (top_side
           (:target wooden_cabinet_1)
       )
@@ -50,7 +39,14 @@
       (butter_init_region
           (:target kitchen_table)
           (:ranges (
-              (0.0450 0.1150 0.1550 0.1850)
+              (-0.0550 0.1150 0.0550 0.1850)
+            )
+          )
+      )
+      (plate_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.3050 0.1750 -0.1750 0.3050)
             )
           )
       )

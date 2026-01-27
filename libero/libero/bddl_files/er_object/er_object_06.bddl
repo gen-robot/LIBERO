@@ -1,11 +1,11 @@
-(define (problem LIBERO_Kitchen_Tabletop_Manipulation)
+(define (problem LIBERO_Tabletop_Manipulation)
   (:domain robosuite)
-  (:language pick up the tomato sauce and place it in the basket)
+  (:language pick up the orange juice and place it in the basket)
     (:regions
-      (wooden_cabinet_init_region
-          (:target kitchen_table)
+      (wine_rack_region
+          (:target main_table)
           (:ranges (
-              (-0.01 -0.31 0.01 -0.29)
+              (-0.27 -0.27 -0.25 -0.25)
             )
           )
           (:yaw_rotation (
@@ -13,22 +13,13 @@
             )
           )
       )
-      (top_side
-          (:target wooden_cabinet_1)
-      )
       (top_region
-          (:target wooden_cabinet_1)
-      )
-      (middle_region
-          (:target wooden_cabinet_1)
-      )
-      (bottom_region
-          (:target wooden_cabinet_1)
+          (:target wine_rack_1)
       )
       (basket_init_region
-          (:target kitchen_table)
+          (:target main_table)
           (:ranges (
-              (-0.165 -0.005 0.165 0.305)
+              (0.055 -0.205 0.25 0.005)
             )
           )
           (:yaw_rotation (
@@ -39,32 +30,10 @@
       (contain_region
           (:target basket_1)
       )
-      (tomato_sauce_init_region
-          (:target kitchen_table)
+      (orange_juice_init_region
+          (:target main_table)
           (:ranges (
-              (-0.045 -0.07500000000000001 0.045 0.015000000000000003)
-            )
-          )
-          (:yaw_rotation (
-              (0.0 0.0)
-            )
-          )
-      )
-      (black_book_init_region
-          (:target kitchen_table)
-          (:ranges (
-              (0.03500000000000004 -0.055 0.16500000000000004 -0.004999999999999998)
-            )
-          )
-          (:yaw_rotation (
-              (0.0 0.0)
-            )
-          )
-      )
-      (white_yellow_mug_init_region
-          (:target kitchen_table)
-          (:ranges (
-              (0.115 -0.095 0.28500000000000003 0.034999999999999996)
+              (-0.195 0.015000000000000003 -0.10499999999999998 0.14500000000000002)
             )
           )
           (:yaw_rotation (
@@ -75,32 +44,28 @@
     )
 
   (:fixtures
-    kitchen_table - kitchen_table
-    wooden_cabinet_1 - wooden_cabinet
+    main_table - table
+    wine_rack_1 - wine_rack
   )
 
   (:objects
     basket_1 - basket
-    tomato_sauce_1 - tomato_sauce
-    black_book_1 - black_book
-    white_yellow_mug_1 - white_yellow_mug
+    orange_juice_1 - orange_juice
   )
 
   (:obj_of_interest
-    tomato_sauce_1
+    orange_juice_1
     basket_1
   )
 
   (:init
-    (On wooden_cabinet_1 kitchen_table_wooden_cabinet_init_region)
-    (On basket_1 kitchen_table_basket_init_region)
-    (On tomato_sauce_1 kitchen_table_tomato_sauce_init_region)
-    (On black_book_1 kitchen_table_black_book_init_region)
-    (On white_yellow_mug_1 kitchen_table_white_yellow_mug_init_region)
+    (On wine_rack_1 main_table_wine_rack_region)
+    (On basket_1 main_table_basket_init_region)
+    (On orange_juice_1 main_table_orange_juice_init_region)
   )
 
   (:goal
-    (And (In tomato_sauce_1 basket_1_contain_region))
+    (And (In orange_juice_1 basket_1_contain_region))
   )
 
 )

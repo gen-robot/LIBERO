@@ -1,0 +1,133 @@
+(define (problem LIBERO_Living_Room_Tabletop_Manipulation)
+  (:domain robosuite)
+  (:language pick up the milk next to the wine bottle and put it in the basket)
+    (:regions
+      (basket_init_region
+          (:target living_room_table)
+          (:ranges (
+              (-0.0100 0.2500 0.0100 0.2700)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (cream_cheese_init_region
+          (:target living_room_table)
+          (:ranges (
+              (0.0750 -0.2250 0.1250 -0.1750)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (orange_juice_init_region
+          (:target living_room_table)
+          (:ranges (
+              (-0.0250 -0.2750 0.0250 -0.2250)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (tomato_sauce_init_region
+          (:target living_room_table)
+          (:ranges (
+              (-0.1250 0.0250 -0.0750 0.0750)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (alphabet_soup_init_region
+          (:target living_room_table)
+          (:ranges (
+              (-0.1250 -0.1750 -0.0750 -0.1250)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (butter_init_region
+          (:target living_room_table)
+          (:ranges (
+              (0.0250 0.0250 0.0750 0.0750)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (ketchup_init_region
+          (:target living_room_table)
+          (:ranges (
+              (-0.2750 -0.1750 -0.2250 -0.1250)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (contain_region
+          (:target basket_1)
+      )
+      (wine_bottle_landmark_point
+          (:target living_room_table)
+          (:ranges (
+              (-0.0001 0.0499 0.0001 0.0501)
+            )
+          )
+      )
+      (milk_a1_point
+          (:target living_room_table)
+          (:ranges (
+              (0.08 -0.09 0.13 -0.05)
+            )
+          )
+      )
+      (milk_a2_point
+          (:target living_room_table)
+          (:ranges (
+              (-0.1801 -0.1801 -0.1799 -0.1799)
+            )
+          )
+      )
+    )
+
+  (:fixtures
+    living_room_table - living_room_table
+  )
+
+  (:objects
+    milk_1 milk_2 - milk
+    basket_1 - basket
+    wine_bottle_1 - wine_bottle
+  )
+
+  (:obj_of_interest
+    milk_1
+    wine_bottle_1
+  )
+
+    (:init
+    (On basket_1 living_room_table_basket_init_region)
+    (On wine_bottle_1 living_room_table_wine_bottle_landmark_point)
+    (On milk_2 living_room_table_milk_a2_point)
+    (On milk_1 basket_1_contain_region)
+  )
+
+  (:goal
+    (And (In milk_1 basket_1_contain_region))
+  )
+)

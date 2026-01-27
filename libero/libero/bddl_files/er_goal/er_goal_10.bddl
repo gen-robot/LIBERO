@@ -1,33 +1,11 @@
-(define (problem LIBERO_Kitchen_Tabletop_Manipulation)
+(define (problem LIBERO_Study_Tabletop_Manipulation)
   (:domain robosuite)
-  (:language put the bbq sauce on top of the cabinet)
+  (:language put the alphabet soup on the cabinet)
     (:regions
-      (wooden_cabinet_init_region
-          (:target kitchen_table)
+      (wooden_two_layer_shelf_init_region
+          (:target study_table)
           (:ranges (
-              (-0.0100 -0.3100 0.0100 -0.2900)
-            )
-          )
-          (:yaw_rotation (
-              (3.141592653589793 3.141592653589793)
-            )
-          )
-      )
-      (akita_black_bowl_init_region
-          (:target kitchen_table)
-          (:ranges (
-              (-0.0250 -0.0250 0.0250 0.0250)
-            )
-          )
-          (:yaw_rotation (
-              (0.0 0.0)
-            )
-          )
-      )
-      (plate_init_region
-          (:target kitchen_table)
-          (:ranges (
-              (-0.0250 0.2250 0.0250 0.2750)
+              (-0.0100 0.2700 0.0100 0.2900)
             )
           )
           (:yaw_rotation (
@@ -36,58 +14,42 @@
           )
       )
       (top_side
-          (:target wooden_cabinet_1)
+          (:target wooden_two_layer_shelf_1)
       )
       (top_region
-          (:target wooden_cabinet_1)
-      )
-      (middle_region
-          (:target wooden_cabinet_1)
+          (:target wooden_two_layer_shelf_1)
       )
       (bottom_region
-          (:target wooden_cabinet_1)
+          (:target wooden_two_layer_shelf_1)
       )
-      (bbq_sauce_init_region
-          (:target kitchen_table)
+      (alphabet_soup_init_region
+          (:target study_table)
           (:ranges (
-              (0.0800 0.0950 0.1600 0.2050)
-            )
-          )
-      )
-      (wooden_tray_init_region
-          (:target kitchen_table)
-          (:ranges (
-              (-0.0850 -0.0050 0.3250 0.3050)
+              (-0.0450 0.02 0.0450 0.10)
             )
           )
       )
     )
 
   (:fixtures
-    kitchen_table - kitchen_table
-    wooden_cabinet_1 - wooden_cabinet
+    study_table - study_table
+    wooden_two_layer_shelf_1 - wooden_two_layer_shelf
   )
 
   (:objects
-    bbq_sauce_1 - bbq_sauce
-    akita_black_bowl_1 - akita_black_bowl
-    plate_1 - plate
-    wooden_tray_1 - wooden_tray
+    alphabet_soup_1 - alphabet_soup
   )
 
   (:obj_of_interest
-    bbq_sauce_1
+    alphabet_soup_1
   )
 
   (:init
-    (On akita_black_bowl_1 kitchen_table_akita_black_bowl_init_region)
-    (On plate_1 kitchen_table_plate_init_region)
-    (On wooden_cabinet_1 kitchen_table_wooden_cabinet_init_region)
-    (On bbq_sauce_1 kitchen_table_bbq_sauce_init_region)
-    (On wooden_tray_1 kitchen_table_wooden_tray_init_region)
+    (On wooden_two_layer_shelf_1 study_table_wooden_two_layer_shelf_init_region)
+    (On alphabet_soup_1 study_table_alphabet_soup_init_region)
   )
 
   (:goal
-    (And (On bbq_sauce_1 wooden_cabinet_1_top_side))
+    (And (On alphabet_soup_1 wooden_two_layer_shelf_1_top_side))
   )
 )

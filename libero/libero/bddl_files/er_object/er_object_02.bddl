@@ -1,45 +1,11 @@
-(define (problem LIBERO_Kitchen_Tabletop_Manipulation)
+(define (problem LIBERO_Living_Room_Tabletop_Manipulation)
   (:domain robosuite)
   (:language pick up the butter and place it in the basket)
     (:regions
-      (white_cabinet_init_region
-          (:target kitchen_table)
-          (:ranges (
-              (-0.01 0.29 0.01 0.31)
-            )
-          )
-          (:yaw_rotation (
-              (0.0 0.0)
-            )
-          )
-      )
-      (wine_rack_init_region
-          (:target kitchen_table)
-          (:ranges (
-              (-0.11 -0.31 -0.09000000000000001 -0.29)
-            )
-          )
-          (:yaw_rotation (
-              (3.141592653589793 3.141592653589793)
-            )
-          )
-      )
-      (top_side
-          (:target white_cabinet_1)
-      )
-      (top_region
-          (:target wine_rack_1)
-      )
-      (middle_region
-          (:target white_cabinet_1)
-      )
-      (bottom_region
-          (:target white_cabinet_1)
-      )
       (basket_init_region
-          (:target kitchen_table)
+          (:target living_room_table)
           (:ranges (
-              (-0.265 -0.185 0.065 0.125)
+              (-0.165 -0.02 0.165 0.275)
             )
           )
           (:yaw_rotation (
@@ -51,9 +17,9 @@
           (:target basket_1)
       )
       (butter_init_region
-          (:target kitchen_table)
+          (:target living_room_table)
           (:ranges (
-              (0.04500000000000003 -0.065 0.15500000000000003 0.005)
+              (-0.055 -0.185 0.055 -0.11499999999999999)
             )
           )
           (:yaw_rotation (
@@ -64,9 +30,7 @@
     )
 
   (:fixtures
-    kitchen_table - kitchen_table
-    white_cabinet_1 - white_cabinet
-    wine_rack_1 - wine_rack
+    living_room_table - living_room_table
   )
 
   (:objects
@@ -80,10 +44,8 @@
   )
 
   (:init
-    (On white_cabinet_1 kitchen_table_white_cabinet_init_region)
-    (On wine_rack_1 kitchen_table_wine_rack_init_region)
-    (On basket_1 kitchen_table_basket_init_region)
-    (On butter_1 kitchen_table_butter_init_region)
+    (On basket_1 living_room_table_basket_init_region)
+    (On butter_1 living_room_table_butter_init_region)
   )
 
   (:goal

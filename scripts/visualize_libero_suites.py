@@ -24,6 +24,7 @@ import os
 import re
 import textwrap
 import time
+import traceback
 from pathlib import Path
 from typing import List, Optional, Tuple
 
@@ -44,6 +45,23 @@ RENDERED_DIR = OUTPUT_DIR / "rendered_images"
 LIBERO_SUITES = ["libero_10", "libero_90", "libero_spatial", "libero_object", "libero_goal"]
 ER_SUITES = ["er_object", "er_goal", "er_spatial", "er_sequential"]
 SUITES = LIBERO_SUITES + ER_SUITES
+
+
+def torch_load_any(path: str):
+    """
+    Load torch-saved objects (e.g. lists of dict sim states).
+
+    Note: For PyTorch >= 2.6, `torch.load` defaults to `weights_only=True`, which
+    can reject non-weight pickles such as LIBERO init-state files. We fall back
+    to `weights_only=False` for local benchmark artifacts.
+    """
+    try:
+        return torch.load(path)
+    except Exception:
+        try:
+            return torch.load(path, weights_only=False)
+        except TypeError:
+            raise
 
 
 def get_font(size: int) -> ImageFont.FreeTypeFont:
@@ -241,6 +259,7 @@ def render_er_suite_images(
     output_dir: Path,
     num_seeds: int = 3,
     resolution: int = 256,
+    task_ids: Optional[set[int]] = None,
 ) -> dict:
     """Render init and goal state images for ER suites (no benchmark registration)."""
     from libero.libero.envs import OffScreenRenderEnv
@@ -259,6 +278,8 @@ def render_er_suite_images(
     all_task_data = {}
     
     for task_id, bddl_file in enumerate(bddl_files):
+        if task_ids is not None and task_id not in task_ids:
+            continue
         task_name = bddl_file.stem
         
         # Extract language from BDDL
@@ -305,7 +326,12 @@ def render_er_suite_images(
             safe_close_env(env)
             env = None
         except Exception as e:
+            # Debug log: show full traceback and hint about which BDDL caused failure
             print(f"    [ERROR] Init: {e}")
+            print(f"    [DEBUG] Init exception in {bddl_file}")
+            print("    [DEBUG] Full traceback:")
+            for line in traceback.format_exc().splitlines():
+                print("      " + line)
             if env is not None:
                 safe_close_env(env)
                 env = None
@@ -317,7 +343,7 @@ def render_er_suite_images(
         # Method 1: Use pre-generated goal files
         if goal_bddl_file.exists() and goal_init_file.exists():
             try:
-                goal_states = torch.load(str(goal_init_file))
+                goal_states = torch_load_any(str(goal_init_file))
                 
                 goal_env_args = {
                     "bddl_file_name": str(goal_bddl_file),
@@ -396,11 +422,12 @@ def render_task_images(
     output_dir: Path,
     num_seeds: int = 3,
     resolution: int = 256,
+    task_ids: Optional[set[int]] = None,
 ) -> dict:
     """Render init and goal state images for all tasks in a suite."""
     # Handle ER suites separately (not registered in benchmark)
     if task_suite_name in ER_SUITES:
-        return render_er_suite_images(task_suite_name, output_dir, num_seeds, resolution)
+        return render_er_suite_images(task_suite_name, output_dir, num_seeds, resolution, task_ids=task_ids)
     
     from libero.libero import benchmark
     from libero.libero.envs import OffScreenRenderEnv
@@ -421,6 +448,8 @@ def render_task_images(
     all_task_data = {}
     
     for task_id in range(num_tasks):
+        if task_ids is not None and task_id not in task_ids:
+            continue
         task = task_suite.get_task(task_id)
         task_name = task.name
         task_description = task.language
@@ -445,7 +474,7 @@ def render_task_images(
         # Render INIT states
         env = None
         try:
-            init_states = torch.load(str(init_file))
+            init_states = torch_load_any(str(init_file))
             
             env_args = {
                 "bddl_file_name": str(bddl_file),
@@ -482,7 +511,7 @@ def render_task_images(
         # Method 1: Use pre-generated goal files
         if goal_bddl_file.exists() and goal_init_file.exists():
             try:
-                goal_states = torch.load(str(goal_init_file))
+                goal_states = torch_load_any(str(goal_init_file))
                 
                 goal_env_args = {
                     "bddl_file_name": str(goal_bddl_file),
@@ -516,7 +545,7 @@ def render_task_images(
         if not goal_rendered and goal_predicates and init_images:
             env = None
             try:
-                init_states = torch.load(str(init_file))
+                init_states = torch_load_any(str(init_file))
                 
                 env_args = {
                     "bddl_file_name": str(bddl_file),
@@ -565,12 +594,13 @@ def create_task_panel(
     task_description: str,
     init_images: List[str],
     goal_images: List[str],
+    max_seeds: int = 3,
     panel_width: int = 500,
     img_size: int = 100,
     header_height: int = 55,
 ) -> Image.Image:
     """Create a panel for a single task with init and goal images."""
-    num_seeds = min(len(init_images), 3) if init_images else 3
+    num_seeds = min(len(init_images), max_seeds) if init_images else max_seeds
     
     total_img_width = num_seeds * img_size + (num_seeds - 1) * 5
     total_img_height = 2 * img_size + 20
@@ -633,6 +663,7 @@ def create_visualization_grid(
     output_path: Path,
     suite_name: str,
     cols: int = 4,
+    max_seeds: int = 3,
     panel_width: int = 500,
     img_size: int = 100,
 ) -> str:
@@ -656,7 +687,7 @@ def create_visualization_grid(
     title_width = len(title) * 10
     draw.text((grid_width // 2 - title_width // 2, 10), title, fill=(0, 0, 100), font=title_font)
     
-    subtitle = f"{num_tasks} tasks | 3 seeds | Init (green) vs Goal (red)"
+    subtitle = f"{num_tasks} tasks | {max_seeds} seeds | Init (green) vs Goal (red)"
     draw.text((grid_width // 2 - 130, 38), subtitle, fill=(80, 80, 80), font=subtitle_font)
     
     draw.rectangle([grid_width - 200, 15, grid_width - 180, 30], outline=(0, 150, 0), width=2)
@@ -678,6 +709,7 @@ def create_visualization_grid(
             task_description=data["task_description"],
             init_images=data.get("init_images", []),
             goal_images=data.get("goal_images", []),
+            max_seeds=max_seeds,
             panel_width=panel_width,
             img_size=img_size,
         )
@@ -758,7 +790,12 @@ def load_existing_task_data(suite_dir: Path) -> dict:
     return task_data
 
 
-def visualize_suite(suite_name: str, skip_render: bool = False, num_seeds: int = 3):
+def visualize_suite(
+    suite_name: str,
+    skip_render: bool = False,
+    num_seeds: int = 3,
+    task_ids: Optional[set[int]] = None,
+):
     """Visualize a single suite."""
     print(f"\n{'='*60}")
     print(f"Processing: {suite_name}")
@@ -775,23 +812,39 @@ def visualize_suite(suite_name: str, skip_render: bool = False, num_seeds: int =
             task_suite_name=suite_name,
             output_dir=RENDERED_DIR,
             num_seeds=num_seeds,
+            task_ids=task_ids,
         )
     
+    if task_ids is not None:
+        task_data = {k: v for k, v in task_data.items() if k in task_ids}
+
     if not task_data:
         print(f"No tasks found for {suite_name}")
         return
     
     print(f"\nCreating visualization grid ({len(task_data)} tasks)...")
     
-    cols = 5
+    cols = min(5, max(1, len(task_data)))
+    img_size = 100
+    total_img_width = num_seeds * img_size + (num_seeds - 1) * 5
+    panel_width = max(500, total_img_width + 80)
     
-    output_path = OUTPUT_DIR / f"{suite_name}_grid.png"
+    if task_ids is None:
+        output_path = OUTPUT_DIR / f"{suite_name}_grid.png"
+    elif len(task_ids) == 1:
+        (only_id,) = tuple(task_ids)
+        output_path = OUTPUT_DIR / f"{suite_name}_task{only_id:02d}_grid.png"
+    else:
+        output_path = OUTPUT_DIR / f"{suite_name}_subset_grid.png"
     
     create_visualization_grid(
         task_data=task_data,
         output_path=output_path,
         suite_name=suite_name,
         cols=cols,
+        max_seeds=num_seeds,
+        panel_width=panel_width,
+        img_size=img_size,
     )
     
     file_size = output_path.stat().st_size / (1024 * 1024)
@@ -816,9 +869,17 @@ def main():
         "--num-seeds",
         type=int,
         default=3,
-        help="Number of init states to render per task"
+        help="Number of scenes (seeds) to render + show per task"
+    )
+    parser.add_argument(
+        "--task-id",
+        type=int,
+        action="append",
+        default=None,
+        help="Only visualize specific task id(s); pass multiple times, e.g. --task-id 0 --task-id 12",
     )
     args = parser.parse_args()
+    task_ids = set(args.task_id) if args.task_id else None
     
     if args.suite == "all":
         suites_to_process = SUITES
@@ -830,6 +891,7 @@ def main():
             suite_name=suite_name,
             skip_render=args.skip_render,
             num_seeds=args.num_seeds,
+            task_ids=task_ids,
         )
     
     print(f"\n{'='*60}")

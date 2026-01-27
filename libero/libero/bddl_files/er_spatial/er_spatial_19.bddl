@@ -1,0 +1,121 @@
+(define (problem LIBERO_Kitchen_Tabletop_Manipulation)
+  (:domain robosuite)
+  (:language pick up the orange juice next to the stove and put it in the basket)
+    (:regions
+      (flat_stove_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.2100 0.1900 -0.1900 0.2100)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (frypan_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.0750 -0.2750 -0.0250 -0.2250)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (moka_pot_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (0.05 -0.0250 0.1 0.0250)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (cook_region
+          (:target flat_stove_1)
+      )
+      (contain_region
+          (:target basket_1)
+      )
+      (orange_juice_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.0450 0.1750 0.0450 0.3050)
+            )
+          )
+      )
+      (basket_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (0.1350 0.15 0.2 0.2)
+            )
+          )
+      )
+      (orange_juice_a1_point
+          (:target kitchen_table)
+          (:ranges (
+              (-0.2 0.06 -0.18 0.08)
+            )
+          )
+      )
+      (orange_juice_a2_point
+          (:target kitchen_table)
+          (:ranges (
+              (0.2199 -0.2201 0.2201 -0.2199)
+            )
+          )
+      )
+      (black_book_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.26 -0.23 -0.2 -0.19)
+            )
+          )
+      )
+      (yellow_book_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.1850 -0.1050 -0.1550 -0.0550)
+            )
+          )
+      )
+    )
+
+  (:fixtures
+    kitchen_table - kitchen_table
+    flat_stove_1 - flat_stove
+  )
+
+  (:objects
+    chefmate_8_frypan_1 - chefmate_8_frypan
+    moka_pot_1 - moka_pot
+    orange_juice_1 orange_juice_2 - orange_juice
+    basket_1 - basket
+    black_book_1 - black_book
+    yellow_book_1 - yellow_book
+  )
+
+  (:obj_of_interest
+    orange_juice_1
+    flat_stove_1
+  )
+
+  (:init
+    (On flat_stove_1 kitchen_table_flat_stove_init_region)
+    (On chefmate_8_frypan_1 kitchen_table_frypan_init_region)
+    (On moka_pot_1 kitchen_table_moka_pot_init_region)
+    (On basket_1 kitchen_table_basket_init_region)
+    (On black_book_1 kitchen_table_black_book_init_region)
+    (On yellow_book_1 kitchen_table_yellow_book_init_region)
+    (On orange_juice_1 kitchen_table_orange_juice_a1_point)
+    (On orange_juice_2 kitchen_table_orange_juice_a2_point)
+  )
+
+  (:goal
+    (And (In orange_juice_1 basket_1_contain_region))
+  )
+)

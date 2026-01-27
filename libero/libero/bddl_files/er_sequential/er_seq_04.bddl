@@ -1,22 +1,11 @@
-(define (problem LIBERO_Kitchen_Tabletop_Manipulation)
+(define (problem LIBERO_Living_Room_Tabletop_Manipulation)
   (:domain robosuite)
-  (:language open the drawer and put the ketchup in it)
+  (:language put the milk in the basket, then put the ketchup in the basket)
     (:regions
-      (wooden_cabinet_init_region
-          (:target kitchen_table)
+      (basket_init_region
+          (:target living_room_table)
           (:ranges (
-              (-0.0100 -0.3100 0.0100 -0.2900)
-            )
-          )
-          (:yaw_rotation (
-              (3.141592653589793 3.141592653589793)
-            )
-          )
-      )
-      (akita_black_bowl_init_region
-          (:target kitchen_table)
-          (:ranges (
-              (-0.0250 -0.0250 0.0250 0.0250)
+              (-0.0100 0.2500 0.0100 0.2700)
             )
           )
           (:yaw_rotation (
@@ -24,47 +13,49 @@
             )
           )
       )
-      (plate_init_region
-          (:target kitchen_table)
+      (contain_region
+          (:target basket_1)
+      )
+      (alphabet_soup_init_region
+          (:target living_room_table)
           (:ranges (
-              (-0.0250 0.2250 0.0250 0.2750)
-            )
-          )
-          (:yaw_rotation (
-              (0.0 0.0)
+              (-0.0450 0.0350 0.0450 0.1250)
             )
           )
       )
-      (top_side
-          (:target wooden_cabinet_1)
+      (butter_init_region
+          (:target living_room_table)
+          (:ranges (
+              (-0.1750 -0.1150 -0.0650 -0.0450)
+            )
+          )
       )
-      (top_region
-          (:target wooden_cabinet_1)
-      )
-      (middle_region
-          (:target wooden_cabinet_1)
-      )
-      (bottom_region
-          (:target wooden_cabinet_1)
+      (milk_init_region
+          (:target living_room_table)
+          (:ranges (
+              (-0.2250 0.1750 -0.1350 0.3050)
+            )
+          )
       )
       (ketchup_init_region
-          (:target kitchen_table)
+          (:target living_room_table)
           (:ranges (
-              (0.0650 0.0950 0.1350 0.2050)
+              (-0.3350 -0.0550 -0.2650 0.0550)
             )
           )
       )
     )
 
   (:fixtures
-    kitchen_table - kitchen_table
-    wooden_cabinet_1 - wooden_cabinet
+    living_room_table - living_room_table
   )
 
   (:objects
-    akita_black_bowl_1 - akita_black_bowl
-    plate_1 - plate
+    alphabet_soup_1 - alphabet_soup
     ketchup_1 - ketchup
+    milk_1 - milk
+    butter_1 - butter
+    basket_1 - basket
   )
 
   (:obj_of_interest
@@ -72,13 +63,14 @@
   )
 
   (:init
-    (On akita_black_bowl_1 kitchen_table_akita_black_bowl_init_region)
-    (On plate_1 kitchen_table_plate_init_region)
-    (On wooden_cabinet_1 kitchen_table_wooden_cabinet_init_region)
-    (On ketchup_1 kitchen_table_ketchup_init_region)
+    (On alphabet_soup_1 living_room_table_alphabet_soup_init_region)
+    (On ketchup_1 living_room_table_ketchup_init_region)
+    (On milk_1 living_room_table_milk_init_region)
+    (On butter_1 living_room_table_butter_init_region)
+    (On basket_1 living_room_table_basket_init_region)
   )
 
   (:goal
-    (And (Open wooden_cabinet_1_top_region) (In ketchup_1 wooden_cabinet_1_top_region))
+    (And (In milk_1 basket_1_contain_region) (In ketchup_1 basket_1_contain_region))
   )
 )

@@ -1,21 +1,7 @@
 (define (problem LIBERO_Tabletop_Manipulation)
   (:domain robosuite)
-  (:language pick up the black bowl next to the ketchup and place it on the plate)
+  (:language pick up the black bowl next to the milk and place it on the plate)
     (:regions
-      (plate_region
-          (:target main_table)
-          (:ranges (
-              (0.0500 0.1900 0.0700 0.2100)
-            )
-          )
-      )
-      (next_to_plate_region
-          (:target main_table)
-          (:ranges (
-              (0.0000 0.3000 0.0200 0.3200)
-            )
-          )
-      )
       (box_region
           (:target main_table)
           (:ranges (
@@ -41,13 +27,6 @@
           (:target main_table)
           (:ranges (
               (-0.2100 0.1900 -0.1900 0.2100)
-            )
-          )
-      )
-      (next_to_ramekin_region
-          (:target main_table)
-          (:ranges (
-              (-0.1900 0.3100 -0.1700 0.3300)
             )
           )
       )
@@ -83,32 +62,31 @@
             )
           )
       )
-      (top_region
-          (:target wooden_cabinet_1)
-      )
-      (middle_region
-          (:target wooden_cabinet_1)
-      )
-      (bottom_region
-          (:target wooden_cabinet_1)
-      )
-      (top_side
-          (:target wooden_cabinet_1)
-      )
-      (cook_region
-          (:target flat_stove_1)
-      )
-      (ketchup_init_region
+      (milk_landmark_point
           (:target main_table)
           (:ranges (
-              (-0.0350 0.0950 0.0350 0.2050)
+              (-0.0001 0.0499 0.0001 0.0501)
             )
           )
       )
-      (akita_black_bowl_init_region
+      (plate_support_point
           (:target main_table)
           (:ranges (
-              (-0.1950 -0.0250 -0.0450 0.1250)
+              (0.1799 -0.1801 0.1801 -0.1799)
+            )
+          )
+      )
+      (akita_black_bowl_a1_point
+          (:target main_table)
+          (:ranges (
+              (0.14 0.07 0.15 0.08)
+            )
+          )
+      )
+      (akita_black_bowl_a2_point
+          (:target main_table)
+          (:ranges (
+              (-0.1801 -0.1801 -0.1799 -0.1799)
             )
           )
       )
@@ -116,32 +94,24 @@
 
   (:fixtures
     main_table - table
-    wooden_cabinet_1 - wooden_cabinet
-    flat_stove_1 - flat_stove
   )
 
   (:objects
     akita_black_bowl_1 akita_black_bowl_2 - akita_black_bowl
-    cookies_1 - cookies
-    glazed_rim_porcelain_ramekin_1 - glazed_rim_porcelain_ramekin
     plate_1 - plate
-    ketchup_1 - ketchup
+    milk_1 - milk
   )
 
   (:obj_of_interest
     akita_black_bowl_1
-    ketchup_1
+    milk_1
   )
 
   (:init
-    (On akita_black_bowl_2 main_table_next_to_box_region)
-    (On plate_1 main_table_plate_region)
-    (On cookies_1 main_table_box_region)
-    (On glazed_rim_porcelain_ramekin_1 main_table_ramekin_region)
-    (On wooden_cabinet_1 main_table_cabinet_region)
-    (On flat_stove_1 main_table_stove_region)
-    (On ketchup_1 main_table_ketchup_init_region)
-    (On akita_black_bowl_1 main_table_akita_black_bowl_init_region)
+    (On milk_1 main_table_milk_landmark_point)
+    (On plate_1 main_table_plate_support_point)
+    (On akita_black_bowl_1 main_table_akita_black_bowl_a1_point)
+    (On akita_black_bowl_2 main_table_akita_black_bowl_a2_point)
   )
 
   (:goal

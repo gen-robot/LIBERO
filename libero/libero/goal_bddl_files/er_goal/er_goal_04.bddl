@@ -1,0 +1,46 @@
+(define (problem LIBERO_Living_Room_Tabletop_Manipulation)
+  (:domain robosuite)
+  (:language put the milk on the plate)
+    (:regions
+      (plate_left_region
+          (:target living_room_table)
+          (:ranges (
+              (-0.0250 -0.3250 0.0250 -0.2750)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (milk_init_region
+          (:target living_room_table)
+          (:ranges (
+              (-0.0450 0.0850 0.0450 0.2150)
+            )
+          )
+      )
+    )
+
+  (:fixtures
+    living_room_table - living_room_table
+  )
+
+  (:objects
+    plate_1 - plate
+    milk_1 - milk
+  )
+
+  (:obj_of_interest
+    milk_1
+  )
+
+    (:init
+    (On plate_1 living_room_table_plate_left_region)
+    (On milk_1 plate_1)
+  )
+
+  (:goal
+    (And (On milk_1 plate_1))
+  )
+)

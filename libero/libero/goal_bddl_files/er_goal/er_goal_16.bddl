@@ -1,0 +1,67 @@
+(define (problem LIBERO_Kitchen_Tabletop_Manipulation)
+  (:domain robosuite)
+  (:language put the tomato sauce on the stove)
+    (:regions
+      (flat_stove_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.2100 0.1900 -0.1900 0.2100)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (cook_region
+          (:target flat_stove_1)
+      )
+      (tomato_sauce_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.1250 -0.0450 -0.0350 0.0450)
+            )
+          )
+      )
+      (black_book_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (0.0150 -0.0250 0.1450 0.0250)
+            )
+          )
+      )
+      (white_yellow_mug_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.0250 -0.18 0.1450 -0.12)
+            )
+          )
+      )
+    )
+
+  (:fixtures
+    kitchen_table - kitchen_table
+    flat_stove_1 - flat_stove
+  )
+
+  (:objects
+    tomato_sauce_1 - tomato_sauce
+    black_book_1 - black_book
+    white_yellow_mug_1 - white_yellow_mug
+  )
+
+  (:obj_of_interest
+    tomato_sauce_1
+  )
+
+    (:init
+    (On flat_stove_1 kitchen_table_flat_stove_init_region)
+    (On black_book_1 kitchen_table_black_book_init_region)
+    (On white_yellow_mug_1 kitchen_table_white_yellow_mug_init_region)
+    (On tomato_sauce_1 flat_stove_1_cook_region)
+  )
+
+  (:goal
+    (And (On tomato_sauce_1 flat_stove_1_cook_region))
+  )
+)

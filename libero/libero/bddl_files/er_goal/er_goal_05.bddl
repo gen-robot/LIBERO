@@ -1,6 +1,6 @@
 (define (problem LIBERO_Kitchen_Tabletop_Manipulation)
   (:domain robosuite)
-  (:language put the cream cheese on top of the cabinet)
+  (:language put the orange juice on top of the cabinet)
     (:regions
       (wooden_cabinet_init_region
           (:target kitchen_table)
@@ -10,28 +10,6 @@
           )
           (:yaw_rotation (
               (3.141592653589793 3.141592653589793)
-            )
-          )
-      )
-      (akita_black_bowl_init_region
-          (:target kitchen_table)
-          (:ranges (
-              (-0.0250 -0.0250 0.0250 0.0250)
-            )
-          )
-          (:yaw_rotation (
-              (0.0 0.0)
-            )
-          )
-      )
-      (plate_init_region
-          (:target kitchen_table)
-          (:ranges (
-              (-0.0250 0.2250 0.0250 0.2750)
-            )
-          )
-          (:yaw_rotation (
-              (0.0 0.0)
             )
           )
       )
@@ -47,10 +25,10 @@
       (bottom_region
           (:target wooden_cabinet_1)
       )
-      (cream_cheese_init_region
+      (orange_juice_init_region
           (:target kitchen_table)
           (:ranges (
-              (0.0700 0.1100 0.1700 0.1900)
+              (-0.0450 0.0850 0.0450 0.2150)
             )
           )
       )
@@ -62,23 +40,19 @@
   )
 
   (:objects
-    cream_cheese_1 - cream_cheese
-    akita_black_bowl_1 - akita_black_bowl
-    plate_1 - plate
+    orange_juice_1 - orange_juice
   )
 
   (:obj_of_interest
-    cream_cheese_1
+    orange_juice_1
   )
 
   (:init
-    (On akita_black_bowl_1 kitchen_table_akita_black_bowl_init_region)
-    (On plate_1 kitchen_table_plate_init_region)
     (On wooden_cabinet_1 kitchen_table_wooden_cabinet_init_region)
-    (On cream_cheese_1 kitchen_table_cream_cheese_init_region)
+    (On orange_juice_1 kitchen_table_orange_juice_init_region)
   )
 
   (:goal
-    (And (On cream_cheese_1 wooden_cabinet_1_top_side))
+    (And (On orange_juice_1 wooden_cabinet_1_top_side))
   )
 )

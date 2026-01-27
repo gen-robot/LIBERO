@@ -83,6 +83,14 @@ def eval_libero(args: Args) -> None:
         max_steps = 520
     elif args.task_suite_name == "libero_90":
         max_steps = 400
+    elif args.task_suite_name == "er_spatial":
+        max_steps = 350
+    elif args.task_suite_name == "er_object":
+        max_steps = 350
+    elif args.task_suite_name == "er_goal":
+        max_steps = 350
+    elif args.task_suite_name == "er_sequential":
+        max_steps = 800
     else:
         raise ValueError(f"Unknown task suite: {args.task_suite_name}")
 

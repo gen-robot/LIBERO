@@ -19,7 +19,7 @@ import gc
 import os
 import time
 from pathlib import Path
-from typing import List
+from typing import List, Optional, Sequence
 
 import numpy as np
 import torch
@@ -77,7 +77,12 @@ def generate_init_states(bddl_file: str, num_states: int = 50, base_seed: int = 
     return init_states
 
 
-def generate_suite_goal_init_files(suite_name: str, num_states: int = 50) -> int:
+def generate_suite_goal_init_files(
+    suite_name: str,
+    num_states: int = 50,
+    *,
+    only_tasks: Optional[Sequence[str]] = None,
+) -> int:
     """Generate goal init files for a suite."""
     suite_goal_bddl_dir = GOAL_BDDL_DIR / suite_name
     suite_goal_init_dir = GOAL_INIT_DIR / suite_name
@@ -89,6 +94,16 @@ def generate_suite_goal_init_files(suite_name: str, num_states: int = 50) -> int
         return 0
     
     bddl_files = sorted(suite_goal_bddl_dir.glob("*.bddl"))
+    if only_tasks:
+        wanted = set()
+        for t in only_tasks:
+            stem = Path(t).stem
+            wanted.add(stem)
+        bddl_files = [p for p in bddl_files if p.stem in wanted]
+        missing = sorted(wanted - {p.stem for p in bddl_files})
+        if missing:
+            print(f"  [ERROR] Requested task(s) not found under {suite_goal_bddl_dir}: {', '.join(missing)}")
+            return 0
     
     print(f"\nGenerating goal init files for {suite_name}: {len(bddl_files)} tasks")
     
@@ -126,6 +141,16 @@ def main():
         default=50,
         help="Number of init states per task"
     )
+    parser.add_argument(
+        "--task",
+        type=str,
+        nargs="*",
+        default=None,
+        help=(
+            "Only generate for these task files (stem or filename). "
+            "Example: --suite er_spatial --task er_spatial_16"
+        ),
+    )
     args = parser.parse_args()
     
     GOAL_INIT_DIR.mkdir(parents=True, exist_ok=True)
@@ -137,11 +162,10 @@ def main():
     
     total = 0
     for suite in suites:
-        total += generate_suite_goal_init_files(suite, num_states=args.num_states)
+        total += generate_suite_goal_init_files(suite, num_states=args.num_states, only_tasks=args.task)
     
     print(f"\nDone! Generated {total} goal init files in {GOAL_INIT_DIR}")
 
 
 if __name__ == "__main__":
     main()
-

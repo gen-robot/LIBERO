@@ -1,0 +1,141 @@
+(define (problem LIBERO_Study_Tabletop_Manipulation)
+  (:domain robosuite)
+  (:language pick up the bbq sauce next to the caddy and put it in the basket)
+    (:regions
+      (desk_caddy_init_region
+          (:target study_table)
+          (:ranges (
+              (-0.2100 -0.1500 -0.1900 -0.1300)
+            )
+          )
+          (:yaw_rotation (
+              (3.141592653589793 3.141592653589793)
+            )
+          )
+      )
+      (black_book_init_region
+          (:target study_table)
+          (:ranges (
+              (-0.05 -0.28 -0.02 -0.25)
+            )
+          )
+          (:yaw_rotation (
+              (-1.5707963267948966 -0.7853981633974483)
+            )
+          )
+      )
+      (white_yellow_mug_init_region
+          (:target study_table)
+          (:ranges (
+              (0.1 0.01 0.140 0.0450)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (desk_caddy_right_region
+          (:target study_table)
+          (:ranges (
+              (-0.2500 0.1000 -0.1500 0.2000)
+            )
+          )
+          (:yaw_rotation (
+              (3.141592653589793 3.141592653589793)
+            )
+          )
+      )
+      (right_contain_region
+          (:target desk_caddy_1)
+      )
+      (left_contain_region
+          (:target desk_caddy_1)
+      )
+      (back_contain_region
+          (:target desk_caddy_1)
+      )
+      (front_contain_region
+          (:target desk_caddy_1)
+      )
+      (contain_region
+          (:target basket_1)
+      )
+      (bbq_sauce_init_region
+          (:target study_table)
+          (:ranges (
+              (-0.1900 0.0250 -0.1100 0.1350)
+            )
+          )
+      )
+      (basket_init_region
+          (:target study_table)
+          (:ranges (
+              (0.1750 -0.18 0.2050 -0.15)
+            )
+          )
+      )
+      (bbq_sauce_a1_point
+          (:target study_table)
+          (:ranges (
+              (-0.005 -0.1401 -0.002 -0.1399)
+            )
+          )
+      )
+      (bbq_sauce_a2_point
+          (:target study_table)
+          (:ranges (
+              (0.2199 0.2199 0.2201 0.2201)
+            )
+          )
+      )
+      (cookies_init_region
+          (:target study_table)
+          (:ranges (
+              (-0.0550 0.0950 0.0550 0.2050)
+            )
+          )
+      )
+      (glazed_rim_porcelain_ramekin_init_region
+          (:target study_table)
+          (:ranges (
+              (-0.2950 0.1850 -0.1850 0.2950)
+            )
+          )
+      )
+    )
+
+  (:fixtures
+    study_table - study_table
+    desk_caddy_1 - desk_caddy
+  )
+
+  (:objects
+    black_book_1 - black_book
+    white_yellow_mug_1 - white_yellow_mug
+    bbq_sauce_1 bbq_sauce_2 - bbq_sauce
+    basket_1 - basket
+    cookies_1 - cookies
+    glazed_rim_porcelain_ramekin_1 - glazed_rim_porcelain_ramekin
+  )
+
+  (:obj_of_interest
+    bbq_sauce_1
+    desk_caddy_1
+  )
+
+    (:init
+    (On desk_caddy_1 study_table_desk_caddy_init_region)
+    (On black_book_1 study_table_black_book_init_region)
+    (On white_yellow_mug_1 study_table_white_yellow_mug_init_region)
+    (On bbq_sauce_2 study_table_bbq_sauce_a2_point)
+    (On basket_1 study_table_basket_init_region)
+    (On cookies_1 study_table_cookies_init_region)
+    (On glazed_rim_porcelain_ramekin_1 study_table_glazed_rim_porcelain_ramekin_init_region)
+    (On bbq_sauce_1 basket_1_contain_region)
+  )
+
+  (:goal
+    (And (In bbq_sauce_1 basket_1_contain_region))
+  )
+)

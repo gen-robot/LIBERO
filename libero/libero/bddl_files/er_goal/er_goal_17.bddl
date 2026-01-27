@@ -1,0 +1,64 @@
+(define (problem LIBERO_Living_Room_Tabletop_Manipulation)
+  (:domain robosuite)
+  (:language put the cream cheese on the plate)
+    (:regions
+      (plate_left_region
+          (:target living_room_table)
+          (:ranges (
+              (-0.0250 -0.20 0.0250 -0.150)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (cream_cheese_init_region
+          (:target living_room_table)
+          (:ranges (
+              (-0.0500 0.1100 0.0500 0.1900)
+            )
+          )
+      )
+      (black_book_init_region
+          (:target living_room_table)
+          (:ranges (
+              (-0.2150 0.0550 -0.0850 0.1050)
+            )
+          )
+      )
+      (red_coffee_mug_init_region
+          (:target living_room_table)
+          (:ranges (
+              (-0.2650 0.1750 -0.0950 0.3050)
+            )
+          )
+      )
+    )
+
+  (:fixtures
+    living_room_table - living_room_table
+  )
+
+  (:objects
+    plate_1 - plate
+    cream_cheese_1 - cream_cheese
+    black_book_1 - black_book
+    red_coffee_mug_1 - red_coffee_mug
+  )
+
+  (:obj_of_interest
+    cream_cheese_1
+  )
+
+  (:init
+    (On plate_1 living_room_table_plate_left_region)
+    (On cream_cheese_1 living_room_table_cream_cheese_init_region)
+    (On black_book_1 living_room_table_black_book_init_region)
+    (On red_coffee_mug_1 living_room_table_red_coffee_mug_init_region)
+  )
+
+  (:goal
+    (And (On cream_cheese_1 plate_1))
+  )
+)

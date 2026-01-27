@@ -14,7 +14,9 @@ gpt/
 bert/
 logs/
 outputs/
+visualizations/rendered_images/*
 
 *.mp4
 libero.egg-info/
 .vscode/
+

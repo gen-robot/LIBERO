@@ -7,6 +7,16 @@ set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
+export LIBERO_CONFIG_PATH="$PWD/.libero_cfg"
+mkdir -p "$LIBERO_CONFIG_PATH"
+cat >"$LIBERO_CONFIG_PATH/config.yaml" <<EOF
+benchmark_root: $PWD/libero/libero
+bddl_files: $PWD/libero/libero/bddl_files
+init_states: $PWD/libero/libero/init_files
+datasets: $PWD/libero/../datasets
+assets: $PWD/libero/libero/assets
+EOF
+
 # Keep defaults aligned with run_libero_parallel.sh (can be overridden via env).
 HOST="${HOST:-127.0.0.1}"
 PORT="${PORT:-8000}"
@@ -14,12 +24,13 @@ NUM_TRIALS_PER_TASK="${NUM_TRIALS_PER_TASK:-20}"
 NUM_WORKERS="${NUM_WORKERS:-50}"
 
 # Base output directory; each suite writes to a separate subfolder.
-VIDEO_OUT_BASE="${VIDEO_OUT_BASE:-outputs/pi05_libero_vla_separate_cot_training/pi05_libero_vla_separate_cot_training_20260122_223734/checkpoint-13700/}"
+VIDEO_OUT_BASE="${VIDEO_OUT_BASE:-outputs/pi05_libero_vla_cot_training_ki/pi05_libero_vla_cot_training_ki_20260124_005509/bak-ckpt-25300/}"
 # Optional suffix appended to each suite folder (e.g., "-2" to match an existing run tag).
-RUN_TAG="${RUN_TAG:--2}"
+RUN_TAG="${RUN_TAG:--cot-reasoning}"
 
 # Default suites (order matters).
-SUITES_DEFAULT=("libero_10" "libero_90" "libero_object" "libero_goal" "libero_spatial")
+# SUITES_DEFAULT=("libero_10" "libero_90" "libero_object" "libero_goal" "libero_spatial")
+SUITES_DEFAULT=("er_spatial" "er_object" "er_goal" "er_sequential")
 
 suite_to_dir() {
   local suite="$1"
@@ -29,6 +40,10 @@ suite_to_dir() {
     libero_object) echo "libero-object" ;;
     libero_goal) echo "libero-goal" ;;
     libero_spatial) echo "libero-spatial" ;;
+    er_spatial) echo "er-spatial" ;;
+    er_object) echo "er-object" ;;
+    er_goal) echo "er-goal" ;;
+    er_sequential) echo "er-sequential" ;;
     *) echo "$suite" ;;
   esac
 }

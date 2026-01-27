@@ -1,0 +1,94 @@
+(define (problem LIBERO_Study_Tabletop_Manipulation)
+  (:domain robosuite)
+  (:language put the ketchup in the caddy)
+    (:regions
+      (desk_caddy_init_region
+          (:target study_table)
+          (:ranges (
+              (-0.2100 -0.1500 -0.1900 -0.1300)
+            )
+          )
+          (:yaw_rotation (
+              (3.141592653589793 3.141592653589793)
+            )
+          )
+      )
+      (right_contain_region
+          (:target desk_caddy_1)
+      )
+      (left_contain_region
+          (:target desk_caddy_1)
+      )
+      (back_contain_region
+          (:target desk_caddy_1)
+      )
+      (front_contain_region
+          (:target desk_caddy_1)
+      )
+      (ketchup_init_region
+          (:target study_table)
+          (:ranges (
+              (-0.0350 0.0950 0.0350 0.2050)
+            )
+          )
+      )
+      (akita_black_bowl_init_region
+          (:target study_table)
+          (:ranges (
+              (-0.0750 -0.0750 0.0750 0.0750)
+            )
+          )
+      )
+      (cream_cheese_init_region
+          (:target study_table)
+          (:ranges (
+              (-0.1700 0.1100 -0.0700 0.1900)
+            )
+          )
+      )
+      (wine_bottle_init_region
+          (:target study_table)
+          (:ranges (
+              (0.0950 0.1250 0.1450 0.1750)
+            )
+          )
+      )
+      (plate_init_region
+          (:target study_table)
+          (:ranges (
+              (-0.3650 0.1750 -0.2350 0.3050)
+            )
+          )
+      )
+    )
+
+  (:fixtures
+    study_table - study_table
+    desk_caddy_1 - desk_caddy
+  )
+
+  (:objects
+    ketchup_1 - ketchup
+    akita_black_bowl_1 - akita_black_bowl
+    cream_cheese_1 - cream_cheese
+    wine_bottle_1 - wine_bottle
+    plate_1 - plate
+  )
+
+  (:obj_of_interest
+    ketchup_1
+  )
+
+    (:init
+    (On desk_caddy_1 study_table_desk_caddy_init_region)
+    (On akita_black_bowl_1 study_table_akita_black_bowl_init_region)
+    (On cream_cheese_1 study_table_cream_cheese_init_region)
+    (On wine_bottle_1 study_table_wine_bottle_init_region)
+    (On plate_1 study_table_plate_init_region)
+    (On ketchup_1 desk_caddy_1_left_contain_region)
+  )
+
+  (:goal
+    (And (On ketchup_1 desk_caddy_1_left_contain_region))
+  )
+)

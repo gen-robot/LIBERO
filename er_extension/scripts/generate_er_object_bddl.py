@@ -23,6 +23,19 @@ from er_constants import (
     OBJECT_SIZES, COLLISION_MARGIN, PLACEMENT_TOLERANCE, get_object_size,
     OBJECT_PLACEMENT_POSITIONS, TARGET_PLACEMENT_POSITIONS, FIXTURE_PLACEMENT_POSITIONS
 )
+from er_sim_constraints import (
+    MIN_REGION_GAP,
+    MIN_MANIP_FIXTURE_GAP,
+    MAX_MANIP_REGION_EXTENT,
+    REACH_BOUND,
+    add_object_unique,
+    alloc_unique_region_name,
+    allocate_region,
+    enforce_non_overlapping_table_placements,
+    ensure_instance_one,
+    infer_manip_and_target_from_goal,
+    occupied_table_region_boxes_from_init,
+)
 
 
 @dataclass
@@ -206,113 +219,10 @@ def get_table_name(fixtures: Dict[str, str]) -> str:
     return list(fixtures.keys())[0] if fixtures else "main_table"
 
 
-def get_occupied_boxes(existing_regions: Dict[str, Region]) -> List[Tuple[float, float, float, float, str]]:
-    """Get list of occupied bounding boxes using actual object sizes.
-    
-    Considers both *_init_region patterns and fixture regions (cabinet_region, stove_region).
-    """
-    fixture_regions = {'cabinet_region', 'stove_region', 'wine_rack_region', 'desk_caddy_region'}
-    fixture_types = {'cabinet_region': 'wooden_cabinet', 'stove_region': 'flat_stove',
-                     'wine_rack_region': 'wine_rack', 'desk_caddy_region': 'desk_caddy'}
-    
-    occupied = []
-    for name, region in existing_regions.items():
-        if not region.ranges:
-            continue
-        r = region.ranges[0]
-        cx, cy = (r[0] + r[2]) / 2, (r[1] + r[3]) / 2
-        
-        if '_init_region' in name:
-            obj_type = name.replace('_init_region', '').rstrip('_0123456789')
-        elif name in fixture_regions:
-            obj_type = fixture_types[name]
-        else:
-            continue
-            
-        obj_w, obj_d = get_object_size(obj_type)
-        occupied.append((cx - obj_w/2, cy - obj_d/2, cx + obj_w/2, cy + obj_d/2, name))
-    return occupied
+def _init_occupied_table_boxes(output: BDDLFile, table_name: str) -> List[Tuple[float, float, float, float]]:
+    return occupied_table_region_boxes_from_init(output.init, output.regions, table_name)
 
 
-def boxes_overlap(box1, box2, margin: float = 0.03) -> bool:
-    """Check if two bounding boxes overlap."""
-    x1_min, y1_min, x1_max, y1_max = box1[:4]
-    x2_min, y2_min, x2_max, y2_max = box2[:4]
-    x1_min -= margin
-    y1_min -= margin
-    x1_max += margin
-    y1_max += margin
-    return not (x1_max < x2_min or x2_max < x1_min or y1_max < y2_min or y2_max < y1_min)
-
-
-def check_collision(new_box, occupied, margin: float = 0.04) -> bool:
-    """Check if new_box collides with any occupied boxes."""
-    for obox in occupied:
-        if boxes_overlap(new_box, obox[:4], margin):
-            return True
-    return False
-
-
-def allocate_object_region(
-    table_name: str,
-    obj_type: str,
-    existing_regions: Dict[str, Region],
-    is_target: bool = False,
-) -> Tuple[Region, str]:
-    """Allocate a region for a new object."""
-    # Use expanded size (1.5x) for collision detection
-    collision_w, collision_d = get_object_size(obj_type, for_collision=True)
-    half_cw, half_cd = collision_w / 2, collision_d / 2
-    # Use actual size for region bounds
-    actual_w, actual_d = get_object_size(obj_type, for_collision=False)
-    half_w, half_d = actual_w / 2, actual_d / 2
-    occupied = get_occupied_boxes(existing_regions)
-    
-    # Use predefined positions from er_constants for consistent, spread-out placement
-    if is_target:
-        candidate_centers = list(TARGET_PLACEMENT_POSITIONS)
-    else:
-        candidate_centers = list(OBJECT_PLACEMENT_POSITIONS)
-
-    selected_center = None
-    for cx, cy in candidate_centers:
-        new_box = (cx - half_cw, cy - half_cd, cx + half_cw, cy + half_cd)
-        if not check_collision(new_box, occupied, margin=COLLISION_MARGIN):
-            selected_center = (cx, cy)
-            break
-
-    if selected_center is None:
-        for x_offset in [0.0, -0.12, 0.12, -0.22, 0.22]:
-            for y_offset in [-0.15, -0.05, 0.05, 0.15]:
-                cx, cy = x_offset, y_offset
-                new_box = (cx - half_cw, cy - half_cd, cx + half_cw, cy + half_cd)
-                if not check_collision(new_box, occupied, margin=COLLISION_MARGIN):
-                    selected_center = (cx, cy)
-                    break
-            if selected_center:
-                break
-
-    if selected_center is None:
-        idx = len(existing_regions)
-        selected_center = (-0.20 + (idx % 5) * 0.10, -0.15 + (idx // 5) * 0.12)
-
-    # Region bounds use object size for proper collision detection in LIBERO
-    # Add small tolerance for spawning variation
-    coords = (
-        selected_center[0] - half_w - PLACEMENT_TOLERANCE,
-        selected_center[1] - half_d - PLACEMENT_TOLERANCE,
-        selected_center[0] + half_w + PLACEMENT_TOLERANCE,
-        selected_center[1] + half_d + PLACEMENT_TOLERANCE,
-    )
-
-    region_name = f"{obj_type}_init_region"
-    counter = 1
-    while region_name in existing_regions:
-        region_name = f"{obj_type}_init_region_{counter}"
-        counter += 1
-
-    region = Region(name=region_name, target=table_name, ranges=[coords], yaw_rotation=(0.0, 0.0))
-    return region, region_name
 
 
 def extract_goal_from_source(source_bddl: BDDLFile) -> str:
@@ -362,25 +272,68 @@ def generate_er_object_bddl(task_spec: dict, bddl_base: str) -> BDDLFile:
         language=task_spec['instruction'],
     )
 
-    output.fixtures = dict(scene_bddl.fixtures)
     output.goal = extract_goal_from_source(manip_bddl)
+    manip_obj, _ = infer_manip_and_target_from_goal(output.goal)
 
-    fixture_names = set(scene_bddl.fixtures.keys()) - {table_name}
+    # Keep the table fixture, and only keep other fixtures that have a valid
+    # table placement region (otherwise MuJoCo may place them at a fallback pose
+    # and cause fixture-fixture interpenetration / physics explosions).
+    output.fixtures = {table_name: scene_bddl.fixtures[table_name]}
+
+    fixture_instances = [k for k in scene_bddl.fixtures.keys() if k != table_name]
+    kept_fixtures: set[str] = set()
+
+    # Copy fixture placement init statements from the scene template, but only
+    # when the referenced table placement region is present (with ranges).
+    #
+    # Many scene templates include object placement statements like:
+    #   (On akita_black_bowl_1 flat_stove_1_cook_region)
+    # which reference objects we intentionally do NOT carry over for ER-OBJECT.
+    #
+    # To avoid dangling references, we only keep fixture-placement (On ...) and
+    # validate the region before keeping the fixture.
+    for fix_instance in fixture_instances:
+        placement_stmt = None
+        placement_region_key = None
+        for init_stmt in scene_bddl.init:
+            stmt = init_stmt.strip()
+            if not stmt.startswith(f"(On {fix_instance} "):
+                continue
+            # Expected: (On <fixture> <table>_<region_name>)
+            parts = stmt.replace("(", "").replace(")", "").split()
+            if len(parts) >= 3:
+                placement_stmt = init_stmt
+                placement_region_key = parts[2]
+            break
+
+        if placement_stmt is None or placement_region_key is None:
+            continue
+
+        table_prefix = f"{table_name}_"
+        if not placement_region_key.startswith(table_prefix):
+            # Unrecognized format; skip to avoid keeping a fixture we can't place.
+            continue
+
+        placement_region_name = placement_region_key[len(table_prefix):]
+        placement_region = scene_bddl.regions.get(placement_region_name)
+        if placement_region is None or placement_region.target != table_name or not placement_region.ranges:
+            print(
+                f"  [warn] skipping fixture '{fix_instance}': missing placement region "
+                f"'{placement_region_name}' on '{table_name}'"
+            )
+            continue
+
+        output.fixtures[fix_instance] = scene_bddl.fixtures[fix_instance]
+        kept_fixtures.add(fix_instance)
+
+        # Ensure the table placement region exists in the output.
+        output.regions[placement_region_name] = placement_region
+        output.init.append(placement_stmt)
+
+    # Copy fixture-internal regions for fixtures we kept (e.g. cook_region, shelf tiers).
     for region_name, region in scene_bddl.regions.items():
-        if region.target == table_name and region.ranges:
-            for fix_name in fixture_names:
-                if fix_name.replace('_1', '') in region_name:
-                    output.regions[region_name] = region
-                    break
-        if region.target in fixture_names:
+        if region.target in kept_fixtures:
             output.regions[region_name] = region
-
-    for init_stmt in scene_bddl.init:
-        for fix_instance in fixture_names:
-            if fix_instance in init_stmt and "(On" in init_stmt:
-                if init_stmt not in output.init:
-                    output.init.append(init_stmt)
-                break
 
     take_list_a = source_a.get('take', [])
     manip_objects = extract_objects_from_source(manip_bddl, take_list_a)
@@ -388,32 +341,72 @@ def generate_er_object_bddl(task_spec: dict, bddl_base: str) -> BDDLFile:
     target_objs = {k: v for k, v in manip_objects.items() if v in target_types}
     other_objs = {k: v for k, v in manip_objects.items() if v not in target_types}
 
+    # Add objects first (handle instance-name collisions), then place with constrained allocator.
+    name_map: Dict[str, str] = {}
     for instance, obj_type in list(target_objs.items()) + list(other_objs.items()):
-        output.objects[instance] = obj_type
-        is_target = obj_type in target_types
-        region, region_name = allocate_object_region(table_name, obj_type, output.regions, is_target=is_target)
-        output.regions[region_name] = region
+        final_name = add_object_unique(output, instance, obj_type, prefer_name=instance)
+        name_map[instance] = final_name
+        if obj_type in ["basket", "wooden_tray"]:
+            contain_region_name = alloc_unique_region_name(set(output.regions), "contain_region")
+            output.regions[contain_region_name] = Region(name=contain_region_name, target=final_name)
 
-        if obj_type in ['basket', 'wooden_tray']:
-            contain_region = Region(name="contain_region", target=instance)
-            output.regions["contain_region"] = contain_region
-
-        output.init.append(f"(On {instance} {table_name}_{region_name})")
-
-    output.obj_of_interest = list(other_objs.keys())[:2]
+    output.obj_of_interest = [name_map[k] for k in list(other_objs.keys())[:2] if k in name_map]
     if target_objs:
-        output.obj_of_interest.append(list(target_objs.keys())[0])
+        first_target = list(target_objs.keys())[0]
+        if first_target in name_map:
+            output.obj_of_interest.append(name_map[first_target])
 
     if source_c:
         distractor_items = source_c.get('take', [])
         for item in distractor_items:
             if isinstance(item, str) and item.endswith('_1'):
                 obj_type = item.rsplit('_', 1)[0]
-                if item not in output.objects:
-                    output.objects[item] = obj_type
-                region, region_name = allocate_object_region(table_name, obj_type, output.regions, is_target=False)
-                output.regions[region_name] = region
-                output.init.append(f"(On {item} {table_name}_{region_name})")
+                final_name = add_object_unique(output, item, obj_type, prefer_name=item)
+                if obj_type in ["basket", "wooden_tray"]:
+                    contain_region_name = alloc_unique_region_name(set(output.regions), "contain_region")
+                    output.regions[contain_region_name] = Region(name=contain_region_name, target=final_name)
+
+    # Constraint: if multiple same-type objects exist, ensure manipulated object is *_1.
+    if manip_obj is not None and manip_obj in output.objects:
+        ensure_instance_one(output, manip_obj)
+        manip_obj, _ = infer_manip_and_target_from_goal(output.goal)
+
+    ordered_instances: List[Tuple[str, str, bool]] = [
+        (inst, otype, otype in target_types) for inst, otype in output.objects.items()
+    ]
+
+    # Place all movable objects onto table with shared constraints.
+    initialized = {stmt.split()[1] for stmt in output.init if stmt.strip().startswith("(On ")}
+    for instance, obj_type, is_target in ordered_instances:
+        if instance in initialized:
+            continue
+        occ = _init_occupied_table_boxes(output, table_name)
+        is_manip = manip_obj is not None and instance == manip_obj
+        region, region_name = allocate_region(
+            table_name,
+            obj_type,
+            output.regions,
+            region_cls=Region,
+            candidates=list(TARGET_PLACEMENT_POSITIONS) if is_target else list(OBJECT_PLACEMENT_POSITIONS),
+            min_gap=MIN_REGION_GAP,
+            max_extent=MAX_MANIP_REGION_EXTENT if is_manip else None,
+            require_within_bound=REACH_BOUND if is_manip else None,
+            min_gap_to_fixtures=MIN_MANIP_FIXTURE_GAP if is_manip else None,
+            occupied_region_boxes=occ,
+        )
+        output.regions[region_name] = region
+        output.init.append(f"(On {instance} {table_name}_{region_name})")
+
+    # Final pass: ensure table placements have non-overlapping region ranges.
+    fixed_instances: set[str] = {k for k in output.fixtures.keys() if k != table_name}
+    if manip_obj is not None:
+        fixed_instances.add(manip_obj)
+    enforce_non_overlapping_table_placements(
+        output,
+        table_name,
+        fixed_instances=fixed_instances,
+        min_gap=MIN_REGION_GAP,
+    )
 
     return output
 

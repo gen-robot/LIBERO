@@ -1,6 +1,6 @@
 (define (problem LIBERO_Kitchen_Tabletop_Manipulation)
   (:domain robosuite)
-  (:language put the bowl on the plate, put the butter in the bowl, and close the drawer)
+  (:language put the bowl on the plate, put the butter on the plate, and put the ketchup on the cabinet)
     (:regions
       (wooden_cabinet_init_region
           (:target kitchen_table)
@@ -24,17 +24,6 @@
             )
           )
       )
-      (plate_init_region
-          (:target kitchen_table)
-          (:ranges (
-              (-0.0250 0.2250 0.0250 0.2750)
-            )
-          )
-          (:yaw_rotation (
-              (0.0 0.0)
-            )
-          )
-      )
       (top_side
           (:target wooden_cabinet_1)
       )
@@ -50,7 +39,21 @@
       (butter_init_region
           (:target kitchen_table)
           (:ranges (
-              (0.0450 0.1150 0.1550 0.1850)
+              (-0.0550 0.1150 0.0550 0.1850)
+            )
+          )
+      )
+      (ketchup_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.2150 0.1850 -0.1450 0.2950)
+            )
+          )
+      )
+      (plate_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.3050 -0.0650 -0.1750 0.0650)
             )
           )
       )
@@ -65,6 +68,7 @@
     akita_black_bowl_1 - akita_black_bowl
     plate_1 - plate
     butter_1 - butter
+    ketchup_1 - ketchup
   )
 
   (:obj_of_interest
@@ -76,9 +80,10 @@
     (On plate_1 kitchen_table_plate_init_region)
     (On wooden_cabinet_1 kitchen_table_wooden_cabinet_init_region)
     (On butter_1 kitchen_table_butter_init_region)
+    (On ketchup_1 kitchen_table_ketchup_init_region)
   )
 
   (:goal
-    (And (On akita_black_bowl_1 plate_1) (On butter_1 akita_black_bowl_1) (Close wooden_cabinet_1_top_region))
+    (And (On akita_black_bowl_1 plate_1) (On butter_1 plate_1) (On ketchup_1 wooden_cabinet_1_top_side))
   )
 )

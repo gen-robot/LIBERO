@@ -1,0 +1,58 @@
+(define (problem LIBERO_Study_Tabletop_Manipulation)
+  (:domain robosuite)
+  (:language put the bbq sauce in the caddy)
+    (:regions
+      (desk_caddy_init_region
+          (:target study_table)
+          (:ranges (
+              (-0.2100 -0.1500 -0.1900 -0.1300)
+            )
+          )
+          (:yaw_rotation (
+              (3.141592653589793 3.141592653589793)
+            )
+          )
+      )
+      (right_contain_region
+          (:target desk_caddy_1)
+      )
+      (left_contain_region
+          (:target desk_caddy_1)
+      )
+      (back_contain_region
+          (:target desk_caddy_1)
+      )
+      (front_contain_region
+          (:target desk_caddy_1)
+      )
+      (bbq_sauce_init_region
+          (:target study_table)
+          (:ranges (
+              (-0.0400 0.0950 0.0400 0.2050)
+            )
+          )
+      )
+    )
+
+  (:fixtures
+    study_table - study_table
+    desk_caddy_1 - desk_caddy
+  )
+
+  (:objects
+    bbq_sauce_1 - bbq_sauce
+  )
+
+  (:obj_of_interest
+    bbq_sauce_1
+  )
+
+    (:init
+    (On desk_caddy_1 study_table_desk_caddy_init_region)
+    (On bbq_sauce_1 desk_caddy_1_front_contain_region)
+  )
+
+  (:goal
+    (And (On bbq_sauce_1 desk_caddy_1_front_contain_region))
+  )
+)

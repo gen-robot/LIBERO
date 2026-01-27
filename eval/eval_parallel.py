@@ -53,6 +53,10 @@ MAX_STEPS = {
     "libero_goal": 300,
     "libero_10": 520,
     "libero_90": 400,
+    "er_spatial": 350,
+    "er_object": 350,
+    "er_goal": 350,
+    "er_sequential": 800,
 }
 
 

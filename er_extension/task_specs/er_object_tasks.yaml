@@ -1,13 +1,15 @@
-# ER-OBJECT Task Definitions (10 tasks)
+# ER-OBJECT Task Definitions (20 tasks)
 # Principle: Same manipulation (pick X, place in Y) in DIFFERENT scene contexts
-# 5 two-source tasks + 5 three-source tasks = 10 total
+# 10 two-source tasks + 10 three-source tasks = 20 total
 
 version: "3.0"
 group: ER-OBJECT
-task_count: 10
+task_count: 20
 
 tasks:
-  # Two-Source Tasks (1-5): Source A (manipulation) + Source B (scene)
+  # Two-Source Tasks (1-10): Source A (manipulation) + Source B (scene)
+  # Selection: 10 tasks drawn from SUITE.md ER-OBJECT (1-20) with uniform target-object coverage.
+
   - id: er_object_01
     instruction: "pick up the alphabet soup and place it in the basket"
     source_a:
@@ -15,10 +17,10 @@ tasks:
       suite: libero_object
       take: [alphabet_soup_1, basket_1, goal]
     source_b:
-      file: libero_90/KITCHEN_SCENE3_turn_on_the_stove.bddl
+      file: libero_90/LIVING_ROOM_SCENE3_pick_up_the_butter_and_put_it_in_the_tray.bddl
       suite: libero_90
-      take: [kitchen_table, flat_stove_1, scene_layout]
-    novelty: "Basket task with stove fixture"
+      take: [living_room_table, scene_layout]
+    novelty: "From SUITE.md ER-OBJECT #11 (living-room tray scene)"
 
   - id: er_object_02
     instruction: "pick up the butter and place it in the basket"
@@ -27,54 +29,116 @@ tasks:
       suite: libero_object
       take: [butter_1, basket_1, goal]
     source_b:
-      file: libero_90/KITCHEN_SCENE4_put_the_wine_bottle_on_the_wine_rack.bddl
+      file: libero_90/LIVING_ROOM_SCENE4_pick_up_the_chocolate_pudding_and_put_it_in_the_tray.bddl
       suite: libero_90
-      take: [kitchen_table, wine_rack_1, white_cabinet_1, scene_layout]
-    novelty: "Basket task with wine rack scene"
+      take: [living_room_table, scene_layout]
+    novelty: "From SUITE.md ER-OBJECT #12 (living-room tray scene)"
 
   - id: er_object_03
+    instruction: "pick up the cream cheese and place it in the basket"
+    source_a:
+      file: libero_object/pick_up_the_cream_cheese_and_place_it_in_the_basket.bddl
+      suite: libero_object
+      take: [cream_cheese_1, basket_1, goal]
+    source_b:
+      file: libero_90/LIVING_ROOM_SCENE5_put_the_red_mug_on_the_left_plate.bddl
+      suite: libero_90
+      take: [living_room_table, scene_layout]
+    novelty: "From SUITE.md ER-OBJECT #13 (living-room mug/plate scene)"
+
+  - id: er_object_04
     instruction: "pick up the ketchup and place it in the basket"
     source_a:
       file: libero_object/pick_up_the_ketchup_and_place_it_in_the_basket.bddl
       suite: libero_object
       take: [ketchup_1, basket_1, goal]
     source_b:
-      file: libero_90/STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_front_compartment_of_the_caddy.bddl
+      file: libero_90/KITCHEN_SCENE4_put_the_wine_bottle_on_the_wine_rack.bddl
       suite: libero_90
-      take: [study_table, desk_caddy_1, scene_layout]
-    novelty: "Basket task in study with caddy"
+      take: [kitchen_table, wine_rack_1, white_cabinet_1, scene_layout]
+    novelty: "From SUITE.md ER-OBJECT #04 (kitchen wine-rack scene)"
 
-  - id: er_object_04
+  - id: er_object_05
     instruction: "pick up the milk and place it in the basket"
     source_a:
       file: libero_object/pick_up_the_milk_and_place_it_in_the_basket.bddl
       suite: libero_object
       take: [milk_1, basket_1, goal]
     source_b:
-      file: libero_90/LIVING_ROOM_SCENE3_pick_up_the_butter_and_put_it_in_the_tray.bddl
-      suite: libero_90
-      take: [living_room_table, scene_layout]
-    novelty: "Basket task in living room"
+      file: libero_goal/put_the_bowl_on_the_plate.bddl
+      suite: libero_goal
+      take: [main_table, wooden_cabinet_1, plate_1, scene_layout]
+    novelty: "From SUITE.md ER-OBJECT #15 (libero_goal plate scene)"
 
-  - id: er_object_05
+  - id: er_object_06
     instruction: "pick up the orange juice and place it in the basket"
     source_a:
       file: libero_object/pick_up_the_orange_juice_and_place_it_in_the_basket.bddl
       suite: libero_object
       take: [orange_juice_1, basket_1, goal]
     source_b:
-      file: libero_goal/put_the_bowl_on_the_stove.bddl
+      file: libero_goal/put_the_wine_bottle_on_the_rack.bddl
       suite: libero_goal
-      take: [main_table, flat_stove_1, scene_layout]
-    novelty: "Basket in libero_goal stove scene"
+      take: [main_table, wine_rack_1, wooden_cabinet_1, scene_layout]
+    novelty: "From SUITE.md ER-OBJECT #16 (libero_goal wine-rack scene)"
 
-  # Three-Source Tasks (6-10): Source A (manipulation) + Source B (scene) + Source C (distractors)
-  - id: er_object_06
+  - id: er_object_07
     instruction: "pick up the tomato sauce and place it in the basket"
     source_a:
       file: libero_object/pick_up_the_tomato_sauce_and_place_it_in_the_basket.bddl
       suite: libero_object
       take: [tomato_sauce_1, basket_1, goal]
+    source_b:
+      file: libero_spatial/pick_up_the_black_bowl_next_to_the_ramekin_and_place_it_on_the_plate.bddl
+      suite: libero_spatial
+      take: [main_table, flat_stove_1, wooden_cabinet_1, scene_layout]
+    novelty: "From SUITE.md ER-OBJECT #17 (libero_spatial main-table scene)"
+
+  - id: er_object_08
+    instruction: "pick up the salad dressing and place it in the basket"
+    source_a:
+      file: libero_object/pick_up_the_salad_dressing_and_place_it_in_the_basket.bddl
+      suite: libero_object
+      take: [salad_dressing_1, basket_1, goal]
+    source_b:
+      file: libero_spatial/pick_up_the_black_bowl_on_the_stove_and_place_it_on_the_plate.bddl
+      suite: libero_spatial
+      take: [main_table, flat_stove_1, wooden_cabinet_1, scene_layout]
+    novelty: "From SUITE.md ER-OBJECT #18 (libero_spatial stove scene)"
+
+  - id: er_object_09
+    instruction: "pick up the chocolate pudding and place it in the basket"
+    source_a:
+      file: libero_object/pick_up_the_chocolate_pudding_and_place_it_in_the_basket.bddl
+      suite: libero_object
+      take: [chocolate_pudding_1, basket_1, goal]
+    source_b:
+      file: libero_90/STUDY_SCENE3_pick_up_the_book_and_place_it_in_the_front_compartment_of_the_caddy.bddl
+      suite: libero_90
+      take: [study_table, desk_caddy_1, scene_layout]
+    novelty: "From SUITE.md ER-OBJECT #09 (study scene 3)"
+
+  - id: er_object_10
+    instruction: "pick up the bbq sauce and place it in the basket"
+    source_a:
+      file: libero_object/pick_up_the_bbq_sauce_and_place_it_in_the_basket.bddl
+      suite: libero_object
+      take: [bbq_sauce_1, basket_1, goal]
+    source_b:
+      file: libero_90/STUDY_SCENE4_pick_up_the_book_on_the_left_and_place_it_on_top_of_the_shelf.bddl
+      suite: libero_90
+      take: [study_table, wooden_two_layer_shelf_1, scene_layout]
+    novelty: "From SUITE.md ER-OBJECT #10 (study shelf scene)"
+
+  # Three-Source Tasks (11-20): Source A (manipulation) + Source B (scene) + Source C (distractors)
+  # Selection: 10 tasks drawn from SUITE.md ER-OBJECT (21-40) with uniform target-object coverage.
+
+  - id: er_object_11
+    instruction: "pick up the alphabet soup and place it in the basket"
+    source_a:
+      file: libero_object/pick_up_the_alphabet_soup_and_place_it_in_the_basket.bddl
+      suite: libero_object
+      take: [alphabet_soup_1, basket_1, goal]
     source_b:
       file: libero_90/KITCHEN_SCENE1_put_the_black_bowl_on_the_plate.bddl
       suite: libero_90
@@ -83,9 +147,25 @@ tasks:
       file: libero_90/STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_front_compartment_of_the_caddy.bddl
       suite: libero_90
       take: [black_book_1, white_yellow_mug_1]
-    novelty: "Kitchen + study objects as distractors"
+    novelty: "From SUITE.md ER-OBJECT #21 (kitchen + study distractors)"
 
-  - id: er_object_07
+  - id: er_object_12
+    instruction: "pick up the butter and place it in the basket"
+    source_a:
+      file: libero_object/pick_up_the_butter_and_place_it_in_the_basket.bddl
+      suite: libero_object
+      take: [butter_1, basket_1, goal]
+    source_b:
+      file: libero_90/KITCHEN_SCENE2_put_the_black_bowl_at_the_front_on_the_plate.bddl
+      suite: libero_90
+      take: [kitchen_table, wooden_cabinet_1, scene_layout]
+    source_c:
+      file: libero_spatial/pick_up_the_black_bowl_next_to_the_ramekin_and_place_it_on_the_plate.bddl
+      suite: libero_spatial
+      take: [glazed_rim_porcelain_ramekin_1, cookies_1]
+    novelty: "From SUITE.md ER-OBJECT #22 (kitchen + ramekin/cookies distractors)"
+
+  - id: er_object_13
     instruction: "pick up the cream cheese and place it in the basket"
     source_a:
       file: libero_object/pick_up_the_cream_cheese_and_place_it_in_the_basket.bddl
@@ -96,12 +176,76 @@ tasks:
       suite: libero_90
       take: [kitchen_table, flat_stove_1, scene_layout]
     source_c:
-      file: libero_goal/put_the_wine_bottle_on_the_rack.bddl
+      file: libero_goal/put_the_wine_bottle_on_top_of_the_cabinet.bddl
       suite: libero_goal
       take: [wine_bottle_1]
-    novelty: "Stove scene + wine bottle distractor"
+    novelty: "From SUITE.md ER-OBJECT #23 (stove scene + wine bottle distractor)"
 
-  - id: er_object_08
+  - id: er_object_14
+    instruction: "pick up the ketchup and place it in the basket"
+    source_a:
+      file: libero_object/pick_up_the_ketchup_and_place_it_in_the_basket.bddl
+      suite: libero_object
+      take: [ketchup_1, basket_1, goal]
+    source_b:
+      file: libero_90/LIVING_ROOM_SCENE6_put_the_red_mug_on_the_plate.bddl
+      suite: libero_90
+      take: [living_room_table, scene_layout]
+    source_c:
+      file: libero_spatial/pick_up_the_black_bowl_next_to_the_cookie_box_and_place_it_on_the_plate.bddl
+      suite: libero_spatial
+      take: [cookies_1, glazed_rim_porcelain_ramekin_1]
+    novelty: "From SUITE.md ER-OBJECT #34 (living-room + cookies/ramekin distractors)"
+
+  - id: er_object_15
+    instruction: "pick up the milk and place it in the basket"
+    source_a:
+      file: libero_object/pick_up_the_milk_and_place_it_in_the_basket.bddl
+      suite: libero_object
+      take: [milk_1, basket_1, goal]
+    source_b:
+      file: libero_90/KITCHEN_SCENE5_put_the_black_bowl_on_the_plate.bddl
+      suite: libero_90
+      take: [kitchen_table, wooden_cabinet_1, scene_layout]
+    source_c:
+      file: libero_90/KITCHEN_SCENE3_put_the_moka_pot_on_the_stove.bddl
+      suite: libero_90
+      take: [moka_pot_1, chefmate_8_frypan_1]
+    novelty: "From SUITE.md ER-OBJECT #25 (kitchen + cookware distractors)"
+
+  - id: er_object_16
+    instruction: "pick up the orange juice and place it in the basket"
+    source_a:
+      file: libero_object/pick_up_the_orange_juice_and_place_it_in_the_basket.bddl
+      suite: libero_object
+      take: [orange_juice_1, basket_1, goal]
+    source_b:
+      file: libero_90/KITCHEN_SCENE9_put_the_frying_pan_on_the_cabinet_shelf.bddl
+      suite: libero_90
+      take: [kitchen_table, wooden_cabinet_1, scene_layout]
+    source_c:
+      file: libero_90/STUDY_SCENE4_pick_up_the_book_on_the_left_and_place_it_on_top_of_the_shelf.bddl
+      suite: libero_90
+      take: [black_book_1, yellow_book_1]
+    novelty: "From SUITE.md ER-OBJECT #26 (kitchen shelf + books distractors)"
+
+  - id: er_object_17
+    instruction: "pick up the tomato sauce and place it in the basket"
+    source_a:
+      file: libero_object/pick_up_the_tomato_sauce_and_place_it_in_the_basket.bddl
+      suite: libero_object
+      take: [tomato_sauce_1, basket_1, goal]
+    source_b:
+      file: libero_90/STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_front_compartment_of_the_caddy.bddl
+      suite: libero_90
+      take: [study_table, desk_caddy_1, scene_layout]
+    source_c:
+      file: libero_90/KITCHEN_SCENE1_put_the_black_bowl_on_the_plate.bddl
+      suite: libero_90
+      take: [akita_black_bowl_1, plate_1]
+    novelty: "From SUITE.md ER-OBJECT #27 (study + dishware distractors)"
+
+  - id: er_object_18
     instruction: "pick up the salad dressing and place it in the basket"
     source_a:
       file: libero_object/pick_up_the_salad_dressing_and_place_it_in_the_basket.bddl
@@ -115,36 +259,36 @@ tasks:
       file: libero_90/LIVING_ROOM_SCENE3_pick_up_the_butter_and_put_it_in_the_tray.bddl
       suite: libero_90
       take: [wooden_tray_1]
-    novelty: "Study + tray distractor"
+    novelty: "From SUITE.md ER-OBJECT #28 (study + tray distractor)"
 
-  - id: er_object_09
+  - id: er_object_19
     instruction: "pick up the chocolate pudding and place it in the basket"
     source_a:
       file: libero_object/pick_up_the_chocolate_pudding_and_place_it_in_the_basket.bddl
       suite: libero_object
       take: [chocolate_pudding_1, basket_1, goal]
     source_b:
-      file: libero_90/KITCHEN_SCENE4_put_the_wine_bottle_on_the_wine_rack.bddl
-      suite: libero_90
-      take: [kitchen_table, wine_rack_1, scene_layout]
-    source_c:
-      file: libero_spatial/pick_up_the_black_bowl_next_to_the_ramekin_and_place_it_on_the_plate.bddl
+      file: libero_spatial/pick_up_the_black_bowl_next_to_the_cookie_box_and_place_it_on_the_plate.bddl
       suite: libero_spatial
-      take: [glazed_rim_porcelain_ramekin_1, cookies_1]
-    novelty: "Wine rack + ramekin/cookies distractors"
+      take: [main_table, flat_stove_1, wooden_cabinet_1, scene_layout]
+    source_c:
+      file: libero_goal/put_the_cream_cheese_in_the_bowl.bddl
+      suite: libero_goal
+      take: [cream_cheese_1]
+    novelty: "From SUITE.md ER-OBJECT #39 (spatial main-table scene + food distractor)"
 
-  - id: er_object_10
+  - id: er_object_20
     instruction: "pick up the bbq sauce and place it in the basket"
     source_a:
       file: libero_object/pick_up_the_bbq_sauce_and_place_it_in_the_basket.bddl
       suite: libero_object
       take: [bbq_sauce_1, basket_1, goal]
     source_b:
-      file: libero_90/LIVING_ROOM_SCENE4_pick_up_the_chocolate_pudding_and_put_it_in_the_tray.bddl
-      suite: libero_90
-      take: [living_room_table, scene_layout]
+      file: libero_goal/put_the_bowl_on_the_stove.bddl
+      suite: libero_goal
+      take: [main_table, flat_stove_1, wooden_cabinet_1, scene_layout]
     source_c:
-      file: libero_90/KITCHEN_SCENE3_put_the_moka_pot_on_the_stove.bddl
-      suite: libero_90
-      take: [moka_pot_1, chefmate_8_frypan_1]
-    novelty: "Living room + cookware distractors"
+      file: libero_spatial/pick_up_the_black_bowl_next_to_the_ramekin_and_place_it_on_the_plate.bddl
+      suite: libero_spatial
+      take: [glazed_rim_porcelain_ramekin_1, plate_1]
+    novelty: "From SUITE.md ER-OBJECT #40 (goal stove scene + ramekin/plate distractors)"

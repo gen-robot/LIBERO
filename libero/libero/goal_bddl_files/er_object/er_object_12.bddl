@@ -1,0 +1,106 @@
+(define (problem LIBERO_Kitchen_Tabletop_Manipulation)
+  (:domain robosuite)
+  (:language pick up the butter and place it in the basket)
+    (:regions
+      (wooden_cabinet_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.01 -0.31 0.01 -0.29)
+            )
+          )
+          (:yaw_rotation (
+              (3.141592653589793 3.141592653589793)
+            )
+          )
+      )
+      (top_side
+          (:target wooden_cabinet_1)
+      )
+      (top_region
+          (:target wooden_cabinet_1)
+      )
+      (middle_region
+          (:target wooden_cabinet_1)
+      )
+      (bottom_region
+          (:target wooden_cabinet_1)
+      )
+      (basket_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.165 0.1 0.15 0.255)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (contain_region
+          (:target basket_1)
+      )
+      (butter_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.18 -0.18 0.075 0.015000000000000003)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (glazed_rim_porcelain_ramekin_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (0.1 -0.01 0.204 0.01)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (cookies_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (0.115 -0.2 0.203 -0.1)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+    )
+
+  (:fixtures
+    kitchen_table - kitchen_table
+    wooden_cabinet_1 - wooden_cabinet
+  )
+
+  (:objects
+    basket_1 - basket
+    butter_1 - butter
+    glazed_rim_porcelain_ramekin_1 - glazed_rim_porcelain_ramekin
+    cookies_1 - cookies
+  )
+
+  (:obj_of_interest
+    butter_1
+    basket_1
+  )
+
+    (:init
+    (On wooden_cabinet_1 kitchen_table_wooden_cabinet_init_region)
+    (On basket_1 kitchen_table_basket_init_region)
+    (On glazed_rim_porcelain_ramekin_1 kitchen_table_glazed_rim_porcelain_ramekin_init_region)
+    (On cookies_1 kitchen_table_cookies_init_region)
+    (On butter_1 basket_1_contain_region)
+  )
+
+  (:goal
+    (And (In butter_1 basket_1_contain_region))
+  )
+
+)

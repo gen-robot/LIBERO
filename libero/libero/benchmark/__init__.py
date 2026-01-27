@@ -53,6 +53,50 @@ def grab_language_from_filename(x):
     return language[:en]
 
 
+def _grab_language_from_bddl_file(bddl_path: str) -> str:
+    """
+    Extract `(:language ...)` from a BDDL file.
+
+    Falls back to empty string if the file cannot be read or parsed.
+    """
+    try:
+        with open(bddl_path, "r") as f:
+            content = f.read()
+    except Exception:
+        return ""
+
+    # Typical format: "  (:language pick up ...)\n"
+    import re
+
+    m = re.search(r"\(:language\s+(.+?)\)\s*\n", content)
+    if not m:
+        m = re.search(r"\(:language\s+(.+?)\)", content)
+    return m.group(1).strip() if m else ""
+
+
+def grab_language_for_task(problem_folder: str, task_name: str) -> str:
+    """
+    Determine language instruction for a task.
+
+    For ER suites in this repo, task filenames are compact IDs (e.g. "er_goal_01"),
+    so we prefer reading the instruction from the BDDL's `(:language ...)`.
+    """
+    # Resolve to the in-repo BDDL location (package-relative), so this works
+    # even if the user's global LIBERO config points somewhere else.
+    benchmark_root_path = os.path.dirname(os.path.abspath(__file__))
+    libero_root = os.path.normpath(os.path.join(benchmark_root_path, ".."))
+    bddl_path = os.path.join(libero_root, "bddl_files", problem_folder, f"{task_name}.bddl")
+
+    # ER suites: prefer the BDDL's `(:language ...)`.
+    if problem_folder.startswith("er_"):
+        lang = _grab_language_from_bddl_file(bddl_path)
+        if lang:
+            return lang
+
+    # Default: derive from filename.
+    return grab_language_from_filename(f"{task_name}.bddl")
+
+
 libero_suites = [
     "libero_spatial",
     "libero_object",
@@ -73,7 +117,7 @@ for libero_suite in libero_suites:
     task_maps[libero_suite] = {}
 
     for task in libero_task_map[libero_suite]:
-        language = grab_language_from_filename(task + ".bddl")
+        language = grab_language_for_task(libero_suite, task)
         task_maps[libero_suite][task] = Task(
             name=task,
             language=language,
@@ -87,7 +131,7 @@ for er_suite in er_suites:
     task_maps[er_suite] = {}
 
     for task in libero_task_map[er_suite]:
-        language = grab_language_from_filename(task + ".bddl")
+        language = grab_language_for_task(er_suite, task)
         task_maps[er_suite][task] = Task(
             name=task,
             language=language,
@@ -136,6 +180,10 @@ class Benchmark(abc.ABC):
     def _make_benchmark(self):
         tasks = list(task_maps[self.name].values())
         if self.name == "libero_90":
+            self.tasks = tasks
+        elif self.name in er_suites:
+            # ER suites are defined directly by their task maps and should be
+            # evaluated on the full set (no 10-task subset ordering).
             self.tasks = tasks
         else:
             print(f"[info] using task orders {task_orders[self.task_order_index]}")

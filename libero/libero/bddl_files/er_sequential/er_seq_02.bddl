@@ -13,35 +13,27 @@
             )
           )
       )
-      (frypan_init_region
-          (:target kitchen_table)
-          (:ranges (
-              (-0.0750 -0.2750 -0.0250 -0.2250)
-            )
-          )
-          (:yaw_rotation (
-              (0.0 0.0)
-            )
-          )
-      )
-      (moka_pot_init_region
-          (:target kitchen_table)
-          (:ranges (
-              (0.0250 -0.0250 0.0750 0.0250)
-            )
-          )
-          (:yaw_rotation (
-              (0.0 0.0)
-            )
-          )
-      )
       (cook_region
           (:target flat_stove_1)
       )
       (butter_init_region
           (:target kitchen_table)
           (:ranges (
-              (0.0450 0.1150 0.1550 0.1850)
+              (-0.1750 -0.1150 -0.0650 -0.0450)
+            )
+          )
+      )
+      (chefmate_8_frypan_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.0250 0.0700 0.2650 0.2300)
+            )
+          )
+      )
+      (moka_pot_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.3350 -0.0700 -0.2650 0.0700)
             )
           )
       )

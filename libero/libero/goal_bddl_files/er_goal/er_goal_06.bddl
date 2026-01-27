@@ -1,0 +1,49 @@
+(define (problem LIBERO_Kitchen_Tabletop_Manipulation)
+  (:domain robosuite)
+  (:language put the orange juice on the stove)
+    (:regions
+      (flat_stove_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (-0.2100 0.1900 -0.1900 0.2100)
+            )
+          )
+          (:yaw_rotation (
+              (0.0 0.0)
+            )
+          )
+      )
+      (cook_region
+          (:target flat_stove_1)
+      )
+      (orange_juice_init_region
+          (:target kitchen_table)
+          (:ranges (
+              (0.0350 -0.0650 0.1250 0.0650)
+            )
+          )
+      )
+    )
+
+  (:fixtures
+    kitchen_table - kitchen_table
+    flat_stove_1 - flat_stove
+  )
+
+  (:objects
+    orange_juice_1 - orange_juice
+  )
+
+  (:obj_of_interest
+    orange_juice_1
+  )
+
+    (:init
+    (On flat_stove_1 kitchen_table_flat_stove_init_region)
+    (On orange_juice_1 flat_stove_1_cook_region)
+  )
+
+  (:goal
+    (And (On orange_juice_1 flat_stove_1_cook_region))
+  )
+)
