@@ -186,6 +186,10 @@ def eval_libero(args: Args) -> None:
                             )
                         ),
                         "prompt": str(task_description),
+                        "task_suite_name": str(args.task_suite_name),
+                        "task_id": int(task_id),
+                        "episode_index": int(episode_idx),
+                        "frame_index": int(t - args.num_steps_wait),
                     }
 
                     if args.enable_gt_segmentation and current_segmentation_for_server is not None:

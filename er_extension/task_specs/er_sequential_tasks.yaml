@@ -53,20 +53,19 @@ tasks:
     goal: "(And (On cream_cheese_1 plate_1) (Close wooden_cabinet_1_top_region))"
     novelty: "Place then close (cheese->plate; drawer->closed)"
 
-  - id: er_seq_04  # SUITE.md ER-SEQUENTIAL ID 04
-    instruction: "put the milk in the basket, then put the ketchup in the basket"
+  - id: er_seq_04  # SUITE.md ER-SEQUENTIAL ID 11
+    instruction: "put the bowl on the stove and put the butter on the plate"
     source_a:
-      file: libero_90/LIVING_ROOM_SCENE2_pick_up_the_milk_and_put_it_in_the_basket.bddl
-      suite: libero_90
-      step: "milk -> basket"
-      take: [milk_1, basket_1]
+      file: libero_goal/put_the_bowl_on_the_stove.bddl
+      suite: libero_goal
+      step: "bowl -> stove"
     source_b:
-      file: libero_object/pick_up_the_ketchup_and_place_it_in_the_basket.bddl
+      file: libero_object/pick_up_the_butter_and_place_it_in_the_basket.bddl
       suite: libero_object
-      step: "ketchup -> basket"
-      take: [ketchup_1]
-    goal: "(And (In milk_1 basket_1_contain_region) (In ketchup_1 basket_1_contain_region))"
-    novelty: "Two different objects to basket (milk, then ketchup)"
+      step: "butter -> plate"
+      take: [butter_1]
+    goal: "(And (On akita_black_bowl_1 flat_stove_1_cook_region) (On butter_1 plate_1))"
+    novelty: "Goal + object (bowl->stove; butter->plate)"
 
   - id: er_seq_05  # SUITE.md ER-SEQUENTIAL ID 05
     instruction: "put the frying pan on the stove and turn it on"
@@ -160,25 +159,19 @@ tasks:
     goal: "(And (Turnon flat_stove_1) (On moka_pot_1 flat_stove_1_cook_region) (On cream_cheese_1 plate_1))"
     novelty: "Stove + moka pot + dairy on plate"
 
-  - id: er_seq_10  # SUITE.md ER-SEQUENTIAL ID 10
-    instruction: "put the pudding in the basket, put the butter in the basket, and put the tomato sauce in the basket"
+  - id: er_seq_10  # Replaced with SUITE.md ER-SEQUENTIAL ID 21
+    instruction: "open the top drawer, put the black bowl on the plate, and close the top drawer"
     source_a:
-      # Use a real tabletop scene (with an actual table) as the base; pure
-      # `libero_object` sources may only define a `floor` fixture, which
-      # LIBERO cannot instantiate as an arena fixture category.
-      file: libero_90/LIVING_ROOM_SCENE2_pick_up_the_milk_and_put_it_in_the_basket.bddl
+      file: libero_90/KITCHEN_SCENE1_open_the_top_drawer_of_the_cabinet.bddl
       suite: libero_90
-      step: "basket scene base"
-      take: [milk_1, basket_1]
+      step: "open top drawer"
     source_b:
-      file: libero_object/pick_up_the_chocolate_pudding_and_place_it_in_the_basket.bddl
-      suite: libero_object
-      step: "pudding -> basket"
-      take: [chocolate_pudding_1, basket_1]
+      file: libero_90/KITCHEN_SCENE1_put_the_black_bowl_on_the_plate.bddl
+      suite: libero_90
+      step: "black bowl -> plate"
     source_c:
-      file: libero_object/pick_up_the_tomato_sauce_and_place_it_in_the_basket.bddl
-      suite: libero_object
-      step: "tomato_sauce + butter -> basket"
-      take: [tomato_sauce_1, butter_1]
-    goal: "(And (In chocolate_pudding_1 basket_1_contain_region) (In butter_1 basket_1_contain_region) (In tomato_sauce_1 basket_1_contain_region))"
-    novelty: "Three objects to the same basket (pudding, butter, tomato_sauce)"
+      file: libero_90/KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet.bddl
+      suite: libero_90
+      step: "close top drawer"
+    goal: "(And (On akita_black_bowl_1 plate_1) (Close wooden_cabinet_1_top_region))"
+    novelty: "Open -> place -> close drawer sandwich"

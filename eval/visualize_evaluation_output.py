@@ -133,6 +133,30 @@ def _parse_annotations(full_text: str) -> Tuple[List[Tuple[Tuple[int, int], Tupl
     return bboxes, points
 
 
+def _resize_annotations_2d(
+    bboxes: List[Tuple[Tuple[int, int], Tuple[int, int]]],
+    points: List[Tuple[int, int]],
+    *,
+    src_size: int,
+    dst_size: int,
+) -> Tuple[List[Tuple[Tuple[int, int], Tuple[int, int]]], List[Tuple[int, int]]]:
+    """Resize bbox/point coordinates from a src_size square canvas to dst_size square canvas."""
+    if src_size <= 0 or dst_size <= 0 or src_size == dst_size:
+        return bboxes, points
+
+    scale = float(dst_size) / float(src_size)
+
+    def _scale_int(v: int) -> int:
+        return int(round(float(v) * scale))
+
+    out_bboxes: List[Tuple[Tuple[int, int], Tuple[int, int]]] = []
+    for (x1, y1), (x2, y2) in bboxes:
+        out_bboxes.append(((_scale_int(x1), _scale_int(y1)), (_scale_int(x2), _scale_int(y2))))
+
+    out_points: List[Tuple[int, int]] = [(_scale_int(x), _scale_int(y)) for (x, y) in points]
+    return out_bboxes, out_points
+
+
 def _render_text_panel(
     text: str,
     height: int,
@@ -241,6 +265,7 @@ class Args:
 
     input_dir: str = "data/libero/videos"
     fps: int = 60
+    resize_cot_data: bool = False
 
 
 def visualize_episode(json_path: pathlib.Path, args: Args, out_dir: pathlib.Path) -> None:
@@ -272,6 +297,10 @@ def visualize_episode(json_path: pathlib.Path, args: Args, out_dir: pathlib.Path
             full_text = entry.get("generated_text")
             slow_text = _extract_slow_text(full_text) if full_text else ""
             bboxes, points = _parse_annotations(full_text) if full_text else ([], [])
+            if args.resize_cot_data:
+                # Server-side CoT grounding may operate in a 224x224 coordinate system (model input),
+                # while evaluation videos may be rendered at 256x256. This option rescales coords.
+                bboxes, points = _resize_annotations_2d(bboxes, points, src_size=224, dst_size=256)
 
             frame_rgb = np.asarray(frame)
             frame_annotated = _draw_annotations_on_image(frame_rgb, bboxes, points)
@@ -301,4 +330,3 @@ def main(args: Args) -> None:
 
 if __name__ == "__main__":
     tyro.cli(main)
-

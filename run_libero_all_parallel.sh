@@ -24,7 +24,7 @@ NUM_TRIALS_PER_TASK="${NUM_TRIALS_PER_TASK:-20}"
 NUM_WORKERS="${NUM_WORKERS:-50}"
 
 # Base output directory; each suite writes to a separate subfolder.
-VIDEO_OUT_BASE="${VIDEO_OUT_BASE:-outputs/pi05_libero_vla_cot_training_ki/pi05_libero_vla_cot_training_ki_20260124_005509/bak-ckpt-25300/}"
+VIDEO_OUT_BASE="${VIDEO_OUT_BASE:-outputs/pi05_libero_vla_cot_training/pi05_libero_vla_cot_training_20260124_005513/bak-ckpt-25800/}"
 # Optional suffix appended to each suite folder (e.g., "-2" to match an existing run tag).
 RUN_TAG="${RUN_TAG:--cot-reasoning}"
 

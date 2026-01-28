@@ -552,16 +552,24 @@ def generate_er_sequential_bddl(task_spec: dict, bddl_base: str) -> BDDLFile:
     output.obj_of_interest = manip_objects[:3] if manip_objects else []
 
     # Final pass: ensure table placements have non-overlapping region ranges.
-    fixed_instances: set[str] = {k for k in output.fixtures.keys() if k != table_name}
-    # NOTE: Do not freeze all base-scene `(On ...)` objects. Some upstream BDDL
-    # files define overlapping *_init_region ranges; we rely on the constraint
-    # pass to re-sample non-critical table placements to be collision-free.
-    # Keep large containers fixed; re-sampling them can fail on crowded tables.
-    fixed_instances |= {inst for inst, typ in output.objects.items() if typ in {"basket", "wooden_tray"}}
-    # Keep goal-referenced props fixed so they won't be dropped as "distractors".
-    fixed_instances |= {inst for inst in goal_instances if inst in output.objects}
+    #
+    # Important: we distinguish between instances that are "frozen" (cannot be
+    # re-sampled to a new table region) vs "protected" (cannot be removed as a
+    # distractor). Upstream BDDL sources sometimes ship with overlapping
+    # *_init_region ranges for important objects (e.g., plate + basket). Those
+    # need to be movable during the non-overlap pass, but still must not be
+    # dropped from the scene.
+    frozen_instances: set[str] = {k for k in output.fixtures.keys() if k != table_name}
+    protected_instances: set[str] = set(frozen_instances)
+    # Keep large containers from being dropped, but allow re-sampling if needed
+    # to resolve overlaps on crowded tables.
+    protected_instances |= {inst for inst, typ in output.objects.items() if typ in {"basket", "wooden_tray"}}
+    # Keep goal-referenced props so they won't be dropped as "distractors".
+    protected_instances |= {inst for inst in goal_instances if inst in output.objects}
     if manip_obj is not None:
-        fixed_instances.add(manip_obj)
+        # The manipulated prop must exist, but its init placement can be re-sampled
+        # to resolve crowded / overlapping upstream region templates.
+        protected_instances.add(manip_obj)
     # If we still fail due to overlapping upstream init regions, drop one
     # overlapping distractor placement and retry once. This keeps generation
     # robust while preserving fixed instances (fixtures / containers / manip).
@@ -573,24 +581,54 @@ def generate_er_sequential_bddl(task_spec: dict, bddl_base: str) -> BDDLFile:
             enforce_non_overlapping_table_placements(
                 output,
                 table_name,
-                fixed_instances=fixed_instances,
+                fixed_instances=frozen_instances,
                 min_gap=MIN_REGION_GAP,
             )
             break
         except RuntimeError as e:
             msg = str(e)
-            m = re.search(r"Table placement regions overlap .*?: ([^ ]+) vs ([^ ]+)$", msg)
-            if not m:
-                raise
-            key_i, key_j = m.group(1), m.group(2)
-            inst_i = key_i.split(":", 1)[0]
-            inst_j = key_j.split(":", 1)[0]
+            overlap_m = re.search(r"Table placement regions overlap .*?: ([^ ]+) vs ([^ ]+)$", msg)
+            alloc_m = re.search(
+                r"Failed to allocate non-overlapping region for ([^ ]+) \\(([^)]+)\\) on ([^ ]+)$", msg
+            )
 
-            victim = None
-            if inst_j not in fixed_instances:
-                victim = inst_j
-            elif inst_i not in fixed_instances:
-                victim = inst_i
+            def find_non_protected_table_instance() -> Optional[str]:
+                prefix = f"{table_name}_"
+                for stmt in getattr(output, "init", []) or []:
+                    s = stmt.strip()
+                    if not s.startswith("(On "):
+                        continue
+                    parts = s.replace("(", "").replace(")", "").split()
+                    if len(parts) < 3:
+                        continue
+                    inst, region_key = parts[1], parts[2]
+                    if not region_key.startswith(prefix):
+                        continue
+                    if inst in protected_instances:
+                        continue
+                    return inst
+                return None
+
+            victim: Optional[str] = None
+            if overlap_m:
+                key_i, key_j = overlap_m.group(1), overlap_m.group(2)
+                inst_i = key_i.split(":", 1)[0]
+                inst_j = key_j.split(":", 1)[0]
+                if inst_j not in protected_instances:
+                    victim = inst_j
+                elif inst_i not in protected_instances:
+                    victim = inst_i
+                else:
+                    victim = find_non_protected_table_instance()
+            elif alloc_m:
+                inst_fail = alloc_m.group(1)
+                if inst_fail not in protected_instances:
+                    victim = inst_fail
+                else:
+                    victim = find_non_protected_table_instance()
+            else:
+                raise
+
             if victim is None:
                 raise
 

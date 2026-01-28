@@ -73,6 +73,9 @@ class Args:
     num_steps_wait: int = 10
     num_trials_per_task: int = 50
 
+    # Whether to send ground-truth segmentation to the policy server
+    enable_gt_segmentation: bool = False
+
     # Parallel execution
     num_workers: int = 4
 
@@ -107,6 +110,23 @@ def quat2axisangle(quat: np.ndarray) -> np.ndarray:
     return (quat[:3] * 2.0 * math.acos(quat[3])) / den
 
 
+def _resize_segmentation_mask(seg: np.ndarray, target_h: int, target_w: int) -> np.ndarray:
+    """Resize a 2D segmentation mask to (target_h, target_w) using nearest-neighbor sampling."""
+    seg = np.asarray(seg)
+    if seg.ndim == 3 and seg.shape[-1] == 1:
+        seg = seg[..., 0]
+    if seg.ndim != 2:
+        raise ValueError(f"Expected 2D segmentation mask, got shape {seg.shape}")
+
+    h, w = seg.shape
+    if h == target_h and w == target_w:
+        return seg
+
+    y_idx = (np.linspace(0, h - 1, target_h)).astype(np.int64)
+    x_idx = (np.linspace(0, w - 1, target_w)).astype(np.int64)
+    return seg[y_idx][:, x_idx]
+
+
 def run_episode(
     task_id: int,
     episode_idx: int,
@@ -116,6 +136,7 @@ def run_episode(
     resize_size: int,
     replan_steps: int,
     num_steps_wait: int,
+    enable_gt_segmentation: bool,
     seed: int,
     video_out_path: str,
     save_video: bool,
@@ -166,6 +187,10 @@ def run_episode(
     current_raw_text = None
     episode_text_log: List[Dict] = []
     episode_seg_log: Dict[str, List[np.ndarray]] = {}
+    # Per-episode cache of segmentation metadata and current resized mask
+    seg_name_to_id = None
+    seg_id_to_name = None
+    current_segmentation_for_server = None
     
     while t < max_steps + num_steps_wait:
         # During dummy steps we do not record video / text / segmentation.
@@ -184,6 +209,21 @@ def run_episode(
                 # Rotate segmentation by 180° to match the image rotation.
                 seg = seg[::-1, ::-1]
                 episode_seg_log[k].append(seg)
+
+            # Prepare a resized segmentation mask for the policy server, if requested.
+            if enable_gt_segmentation:
+                agentview_keys = [k for k in seg_items.keys() if "agentview" in k.lower()]
+                if agentview_keys:
+                    seg_key = sorted(agentview_keys)[0]
+                else:
+                    seg_key = sorted(seg_items.keys())[0]
+                seg_for_server = np.array(seg_items[seg_key])
+                seg_for_server = seg_for_server[::-1, ::-1]
+                current_segmentation_for_server = _resize_segmentation_mask(
+                    seg_for_server, resize_size, resize_size
+                )
+            else:
+                current_segmentation_for_server = None
 
         # Preprocess images
         img = np.ascontiguousarray(obs["agentview_image"][::-1, ::-1])
@@ -205,7 +245,30 @@ def run_episode(
                     obs["robot0_gripper_qpos"],
                 )),
                 "prompt": str(task_description),
+                "task_suite_name": str(task_suite_name),
+                "task_id": int(task_id),
+                "episode_index": int(episode_idx),
+                "frame_index": int(t - num_steps_wait),
             }
+
+            if enable_gt_segmentation and current_segmentation_for_server is not None:
+                # Lazily build instance-name ↔ segmentation-id mapping once per episode.
+                if seg_name_to_id is None or seg_id_to_name is None:
+                    seg_name_to_id = {}
+                    seg_id_to_name = {}
+                    if hasattr(env, "instance_to_id"):
+                        for name, seg_id in env.instance_to_id.items():
+                            seg_id = int(seg_id)
+                            seg_name_to_id[name] = seg_id
+                            # Use string keys so msgpack strict_map_key=True accepts them.
+                            seg_id_to_name[str(seg_id)] = name
+                    if hasattr(env, "segmentation_robot_id") and env.segmentation_robot_id is not None:
+                        robot_base_id = int(env.segmentation_robot_id)
+                        seg_id_to_name[str(robot_base_id + 1)] = "robot"
+
+                element["observation/gt_segmentation"] = current_segmentation_for_server.astype(np.int32)
+                element["observation/segmentation_instance_to_id"] = seg_name_to_id
+                element["observation/segmentation_id_to_instance"] = seg_id_to_name
 
             infer_result = client.infer(element)
             action_chunk = infer_result["actions"]
@@ -330,6 +393,7 @@ def worker_fn(
             resize_size=args.resize_size,
             replan_steps=args.replan_steps,
             num_steps_wait=args.num_steps_wait,
+            enable_gt_segmentation=args.enable_gt_segmentation,
             seed=args.seed,
             video_out_path=args.video_out_path,
             save_video=args.save_video,

@@ -153,7 +153,7 @@
 
   (:init
     (On butter_1 main_table_butter_init_region_1)
-    (On akita_black_bowl_1 main_table_akita_black_bowl_on_region)
+    (On akita_black_bowl_1 butter_1)
     (On akita_black_bowl_2 main_table_akita_black_bowl_init_region)
     (On chefmate_8_frypan_1 main_table_chefmate_8_frypan_init_region)
     (On plate_1 main_table_plate_init_region)

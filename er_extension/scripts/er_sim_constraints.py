@@ -595,10 +595,14 @@ def enforce_non_overlapping_table_placements(
     # We try a few re-sampling attempts for all non-fixed table placements
     # before giving up.
     last_overlap: Optional[Tuple[str, str]] = None
+    last_failure: Optional[str] = None
     for _attempt in range(25):
+        init_try = list(init) if isinstance(init, list) else []
+        regions_try = dict(regions) if isinstance(regions, dict) else {}
+
         placements = []
         prefix = f"{table_name}_"
-        for i, stmt in enumerate(init):
+        for i, stmt in enumerate(init_try):
             parsed = _parse_on_stmt(stmt)
             if parsed is None:
                 continue
@@ -606,7 +610,7 @@ def enforce_non_overlapping_table_placements(
             if not region_key.startswith(prefix):
                 continue
             region_name = region_key[len(prefix) :]
-            region = regions.get(region_name)
+            region = regions_try.get(region_name)
             if region is None or getattr(region, "target", None) != table_name or not getattr(region, "ranges", None):
                 continue
             placements.append((i, instance, region_name))
@@ -616,32 +620,37 @@ def enforce_non_overlapping_table_placements(
             if instance in fixed_instances:
                 continue
             to_reallocate.append((init_idx, instance, region_name))
-            regions.pop(region_name, None)
+            regions_try.pop(region_name, None)
 
         # Randomize order to avoid deterministic dead-ends when space is tight.
         random.shuffle(to_reallocate)
 
+        allocation_failed = False
         for init_idx, instance, region_name in to_reallocate:
             obj_type = objects.get(instance) or extract_object_type(instance)
-            new_region, _ = allocate_region(
-                table_name,
-                obj_type,
-                regions,
-                min_gap=min_gap,
-                collision_margin=COLLISION_MARGIN,
-                occupied_region_boxes=occupied_table_region_boxes_from_init(getattr(output, "init", []), regions, table_name),
-            )
-            existing = regions.get(region_name)
-            if existing is None:
-                regions[region_name] = new_region
-            else:
-                existing.target = table_name
-                existing.ranges = getattr(new_region, "ranges", None)
-            getattr(output, "init")[init_idx] = f"(On {instance} {table_name}_{region_name})"
+            try:
+                new_region, _ = allocate_region(
+                    table_name,
+                    obj_type,
+                    regions_try,
+                    min_gap=min_gap,
+                    collision_margin=COLLISION_MARGIN,
+                    occupied_region_boxes=occupied_table_region_boxes_from_init(init_try, regions_try, table_name),
+                )
+            except RuntimeError:
+                allocation_failed = True
+                last_failure = f"Failed to allocate non-overlapping region for {instance} ({obj_type}) on {table_name}"
+                break
+
+            regions_try[region_name] = new_region
+            init_try[init_idx] = f"(On {instance} {table_name}_{region_name})"
+
+        if allocation_failed:
+            continue
 
         final_boxes: List[Tuple[str, Tuple[float, float, float, float]]] = []
         for _, instance, region_name in placements:
-            region = regions.get(region_name)
+            region = regions_try.get(region_name)
             if region is None or getattr(region, "target", None) != table_name or not getattr(region, "ranges", None):
                 continue
             r = getattr(region, "ranges")[0]
@@ -660,9 +669,13 @@ def enforce_non_overlapping_table_placements(
                 break
 
         if not overlap_found:
+            setattr(output, "init", init_try)
+            setattr(output, "regions", regions_try)
             return
 
     if last_overlap is None:
+        if last_failure is not None:
+            raise RuntimeError(last_failure)
         raise RuntimeError("Table placement regions overlap but no concrete overlap pair was found.")
     raise RuntimeError(f"Table placement regions overlap (margin={min_gap}): {last_overlap[0]} vs {last_overlap[1]}")
 

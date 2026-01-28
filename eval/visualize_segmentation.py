@@ -25,7 +25,8 @@ Notes:
     the same color across frames).
 
 Usage example:
-    python eval/visualize_segmentation.py --args.input-dir data/libero/videos
+    python eval/visualize_segmentation.py --input-dir data/libero/videos
+    python eval/visualize_segmentation.py --input-dir data/er_libero_data/er_object
 """
 
 from __future__ import annotations
@@ -52,8 +53,12 @@ class Args:
 
     # Directory that contains *.segmentation.npz files.
     input_dir: str = "data/libero/videos"
+    # Optional output directory. Defaults to <input_dir>/seg_vis_output.
+    output_dir: str = ""
     # FPS of the output videos.
     fps: int = 60
+    # Recursively search for *.segmentation.npz files.
+    recursive: bool = False
 
 
 def _build_color_map(instance_ids: np.ndarray) -> np.ndarray:
@@ -184,6 +189,8 @@ def _visualize_single_array(
     # seg expected shape: [T, H, W] or [T, H, W, 1]
     if seg.ndim == 4 and seg.shape[-1] == 1:
         seg = seg[..., 0]
+    if seg.ndim == 2:
+        seg = seg[None, ...]
     if seg.ndim != 3:
         LOGGER.warning(
             "Unexpected segmentation array shape %s for %s, skipping",
@@ -278,15 +285,26 @@ def main(args: Args) -> None:
         LOGGER.error("Input directory does not exist: %s", input_dir)
         return
 
-    out_dir = input_dir / "seg_vis_output"
+    out_dir = pathlib.Path(args.output_dir) if args.output_dir else (input_dir / "seg_vis_output")
 
-    seg_files = sorted(input_dir.glob("*.segmentation.npz"))
+    if args.recursive:
+        seg_files = sorted(input_dir.rglob("*.segmentation.npz"))
+    else:
+        seg_files = sorted(input_dir.glob("*.segmentation.npz"))
     if not seg_files:
         LOGGER.warning("No *.segmentation.npz files found in %s", input_dir)
         return
 
     for seg_path in tqdm.tqdm(seg_files, desc="Segmentation episodes"):
-        visualize_segmentation_file(seg_path, args, out_dir)
+        if args.recursive:
+            try:
+                relative_parent = seg_path.parent.relative_to(input_dir)
+            except ValueError:
+                relative_parent = pathlib.Path()
+            out_subdir = out_dir / relative_parent
+        else:
+            out_subdir = out_dir
+        visualize_segmentation_file(seg_path, args, out_subdir)
 
 
 if __name__ == "__main__":
