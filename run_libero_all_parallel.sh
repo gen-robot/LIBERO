@@ -7,15 +7,12 @@ set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-export LIBERO_CONFIG_PATH="$PWD/.libero_cfg"
-mkdir -p "$LIBERO_CONFIG_PATH"
-cat >"$LIBERO_CONFIG_PATH/config.yaml" <<EOF
-benchmark_root: $PWD/libero/libero
-bddl_files: $PWD/libero/libero/bddl_files
-init_states: $PWD/libero/libero/init_files
-datasets: $PWD/libero/../datasets
-assets: $PWD/libero/libero/assets
-EOF
+is_er_suite() {
+  case "$1" in
+    er_spatial|er_sequential|er_goal|er_object) return 0 ;;
+    *) return 1 ;;
+  esac
+}
 
 # Keep defaults aligned with run_libero_parallel.sh (can be overridden via env).
 HOST="${HOST:-127.0.0.1}"
@@ -24,7 +21,7 @@ NUM_TRIALS_PER_TASK="${NUM_TRIALS_PER_TASK:-20}"
 NUM_WORKERS="${NUM_WORKERS:-50}"
 
 # Base output directory; each suite writes to a separate subfolder.
-VIDEO_OUT_BASE="${VIDEO_OUT_BASE:-outputs/pi05_libero_vla_cot_training/pi05_libero_vla_cot_training_20260124_005513/bak-ckpt-25800/}"
+VIDEO_OUT_BASE="${VIDEO_OUT_BASE:-outputs/pi05_libero_vla_only_mix120/pi05_libero_vla_only_mix120_20260115_180102/checkpoint-25500/attention_mask/}"
 # Optional suffix appended to each suite folder (e.g., "-2" to match an existing run tag).
 RUN_TAG="${RUN_TAG:--cot-reasoning}"
 
@@ -55,7 +52,22 @@ for suite in "${SUITES_DEFAULT[@]}"; do
   mkdir -p "$out_dir"
 
   echo "==> Evaluating ${suite} -> ${out_dir}"
+  extra_env=()
+  if is_er_suite "$suite"; then
+    cfg_dir="$PWD/.libero_cfg"
+    mkdir -p "$cfg_dir"
+    cat >"$cfg_dir/config.yaml" <<EOF
+benchmark_root: $PWD/libero/libero
+bddl_files: $PWD/libero/libero/bddl_files
+init_states: $PWD/libero/libero/init_files
+datasets: $PWD/libero/../datasets
+assets: $PWD/libero/libero/assets
+EOF
+    extra_env=(LIBERO_CONFIG_PATH="$cfg_dir")
+  fi
+
   env -u LD_LIBRARY_PATH -u PYTHONPATH PYTHONNOUSERSITE=1 \
+    "${extra_env[@]}" \
     PYTHONPATH="$PWD/eval:${PYTHONPATH:-}" \
     LD_LIBRARY_PATH=/usr/local/nvidia/lib64:/usr/local/nvidia/lib:/usr/lib/x86_64-linux-gnu \
     MUJOCO_GL=osmesa \

@@ -1,5 +1,5 @@
-benchmark_root: /mnt/project_rlinf/yangxinye/vla_lib/libero_er/libero/libero
-bddl_files: /mnt/project_rlinf/yangxinye/vla_lib/libero_er/libero/libero/bddl_files
-init_states: /mnt/project_rlinf/yangxinye/vla_lib/libero_er/libero/libero/init_files
-datasets: /mnt/project_rlinf/yangxinye/vla_lib/libero_er/libero/../datasets
-assets: /mnt/project_rlinf/yangxinye/vla_lib/libero_er/libero/libero/assets
+benchmark_root: /mnt/project_rlinf/yangxinye/LIBERO_ER/LIBERO/libero/libero
+bddl_files: /mnt/project_rlinf/yangxinye/LIBERO_ER/LIBERO/libero/libero/bddl_files
+init_states: /mnt/project_rlinf/yangxinye/LIBERO_ER/LIBERO/libero/libero/init_files
+datasets: /mnt/project_rlinf/yangxinye/LIBERO_ER/LIBERO/libero/../datasets
+assets: /mnt/project_rlinf/yangxinye/LIBERO_ER/LIBERO/libero/libero/assets
