@@ -5,8 +5,12 @@ import random
 import torch
 
 from typing import List, NamedTuple, Type
-from libero.libero import get_libero_path
-from libero.libero.benchmark.libero_suite_task_map import libero_task_map
+try:
+    from libero.libero import get_libero_path  # type: ignore
+    from libero.libero.benchmark.libero_suite_task_map import libero_task_map  # type: ignore
+except Exception:
+    from libero import get_libero_path  # type: ignore
+    from libero.benchmark.libero_suite_task_map import libero_task_map  # type: ignore
 
 BENCHMARK_MAPPING = {}
 
@@ -110,6 +114,7 @@ er_suites = [
     "er_goal",
     "er_spatial",
     "er_sequential",
+    "er_object_simple",
 ]
 task_maps = {}
 max_len = 0
@@ -317,4 +322,12 @@ class ER_SEQUENTIAL(Benchmark):
     def __init__(self, task_order_index=0):
         super().__init__(task_order_index=task_order_index)
         self.name = "er_sequential"
+        self._make_benchmark()
+
+
+@register_benchmark
+class ER_OBJECT_SIMPLE(Benchmark):
+    def __init__(self, task_order_index=0):
+        super().__init__(task_order_index=task_order_index)
+        self.name = "er_object_simple"
         self._make_benchmark()

@@ -19,4 +19,6 @@ visualizations/rendered_images/*
 *.mp4
 libero.egg-info/
 .vscode/
+.venv/
 
+pi05_libero_vla_cot_training_ki

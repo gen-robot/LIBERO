@@ -48,15 +48,21 @@ LOGGER = logging.getLogger(__name__)
 
 
 def _extract_slow_text(full_text: str) -> str:
-    """Return the part of generated text before the 'FAST:' / 'Fast:' marker, if present."""
+    """Return the part of generated text before fast/detect markers, if present."""
     if not full_text:
         return ""
     text = str(full_text)
     lower = text.lower()
-    for marker in ("fast:",):
-        idx = lower.find(marker)
-        if idx != -1:
-            return text[:idx].strip()
+    first_idx: int | None = None
+    idx = lower.find("fast:")
+    if idx != -1:
+        first_idx = idx
+    detect_match = re.search(r"\bdetect\b", lower)
+    if detect_match:
+        d_idx = int(detect_match.start())
+        first_idx = d_idx if first_idx is None else min(first_idx, d_idx)
+    if first_idx is not None:
+        return text[:first_idx].strip()
     return text.strip()
 
 
@@ -247,7 +253,53 @@ def _parse_ints(text: str) -> List[int]:
     return out
 
 
-def _parse_bbox_annotations(text: str) -> List[Dict[str, Any]]:
+def _decode_paligemma_loc_value(val: int, *, dst_size: int = 224, norm: int = 1024) -> int:
+    coord = int(float(val) * float(dst_size) / float(norm))
+    return max(0, min(dst_size - 1, coord))
+
+
+def _parse_paligemma_detect_bboxes(text: str) -> List[Dict[str, Any]]:
+    if not text:
+        return []
+    pattern = re.compile(r"detect\b[\s:;.-]*", flags=re.IGNORECASE)
+    loc_pat = re.compile(r"<loc(\d{4})>")
+    out: List[Dict[str, Any]] = []
+    m = pattern.search(str(text))
+    if not m:
+        return out
+    sub = str(text)[m.end() :]
+    loc_and_obj = re.compile(
+        r"(?P<locs>(?:<loc\d{4}>){4})\s*(?P<obj>[a-zA-Z0-9 _-]+)",
+        flags=re.IGNORECASE,
+    )
+    for mm in loc_and_obj.finditer(sub):
+        obj = (mm.group("obj") or "").strip()
+        obj = re.sub(r"[\s\.:;,-]+$", "", obj).strip()
+        locs_raw = loc_pat.findall(mm.group("locs") or "")
+        record: Dict[str, Any] = {
+            "raw_obj": obj,
+            "raw_coords": mm.group("locs"),
+            "pred_bbox_xyxy": None,
+            "parse_ok": False,
+        }
+        if len(locs_raw) >= 4:
+            try:
+                locs = [int(x) for x in locs_raw[:4]]
+            except Exception:  # pylint: disable=broad-except
+                locs = []
+            if len(locs) >= 4:
+                y1, x1, y2, x2 = locs
+                x1_i = _decode_paligemma_loc_value(x1)
+                y1_i = _decode_paligemma_loc_value(y1)
+                x2_i = _decode_paligemma_loc_value(x2)
+                y2_i = _decode_paligemma_loc_value(y2)
+                record["pred_bbox_xyxy"] = [x1_i, y1_i, x2_i, y2_i]
+                record["parse_ok"] = True
+        out.append(record)
+    return out
+
+
+def _parse_bbox_annotations(text: str, *, decode_paligemma_tokens: bool = False) -> List[Dict[str, Any]]:
     """Return a list of bbox annotations with `obj` and `bbox`."""
     slow = _extract_slow_text(text)
     if not slow:
@@ -269,6 +321,8 @@ def _parse_bbox_annotations(text: str) -> List[Dict[str, Any]]:
     ]
 
     out: List[Dict[str, Any]] = []
+    if decode_paligemma_tokens:
+        out.extend(_parse_paligemma_detect_bboxes(text))
     for pat in patterns:
         for m in pat.finditer(slow):
             obj = (m.group("obj") or "").strip()
@@ -419,6 +473,7 @@ class Args:
     out_dir_name: str = "cot_grounding_eval"
     seg_key: str = "agentview_segmentation_instance"
     bbox_iou_threshold: float = 0.8
+    decode_paligemma_tokens: bool = False
 
 
 @dataclasses.dataclass
@@ -519,7 +574,10 @@ def _evaluate_episode(
             seg_frame = seg_arr[t_i]
             gen_text = step.get("generated_text", "")
 
-            bboxes = _parse_bbox_annotations(gen_text)
+            bboxes = _parse_bbox_annotations(
+                gen_text,
+                decode_paligemma_tokens=args.decode_paligemma_tokens,
+            )
             points = _parse_pointing_annotations(gen_text)
 
             bbox_eval: List[Dict[str, Any]] = []

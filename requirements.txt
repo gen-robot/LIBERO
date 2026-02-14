@@ -1,3 +1,6 @@
+ torch==1.11.0+cu113
+ torchvision==0.12.0+cu113
+ torchaudio==0.11.0+cu113
  hydra-core==1.2.0
  numpy==1.22.4 
  wandb==0.13.1 

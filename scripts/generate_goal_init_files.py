@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import gc
 import os
+import sys
 import time
 from pathlib import Path
 from typing import List, Optional, Sequence
@@ -25,12 +26,15 @@ import numpy as np
 import torch
 
 SCRIPT_DIR = Path(__file__).parent
+PROJECT_ROOT = SCRIPT_DIR.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 LIBERO_ROOT = SCRIPT_DIR.parent / "libero" / "libero"
 GOAL_BDDL_DIR = LIBERO_ROOT / "goal_bddl_files"
 GOAL_INIT_DIR = GOAL_BDDL_DIR / "goal_files"
 
 LIBERO_SUITES = ["libero_10", "libero_90", "libero_spatial", "libero_object", "libero_goal"]
-ER_SUITES = ["er_object", "er_goal", "er_spatial", "er_sequential"]
+ER_SUITES = ["er_object", "er_goal", "er_spatial", "er_sequential", "er_object_simple"]
 SUITES = LIBERO_SUITES + ER_SUITES
 
 

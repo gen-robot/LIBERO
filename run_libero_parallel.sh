@@ -2,12 +2,12 @@ source eval/.venv/bin/activate
 
 is_er_suite() {
   case "$1" in
-    er_spatial|er_sequential|er_goal|er_object) return 0 ;;
+    er_spatial|er_sequential|er_goal|er_object|er_object_simple) return 0 ;;
     *) return 1 ;;
   esac
 }
 
-SUITE="${SUITE:-libero_goal}"
+SUITE="${SUITE:-er_object_simple}"
 extra_env=()
 if is_er_suite "$SUITE"; then
   # Use a repo-local LIBERO config so `get_libero_path("init_states")` points to this checkout.
@@ -32,9 +32,9 @@ env -u LD_LIBRARY_PATH -u PYTHONPATH PYTHONNOUSERSITE=1 \
 	    python eval/eval_parallel.py \
 	        --args.task-suite-name "$SUITE" \
 	        --args.host 127.0.0.1 \
-	        --args.port 8000 \
-	        --args.num-trials-per-task 20 \
-	        --args.video-out-path data/libero/videos-debug \
-			--args.num-workers 50 \
+	        --args.port 9000 \
+	        --args.num-trials-per-task 10 \
+	        --args.video-out-path outputs/er_object_simple/pi05_libero_vla_only_mix120/pi05_libero_vla_only_mix120_20260115_180102/checkpoint-25500/er_object_simple \
+			    --args.num-workers 50 \
 	        # --args.enable_gt_segmentation \
 	        # --args.replan-steps 2 \

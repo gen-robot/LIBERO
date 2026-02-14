@@ -43,7 +43,7 @@ OUTPUT_DIR = SCRIPT_DIR.parent / "visualizations"
 RENDERED_DIR = OUTPUT_DIR / "rendered_images"
 
 LIBERO_SUITES = ["libero_10", "libero_90", "libero_spatial", "libero_object", "libero_goal"]
-ER_SUITES = ["er_object", "er_goal", "er_spatial", "er_sequential"]
+ER_SUITES = ["er_object", "er_goal", "er_spatial", "er_sequential", "er_object_simple"]
 SUITES = LIBERO_SUITES + ER_SUITES
 
 

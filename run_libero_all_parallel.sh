@@ -21,13 +21,13 @@ NUM_TRIALS_PER_TASK="${NUM_TRIALS_PER_TASK:-20}"
 NUM_WORKERS="${NUM_WORKERS:-50}"
 
 # Base output directory; each suite writes to a separate subfolder.
-VIDEO_OUT_BASE="${VIDEO_OUT_BASE:-outputs/pi05_libero_vla_only_mix120/pi05_libero_vla_only_mix120_20260115_180102/checkpoint-25500/attention_mask/}"
+VIDEO_OUT_BASE="${VIDEO_OUT_BASE:-outputs/pi05_libero_separate_cot_subtask_bbox_with_er/pi05_libero_separate_cot_subtask_bbox_with_er_20260129_112740/bak-ckpt-19700/}"
 # Optional suffix appended to each suite folder (e.g., "-2" to match an existing run tag).
-RUN_TAG="${RUN_TAG:--cot-reasoning}"
+RUN_TAG="${RUN_TAG:--vla-only}"
 
 # Default suites (order matters).
 # SUITES_DEFAULT=("libero_10" "libero_90" "libero_object" "libero_goal" "libero_spatial")
-SUITES_DEFAULT=("er_spatial" "er_object" "er_goal" "er_sequential")
+SUITES_DEFAULT=("er_object" "er_goal" "er_spatial" "er_sequential")
 
 suite_to_dir() {
   local suite="$1"

@@ -81,6 +81,11 @@ def _rotate180(arr: np.ndarray) -> np.ndarray:
     return np.ascontiguousarray(arr[::-1, ::-1])
 
 
+def _flip_y_axis(arr: np.ndarray) -> np.ndarray:
+    # Mirror across the image y-axis (left-right flip).
+    return np.ascontiguousarray(arr[:, ::-1, ...])
+
+
 def _extract_segmentation_items(
     obs: Dict[str, Any],
     *,
@@ -206,6 +211,19 @@ def main() -> None:
         help="Disable 180° rotation",
     )
     parser.add_argument(
+        "--flip-y",
+        dest="flip_y",
+        action="store_true",
+        default=True,
+        help="Flip visual outputs along the final image y-axis (default: enabled)",
+    )
+    parser.add_argument(
+        "--no-flip-y",
+        dest="flip_y",
+        action="store_false",
+        help="Disable y-axis flip for visual outputs",
+    )
+    parser.add_argument(
         "--include-all-segmentation-cameras",
         dest="include_all_segmentation_cameras",
         action="store_true",
@@ -285,6 +303,8 @@ def main() -> None:
                 img = np.asarray(obs[rgb_key])
                 if args.rotate180:
                     img = _rotate180(img)
+                if args.flip_y:
+                    img = _flip_y_axis(img)
                 img = img.astype(np.uint8, copy=False)
 
                 seg_items = _extract_segmentation_items(
@@ -294,6 +314,8 @@ def main() -> None:
                 )
                 if args.rotate180:
                     seg_items = {k: _rotate180(v) for k, v in seg_items.items()}
+                if args.flip_y:
+                    seg_items = {k: _flip_y_axis(v) for k, v in seg_items.items()}
 
                 seg_arrays = {k: v[None, ...] for k, v in seg_items.items()}
 
@@ -332,6 +354,7 @@ def main() -> None:
                             "camera_names": list(args.camera_names),
                             "resolution": int(args.resolution),
                             "rotate180": bool(args.rotate180),
+                            "flip_y": bool(args.flip_y),
                             "stabilize_steps": int(args.stabilize_steps),
                             "image_file": str(img_path.name),
                             "segmentation_file": str(seg_path.name),

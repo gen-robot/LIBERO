@@ -1,5 +1,8 @@
 import os
-from libero.libero import get_libero_path
+try:
+    from libero.libero import get_libero_path  # type: ignore
+except Exception:
+    from libero import get_libero_path  # type: ignore
 
 # This is the mapping from texture name to texture file name. Currently this has some duplication with style.py. We will fix this in the future.
 

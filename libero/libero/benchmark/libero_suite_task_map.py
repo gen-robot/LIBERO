@@ -219,4 +219,16 @@ libero_task_map = {
         "er_seq_09",
         "er_seq_10",
     ],
+    "er_object_simple": [
+        "er_obj_simple_01",
+        "er_obj_simple_02",
+        "er_obj_simple_03",
+        "er_obj_simple_04",
+        "er_obj_simple_05",
+        "er_obj_simple_06",
+        "er_obj_simple_07",
+        "er_obj_simple_08",
+        "er_obj_simple_09",
+        "er_obj_simple_10",
+    ],
 }

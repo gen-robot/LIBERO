@@ -68,18 +68,70 @@ def _wrap_text_to_width(
 
 
 def _extract_slow_text(full_text: str) -> str:
-    """Return the part of generated text before the 'FAST:' / 'Fast:' marker, if present."""
+    """Return the part of generated text before fast/detect markers, if present."""
     if not full_text:
         return ""
     text = str(full_text)
-    for marker in ("FAST:", "Fast:"):
-        idx = text.find(marker)
+    lower = text.lower()
+    first_idx: int | None = None
+    for marker in ("fast:",):
+        idx = lower.find(marker)
         if idx != -1:
-            return text[:idx].strip()
+            first_idx = idx if first_idx is None else min(first_idx, idx)
+    detect_match = re.search(r"\bdetect\b", lower)
+    if detect_match:
+        idx = int(detect_match.start())
+        first_idx = idx if first_idx is None else min(first_idx, idx)
+    if first_idx is not None:
+        return text[:first_idx].strip()
     return text.strip()
 
 
-def _parse_annotations(full_text: str) -> Tuple[List[Tuple[Tuple[int, int], Tuple[int, int]]], List[Tuple[int, int]]]:
+def _decode_paligemma_loc_value(val: int, *, dst_size: int = 224, norm: int = 1024) -> int:
+    coord = int(float(val) * float(dst_size) / float(norm))
+    return max(0, min(dst_size - 1, coord))
+
+
+def _parse_paligemma_bboxes(full_text: str) -> List[Tuple[Tuple[int, int], Tuple[int, int]]]:
+    if not full_text:
+        return []
+    text = str(full_text)
+    pattern = re.compile(
+        r"detect\b[\s:;.-]*",
+        flags=re.IGNORECASE,
+    )
+    loc_pat = re.compile(r"<loc(\d{4})>")
+    out: List[Tuple[Tuple[int, int], Tuple[int, int]]] = []
+    m = pattern.search(text)
+    if not m:
+        return out
+    sub = text[m.end() :]
+    loc_and_obj = re.compile(
+        r"(?P<locs>(?:<loc\d{4}>){4})\s*(?P<obj>[a-zA-Z0-9 _-]+)",
+        flags=re.IGNORECASE,
+    )
+    for mm in loc_and_obj.finditer(sub):
+        locs_raw = loc_pat.findall(mm.group("locs") or "")
+        if len(locs_raw) < 4:
+            continue
+        try:
+            locs = [int(x) for x in locs_raw[:4]]
+        except Exception:
+            continue
+        y1, x1, y2, x2 = locs
+        x1_i = _decode_paligemma_loc_value(x1)
+        y1_i = _decode_paligemma_loc_value(y1)
+        x2_i = _decode_paligemma_loc_value(x2)
+        y2_i = _decode_paligemma_loc_value(y2)
+        out.append(((x1_i, y1_i), (x2_i, y2_i)))
+    return out
+
+
+def _parse_annotations(
+    full_text: str,
+    *,
+    decode_paligemma_tokens: bool = False,
+) -> Tuple[List[Tuple[Tuple[int, int], Tuple[int, int]]], List[Tuple[int, int]]]:
     """Parse bounding box and pointing annotations from generated text.
 
     Supports patterns like:
@@ -111,6 +163,9 @@ def _parse_annotations(full_text: str) -> Tuple[List[Tuple[Tuple[int, int], Tupl
             x1, y1, x2, y2 = map(int, m.groups())
             bboxes.append(((x1, y1), (x2, y2)))
         break
+
+    if decode_paligemma_tokens:
+        bboxes.extend(_parse_paligemma_bboxes(text))
 
     # --------- Parse pointing coordinates ----------
     point_markers = ["pointing:", "Pointing:"]
@@ -266,6 +321,7 @@ class Args:
     input_dir: str = "data/libero/videos"
     fps: int = 60
     resize_cot_data: bool = False
+    decode_paligemma_tokens: bool = False
 
 
 def visualize_episode(json_path: pathlib.Path, args: Args, out_dir: pathlib.Path) -> None:
@@ -296,7 +352,11 @@ def visualize_episode(json_path: pathlib.Path, args: Args, out_dir: pathlib.Path
             entry = steps[idx]
             full_text = entry.get("generated_text")
             slow_text = _extract_slow_text(full_text) if full_text else ""
-            bboxes, points = _parse_annotations(full_text) if full_text else ([], [])
+            bboxes, points = (
+                _parse_annotations(full_text, decode_paligemma_tokens=args.decode_paligemma_tokens)
+                if full_text
+                else ([], [])
+            )
             if args.resize_cot_data:
                 # Server-side CoT grounding may operate in a 224x224 coordinate system (model input),
                 # while evaluation videos may be rendered at 256x256. This option rescales coords.

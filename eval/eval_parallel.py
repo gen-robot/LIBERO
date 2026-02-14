@@ -57,6 +57,7 @@ MAX_STEPS = {
     "er_object": 350,
     "er_goal": 350,
     "er_sequential": 800,
+    "er_object_simple": 350,
 }
 
 
