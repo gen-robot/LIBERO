@@ -7,7 +7,7 @@ is_er_suite() {
   esac
 }
 
-SUITE="${SUITE:-er_object_simple}"
+SUITE="${SUITE:-libero_object}"
 extra_env=()
 if is_er_suite "$SUITE"; then
   # Use a repo-local LIBERO config so `get_libero_path("init_states")` points to this checkout.
@@ -32,9 +32,9 @@ env -u LD_LIBRARY_PATH -u PYTHONPATH PYTHONNOUSERSITE=1 \
 	    python eval/eval_parallel.py \
 	        --args.task-suite-name "$SUITE" \
 	        --args.host 127.0.0.1 \
-	        --args.port 9000 \
-	        --args.num-trials-per-task 10 \
-	        --args.video-out-path outputs/er_object_simple/pi05_libero_vla_only_mix120/pi05_libero_vla_only_mix120_20260115_180102/checkpoint-25500/er_object_simple \
+	        --args.port 8000 \
+	        --args.num-trials-per-task 20 \
+	        --args.video-out-path outputs/pi05_libero_object_cot_separate_prompt_bbox_paligemma_ki/pi05_libero_object_cot_separate_prompt_bbox_paligemma_ki_20260318_214401/checkpoint-7500-1/libero_object \
 			    --args.num-workers 50 \
 	        # --args.enable_gt_segmentation \
 	        # --args.replan-steps 2 \

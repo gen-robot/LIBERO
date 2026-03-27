@@ -21,7 +21,7 @@ NUM_TRIALS_PER_TASK="${NUM_TRIALS_PER_TASK:-20}"
 NUM_WORKERS="${NUM_WORKERS:-50}"
 
 # Base output directory; each suite writes to a separate subfolder.
-VIDEO_OUT_BASE="${VIDEO_OUT_BASE:-outputs/pi05_libero_separate_cot_subtask_bbox_with_er/pi05_libero_separate_cot_subtask_bbox_with_er_20260129_112740/bak-ckpt-19700/}"
+VIDEO_OUT_BASE="${VIDEO_OUT_BASE:-outputs/pi05_libero_separate_vlm_dataset_paligemma_er_mix/pi05_libero_separate_vlm_dataset_paligemma_er_mix_20260219_001658/checkpoint-25000/}"
 # Optional suffix appended to each suite folder (e.g., "-2" to match an existing run tag).
 RUN_TAG="${RUN_TAG:--vla-only}"
 
